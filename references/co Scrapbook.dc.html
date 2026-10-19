@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shantell+Sans:wght@300..500&family=Barlow+Condensed:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#1a1a19}
+a{color:#FAF7F0;text-decoration:underline}
+a:hover{color:#F2C230}
+@keyframes co-fly{0%{transform:translate(-40px,520px) rotate(-28deg) scale(.7)}38%{transform:translate(6px,-14px) rotate(-1deg) scale(1.03)}50%,100%{transform:translate(0,0) rotate(-4deg) scale(1)}}
+@keyframes co-press{0%,52%{opacity:0;transform:rotate(-14deg) scale(1.15)}53%{opacity:1;transform:rotate(-14deg) scale(1.15)}58%{transform:rotate(-14deg) scale(.98)}63%,100%{opacity:1;transform:rotate(-14deg) scale(1)}}
+@keyframes co-spat{0%,55%{opacity:0;transform:scale(.4)}60%,100%{opacity:1;transform:scale(1)}}
+@keyframes co-caret{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes co-trail{0%,8%{opacity:0}12%,40%{opacity:1}46%,100%{opacity:0}}
+</style>
+</helmet>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="ink" filterUnits="userSpaceOnUse" x="-300" y="-300" width="2400" height="2400"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="3"></feTurbulence><feDisplacementMap in="SourceGraphic" scale="2.4"></feDisplacementMap></filter>
+    <filter id="boil" filterUnits="userSpaceOnUse" x="-300" y="-300" width="2400" height="2400"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="3"><animate attributeName="seed" values="3;8;13" dur="0.42s" calcMode="discrete" repeatCount="indefinite"></animate></feTurbulence><feDisplacementMap in="SourceGraphic" scale="2.8"></feDisplacementMap></filter>
+    <pattern id="h-d" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" style="stroke:#111111;stroke-width:1.1"></line></pattern>
+    <pattern id="h-l" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" style="stroke:#FAF7F0;stroke-width:1.1"></line></pattern>
+    <path id="pm-arc-r" d="M12 38 A24 24 0 0 1 60 38"></path>
+    <pattern id="scrim" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(40)"><line x1="0" y1="0" x2="0" y2="9" style="stroke:#111111;stroke-width:1.3"></line></pattern>
+  </defs>
+</svg>
+<div style="padding:80px 80px 160px;background:#1a1a19;width:max-content;min-width:100%;box-sizing:border-box;font-family:'Shantell Sans',cursive;font-weight:300;color:#FAF7F0;display:flex;flex-direction:column;gap:120px">
+  <header style="display:flex;align-items:flex-end;gap:28px">
+    <div style="font-size:88px;line-height:.9">c/o</div>
+    <div style="font-size:22px;line-height:1.35;max-width:560px;padding-bottom:8px">a scrapbook you don't fill in yourself. postal ephemera, drawn by hand.</div>
+  </header>
+
+  <section data-screen-label="00 item system" style="display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:16px"><div style="font-size:30px">the item system</div><div style="font-size:17px;color:#CFE8D8">tap any item to turn it over</div></div>
+    <div style="width:1500px;background:#FAF7F0;color:#111111;border-radius:6px;padding:80px 70px 70px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:40px;row-gap:70px;align-items:start;box-sizing:border-box">
+      <div style="font-size:20px">photo → stamp</div>
+      <div style="font-size:20px">text → note card</div>
+      <div style="font-size:20px">audio → voice postcard</div>
+      <div style="font-size:20px">link → parcel tag</div>
+      <div style="height:300px;display:flex;align-items:center;justify-content:center"><dc-import name="Item" type="stamp" text="the night the bus never came" label="rooftop, aug" city="lisbon" denom="2" attach="none" rot="-3" zoom="1.3" hint-size="195px,255px"></dc-import></div>
+      <div style="height:300px;display:flex;align-items:center;justify-content:center"><dc-import name="Item" type="note" text="you laughed at the exact same part of the film i did, a full second before everyone else." rot="2.5" zoom="1.3" hint-size="260px,221px"></dc-import></div>
+      <div style="height:300px;display:flex;align-items:center;justify-content:center"><dc-import name="Item" type="voice" dur="0:42" rot="-2" zoom="1.2" hint-size="276px,175px"></dc-import></div>
+      <div style="height:300px;display:flex;align-items:center;justify-content:center"><dc-import name="Item" type="tag" text="the quiet hour" rot="4" zoom="1.2" hint-size="149px,240px"></dc-import></div>
+      <div style="font-size:16px;color:#111111;grid-column:1 / -1;display:flex;gap:40px;border-top:0">
+        <div style="flex:1">back — what everyone else sees</div>
+        <div style="flex:1">back — what the owner sees</div>
+      </div>
+      <div style="height:280px;display:flex;align-items:center;justify-content:center"><dc-import name="Item" type="stamp" viewer="other" flipped="{{ true }}" rot="3" zoom="1.25" hint-size="188px,245px"></dc-import></div>
+      <div style="height:280px;display:flex;align-items:center;justify-content:center"><dc-import name="Item" type="note" viewer="other" flipped="{{ true }}" rot="-2" zoom="1.25" hint-size="250px,213px"></dc-import></div>
+      <div style="height:280px;display:flex;align-items:center;justify-content:center"><dc-import name="Item" type="stamp" viewer="owner" from="jun" flipped="{{ true }}" rot="-3" zoom="1.25" hint-size="188px,245px"></dc-import></div>
+      <div style="height:280px;display:flex;align-items:center;justify-content:center"><dc-import name="Item" type="voice" viewer="owner" from="priya" city="leeds" date="2 sep" time="11:50 pm" flipped="{{ true }}" rot="2" zoom="1.15" hint-size="265px,168px"></dc-import></div>
+      <div style="font-size:16px;grid-column:1 / -1">attachments — each item sits 2–6° off axis</div>
+      <div style="height:250px;display:flex;align-items:center;justify-content:center"><dc-import name="Item" type="stamp" attach="tape" postmark="{{ false }}" label="snow" denom="5" text="first snow" rot="-4" zoom="1" hint-size="150px,196px"></dc-import></div>
+      <div style="height:250px;display:flex;align-items:center;justify-content:center"><dc-import name="Item" type="note" attach="clip" text="ok but who taught you to whistle like that" rot="3" zoom="1" hint-size="200px,170px"></dc-import></div>
+      <div style="height:250px;display:flex;align-items:center;justify-content:center"><dc-import name="Item" type="stamp" attach="corners" postmark="{{ false }}" label="kitchen" denom="1" text="tuesday soup" rot="5" zoom="1" hint-size="150px,196px"></dc-import></div>
+      <div style="height:250px;display:flex;align-items:center;justify-content:center"><dc-import name="Item" type="voice" attach="tape" dur="1:07" rot="-5" zoom="1" hint-size="230px,146px"></dc-import></div>
+    </div>
+  </section>
+
+  <section data-screen-label="screens 01–04" style="display:flex;flex-direction:column;gap:28px">
+    <div style="font-size:30px">home, canvas, adding</div>
+    <div style="display:flex;flex-wrap:nowrap;gap:64px;align-items:flex-start">
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">01 · mailroom</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="01 mailroom" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#FAF7F0;color:#111111">
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#111111;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#111111;stroke:none"></path></g></svg>
+            <div style="position:absolute;top:62px;left:28px;right:28px;display:flex;align-items:center;justify-content:space-between">
+              <div style="font-size:22px">c/o</div>
+              <svg width="40" height="30" style="overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M10 14 L30 13 L30 4 L10 5 Z M10 5 L20 10 L30 4" style="fill:#FAF7F0"></path><path d="M-1 15 L41 14 M2 15 L6 29 L35 28 L39 14"></path></g></svg>
+            </div>
+            <div style="position:absolute;top:118px;left:28px;font-size:34px;line-height:1">the mailroom</div>
+            <div style="position:absolute;left:28px;top:204px;width:337px;height:330px">
+              <svg width="337" height="330" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M-12 -12 L349 -10 M-3 2 L340 0 M337 -4 L338 334 M341 330 L-3 331 M1 335 L0 -4 M168 -5 L169 335 M-4 110 L341 112 M-3 221 L340 219 M8 331 L10 344 M327 331 L326 345"></path></g></svg>
+              <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,110px)">
+                <div style="position:relative">
+                  <svg width="140" height="48" style="position:absolute;left:14px;top:14px;overflow:visible;fill:none;stroke:#111111;stroke-width:2"><g style="filter:url(#ink)"><rect x="0" y="0" width="140" height="48" fill="url(#h-d)" style="stroke:none"></rect><path d="M-2 0 L142 1 M141 -2 L140 49 M142 48 L-1 48 M0 50 L1 -2"></path></g></svg>
+                  <svg width="72" height="48" style="position:absolute;left:52px;top:4px;overflow:visible;transform:rotate(-7deg);fill:none;stroke:#111111;stroke-width:2;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M2 3 L68 1 L69 45 L3 46 Z" style="fill:#FAF7F0"></path><path d="M2 3 L36 27 L68 1"></path><path d="M55 8 L63 8 L63 18 L55 18 Z" style="fill:#D8422C;stroke:none"></path></g></svg>
+                  <div style="position:absolute;left:16px;bottom:10px;font-size:21px;line-height:1">maya</div>
+                </div>
+                <div style="position:relative">
+                  <svg width="140" height="48" style="position:absolute;left:14px;top:14px;overflow:visible;fill:none;stroke:#111111;stroke-width:2"><g style="filter:url(#ink)"><rect x="0" y="0" width="140" height="48" fill="url(#h-d)" style="stroke:none"></rect><path d="M-1 1 L141 0 M140 -2 L141 50 M141 48 L-2 49 M1 50 L0 -1"></path></g></svg>
+                  <div style="position:absolute;left:16px;bottom:10px;font-size:21px;line-height:1">jun</div>
+                </div>
+                <div style="position:relative">
+                  <svg width="140" height="48" style="position:absolute;left:14px;top:14px;overflow:visible;fill:none;stroke:#111111;stroke-width:2"><g style="filter:url(#ink)"><rect x="0" y="0" width="140" height="48" fill="url(#h-d)" style="stroke:none"></rect><path d="M-2 1 L141 -1 M140 -1 L139 49 M141 48 L-1 47 M0 50 L1 -2"></path></g></svg>
+                  <div style="position:absolute;left:16px;bottom:10px;font-size:21px;line-height:1">priya</div>
+                </div>
+                <div style="position:relative">
+                  <svg width="140" height="48" style="position:absolute;left:14px;top:14px;overflow:visible;fill:none;stroke:#111111;stroke-width:2"><g style="filter:url(#ink)"><rect x="0" y="0" width="140" height="48" fill="url(#h-d)" style="stroke:none"></rect><path d="M-1 0 L142 1 M141 -1 L140 50 M142 48 L-2 48 M0 49 L1 -1"></path></g></svg>
+                  <svg width="72" height="48" style="position:absolute;left:30px;top:6px;overflow:visible;transform:rotate(6deg);fill:none;stroke:#111111;stroke-width:2;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M2 3 L68 1 L69 45 L3 46 Z" style="fill:#FAF7F0"></path><path d="M2 3 L36 27 L68 1"></path><path d="M55 8 L63 8 L63 18 L55 18 Z" style="fill:#D8422C;stroke:none"></path></g></svg>
+                  <div style="position:absolute;left:16px;bottom:10px;font-size:21px;line-height:1">theo</div>
+                </div>
+                <div style="position:relative">
+                  <svg width="140" height="48" style="position:absolute;left:14px;top:14px;overflow:visible;fill:none;stroke:#111111;stroke-width:2"><g style="filter:url(#ink)"><rect x="0" y="0" width="140" height="48" fill="url(#h-d)" style="stroke:none"></rect><path d="M-2 0 L141 1 M140 -2 L141 49 M141 48 L-1 49 M1 50 L0 -1"></path></g></svg>
+                  <svg width="60" height="60" style="position:absolute;left:70px;top:-2px;overflow:visible;transform:rotate(-12deg);fill:none;stroke:#111111;stroke-width:2;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M2 2 L50 3 L49 52 L3 51 Z" style="fill:#FAF7F0"></path><path d="M2 20 L49 18 M20 3 L22 51"></path></g></svg>
+                  <div style="position:absolute;left:16px;bottom:10px;font-size:21px;line-height:1">ana</div>
+                </div>
+                <div style="position:relative">
+                  <svg width="140" height="48" style="position:absolute;left:14px;top:14px;overflow:visible;fill:none;stroke:#111111;stroke-width:2"><g style="filter:url(#ink)"><rect x="0" y="0" width="140" height="48" fill="url(#h-d)" style="stroke:none"></rect><path d="M-1 1 L142 0 M141 -1 L140 50 M141 48 L-2 47 M0 49 L1 -2"></path></g></svg>
+                  <div style="position:absolute;left:16px;bottom:10px;font-size:21px;line-height:1">sam</div>
+                </div>
+              </div>
+            </div>
+            <div style="position:absolute;left:0;right:0;top:600px;height:220px">
+              <svg width="393" height="220" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round;stroke-linejoin:round">
+                <g style="filter:url(#ink)">
+                  <path d="M178 104 L177 206 M204 105 L206 205"></path>
+                  <path d="M104 106 L103 44 C103 14 132 2 190 3 C252 3 282 14 283 44 L284 107 Z" style="fill:#FAF7F0"></path>
+                  <path d="M128 6 C112 16 108 34 108 52 L107 106"></path>
+                  <path d="M120 207 L270 205 M136 214 L142 205 M150 215 L152 206 M236 215 L240 205 M252 214 L250 205"></path>
+                </g>
+                <g style="filter:url(#boil)">
+                  <path d="M262 74 L263 20 M263 20 L294 22 L293 42 L263 41" style="fill:none"></path>
+                  <path d="M263 20 L294 22 L293 42 L263 41 Z" style="fill:#D8422C;stroke:none"></path>
+                </g>
+              </svg>
+              <div style="position:absolute;left:118px;top:48px;width:150px;text-align:center;font-size:26px;line-height:1">vishruth</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">02 · someone else's scrapbook</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="02 contributor canvas" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#CFE8D8;color:#111111">
+            <div style="position:absolute;left:24px;top:116px"><dc-import name="Item" type="stamp" text="you, mid-sentence, as always" label="the pier, july" city="brighton" date="14 jul" denom="3" attach="tape" field="#CFE8D8" rot="-4" zoom="0.9" hint-size="135px,176px"></dc-import></div>
+            <div style="position:absolute;left:196px;top:150px"><dc-import name="Item" type="note" text="saw a dog in a raincoat and it was so obviously your dog. you don't have a dog." attach="clip" field="#CFE8D8" rot="3" zoom="0.85" hint-size="170px,145px"></dc-import></div>
+            <div style="position:absolute;left:32px;top:392px"><dc-import name="Item" type="voice" dur="0:31" attach="tape" field="#CFE8D8" rot="2" zoom="0.9" hint-size="207px,131px"></dc-import></div>
+            <div style="position:absolute;left:266px;top:372px"><dc-import name="Item" type="tag" text="songs for buses" field="#CFE8D8" rot="6" zoom="0.82" hint-size="102px,164px"></dc-import></div>
+            <div style="position:absolute;left:222px;top:590px"><dc-import name="Item" type="stamp" text="" label="breakfast" city="leeds" date="3 jun" denom="1" attach="corners" field="#CFE8D8" rot="-5" zoom="0.9" hint-size="135px,176px"></dc-import></div>
+            <div style="position:absolute;left:-74px;top:600px"><dc-import name="Item" type="note" text="the way you say 'anyway' like a door closing" attach="tape" field="#CFE8D8" rot="-3" zoom="0.9" hint-size="180px,153px"></dc-import></div>
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#111111;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#111111;stroke:none"></path></g></svg>
+            <div style="position:absolute;top:62px;left:26px;display:flex;align-items:center;gap:12px">
+              <svg width="30" height="22" style="overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M28 11.5 C20 10.5 11 11.8 3 11 M10 4 L2.5 11.2 L10.5 18.5"></path></g></svg>
+              <div style="font-size:20px">maya</div>
+            </div>
+            <svg width="66" height="104" style="position:absolute;left:164px;bottom:30px;overflow:visible;fill:none;stroke:#111111;stroke-width:2.2;stroke-linecap:round"><g style="filter:url(#ink)"><rect x="3" y="3" width="60" height="98" rx="30" style="fill:#CFE8D8"></rect><path d="M2 40 C1 20 14 4 34 2 M33 34 L34 70 M16 52 L50 51"></path></g></svg>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">03 · add fan-out</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="03 add fan-out" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#CFE8D8;color:#111111">
+            <div style="position:absolute;left:24px;top:116px"><dc-import name="Item" type="stamp" text="you, mid-sentence, as always" label="the pier, july" city="brighton" date="14 jul" denom="3" attach="tape" field="#CFE8D8" rot="-4" zoom="0.9" flippable="{{ false }}" hint-size="135px,176px"></dc-import></div>
+            <div style="position:absolute;left:196px;top:150px"><dc-import name="Item" type="note" text="saw a dog in a raincoat and it was so obviously your dog. you don't have a dog." attach="clip" field="#CFE8D8" rot="3" zoom="0.85" flippable="{{ false }}" hint-size="170px,145px"></dc-import></div>
+            <div style="position:absolute;left:32px;top:392px"><dc-import name="Item" type="voice" dur="0:31" attach="tape" field="#CFE8D8" rot="2" zoom="0.9" flippable="{{ false }}" hint-size="207px,131px"></dc-import></div>
+            <div style="position:absolute;left:266px;top:372px"><dc-import name="Item" type="tag" text="songs for buses" field="#CFE8D8" rot="6" zoom="0.82" flippable="{{ false }}" hint-size="102px,164px"></dc-import></div>
+            <svg width="393" height="852" style="position:absolute;inset:0"><g style="filter:url(#ink)"><rect x="-20" y="-20" width="433" height="892" fill="url(#scrim)"></rect></g></svg>
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;left:13px;top:675px;width:92px;height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+              <svg width="92" height="92" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:2"><g style="filter:url(#ink)"><circle cx="46" cy="46" r="45" style="fill:#CFE8D8"></circle></g></svg>
+              <div style="position:relative"><dc-import name="Item" type="stamp" bare="{{ true }}" label="" denom="" field="#CFE8D8" rot="-4" zoom="0.27" flippable="{{ false }}" hint-size="41px,53px"></dc-import></div>
+              <div style="position:relative;font-size:13px;line-height:1">camera roll</div>
+            </div>
+            <div style="position:absolute;left:74px;top:597px;width:92px;height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+              <svg width="92" height="92" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:2"><g style="filter:url(#ink)"><circle cx="46" cy="46" r="45" style="fill:#CFE8D8"></circle></g></svg>
+              <div style="position:relative;margin-top:8px"><dc-import name="Item" type="tag" bare="{{ true }}" text="" field="#CFE8D8" rot="6" zoom="0.26" flippable="{{ false }}" hint-size="32px,52px"></dc-import></div>
+              <div style="position:relative;font-size:13px;line-height:1">link</div>
+            </div>
+            <div style="position:absolute;left:227px;top:597px;width:92px;height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+              <svg width="92" height="92" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:2"><g style="filter:url(#ink)"><circle cx="46" cy="46" r="45" style="fill:#CFE8D8"></circle></g></svg>
+              <div style="position:relative"><dc-import name="Item" type="voice" bare="{{ true }}" dur="" field="#CFE8D8" rot="-3" zoom="0.27" flippable="{{ false }}" hint-size="62px,39px"></dc-import></div>
+              <div style="position:relative;font-size:13px;line-height:1">audio</div>
+            </div>
+            <div style="position:absolute;left:288px;top:675px;width:92px;height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+              <svg width="92" height="92" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:2"><g style="filter:url(#ink)"><circle cx="46" cy="46" r="45" style="fill:#CFE8D8"></circle></g></svg>
+              <div style="position:relative"><dc-import name="Item" type="note" bare="{{ true }}" text="" field="#CFE8D8" rot="4" zoom="0.27" flippable="{{ false }}" hint-size="54px,46px"></dc-import></div>
+              <div style="position:relative;font-size:13px;line-height:1">text</div>
+            </div>
+            <svg width="66" height="104" style="position:absolute;left:164px;bottom:30px;overflow:visible;fill:none;stroke:#111111;stroke-width:2.2;stroke-linecap:round"><g style="filter:url(#ink)"><rect x="3" y="3" width="60" height="98" rx="30" style="fill:#CFE8D8"></rect><path d="M2 40 C1 20 14 4 34 2 M21 39 L46 65 M46 39 L21 64"></path></g></svg>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">04 · compose — photo</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="04 compose photo" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#F2C230;color:#111111">
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#111111;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#111111;stroke:none"></path></g></svg>
+            <svg width="24" height="24" style="position:absolute;left:28px;top:64px;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M3 3 L21 22 M22 2 L2 21"></path></g></svg>
+            <div style="position:absolute;top:62px;left:0;right:0;text-align:center;font-size:18px">for maya</div>
+            <div style="position:absolute;left:76px;top:168px"><dc-import name="Item" type="stamp" text="" label="from your camera roll" denom="2" postmark="{{ false }}" field="#F2C230" rot="-2" zoom="1.6" hint-size="240px,314px"></dc-import></div>
+            <div style="position:absolute;left:56px;right:56px;top:548px;display:flex;flex-direction:column;align-items:flex-start;gap:2px">
+              <div style="font-size:19px">add a line, if you want</div>
+              <svg width="281" height="8" style="overflow:visible;fill:none;stroke:#111111;stroke-width:1.6;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M-2 4 C80 2 180 6 283 3"></path></g></svg>
+            </div>
+            <div style="position:absolute;left:0;right:0;top:700px;display:flex;justify-content:center">
+              <div style="position:relative;width:132px;height:60px;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer">
+                <svg width="132" height="60" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M70 3 C120 1 132 18 130 32 C128 50 100 58 64 57 C24 56 3 46 3 30 C3 12 30 4 78 6"></path></g></svg>
+                <span style="position:relative">send</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section data-screen-label="screens 05–09" style="display:flex;flex-direction:column;gap:28px">
+    <div style="font-size:30px">composing, sending, your own</div>
+    <div style="display:flex;flex-wrap:nowrap;gap:64px;align-items:flex-start">
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">05 · compose — text</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="05 compose text" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#FAF7F0;color:#111111">
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#111111;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#111111;stroke:none"></path></g></svg>
+            <svg width="24" height="24" style="position:absolute;left:28px;top:64px;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M3 3 L21 22 M22 2 L2 21"></path></g></svg>
+            <div style="position:absolute;top:62px;left:0;right:0;text-align:center;font-size:18px">for jun</div>
+            <div style="position:absolute;left:36px;top:196px"><dc-import name="Item" type="note" text="the way you hold the door for people who are still really far away. every time. even in the rain" typing="{{ true }}" flippable="{{ false }}" rot="-1.5" zoom="1.6" hint-size="320px,272px"></dc-import></div>
+            <div style="position:absolute;left:0;right:0;top:700px;display:flex;justify-content:center">
+              <div style="position:relative;width:132px;height:60px;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer">
+                <svg width="132" height="60" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M70 3 C120 1 132 18 130 32 C128 50 100 58 64 57 C24 56 3 46 3 30 C3 12 30 4 78 6"></path></g></svg>
+                <span style="position:relative">send</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">06a · compose — audio, recording</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="06a compose audio record" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#0F3B2E;color:#FAF7F0">
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#FAF7F0;stroke:none"></path></g></svg>
+            <svg width="24" height="24" style="position:absolute;left:28px;top:64px;overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M3 3 L21 22 M22 2 L2 21"></path></g></svg>
+            <div style="position:absolute;top:62px;left:0;right:0;text-align:center;font-size:18px">for priya</div>
+            <div style="position:absolute;left:24px;top:210px"><dc-import name="Item" type="voice" recording="{{ true }}" dur="0:14" ink="#FAF7F0" field="#0F3B2E" flippable="{{ false }}" rot="-2" zoom="1.5" hint-size="345px,219px"></dc-import></div>
+            <div style="position:absolute;left:0;right:0;top:500px;display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="font-size:24px">listening</div>
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:.16em">0:14</div>
+            </div>
+            <svg width="84" height="84" style="position:absolute;left:154px;top:666px;overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M44 2 C70 2 82 22 82 42 C82 66 64 82 42 82 C18 82 2 64 2 42 C2 18 20 3 50 4"></path><path d="M31 31 L54 30 L55 53 L30 54 Z" style="fill:#D8422C;stroke:none"></path></g></svg>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">06b · compose — audio, review</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="06b compose audio review" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#0F3B2E;color:#FAF7F0">
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#FAF7F0;stroke:none"></path></g></svg>
+            <svg width="24" height="24" style="position:absolute;left:28px;top:64px;overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M3 3 L21 22 M22 2 L2 21"></path></g></svg>
+            <div style="position:absolute;top:62px;left:0;right:0;text-align:center;font-size:18px">for priya</div>
+            <div style="position:absolute;left:24px;top:210px"><dc-import name="Item" type="voice" dur="0:38" ink="#FAF7F0" field="#0F3B2E" flippable="{{ false }}" rot="-2" zoom="1.5" hint-size="345px,219px"></dc-import></div>
+            <div style="position:absolute;left:0;right:0;top:500px;text-align:center;font-size:24px">listen back</div>
+            <div style="position:absolute;left:0;right:0;top:700px;display:flex;justify-content:center;align-items:center;gap:44px">
+              <div style="display:flex;flex-direction:column;align-items:center;white-space:nowrap;font-size:22px;cursor:pointer">
+                <span>again</span>
+                <svg width="60" height="6" style="overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:1.6;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M-2 3 C20 1 40 5 62 2"></path></g></svg>
+              </div>
+              <div style="position:relative;width:132px;height:60px;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer">
+                <svg width="132" height="60" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M70 3 C120 1 132 18 130 32 C128 50 100 58 64 57 C24 56 3 46 3 30 C3 12 30 4 78 6"></path></g></svg>
+                <span style="position:relative">send</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">07 · compose — link</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="07 compose link" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#2E6BE6;color:#111111">
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#111111;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#111111;stroke:none"></path></g></svg>
+            <svg width="24" height="24" style="position:absolute;left:28px;top:64px;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M3 3 L21 22 M22 2 L2 21"></path></g></svg>
+            <div style="position:absolute;top:62px;left:0;right:0;text-align:center;font-size:18px">for theo</div>
+            <div style="position:absolute;left:48px;right:48px;top:150px;display:flex;flex-direction:column;align-items:center;gap:2px">
+              <div style="font-size:18px">the-quiet-hour.blog/rain-notes</div>
+              <svg width="297" height="8" style="overflow:visible;fill:none;stroke:#111111;stroke-width:1.6;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M-2 4 C80 2 190 6 299 3"></path></g></svg>
+            </div>
+            <svg width="40" height="70" style="position:absolute;left:180px;top:190px;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M16 0 C4 24 30 40 18 70"></path></g></svg>
+            <div style="position:absolute;left:104px;top:300px"><dc-import name="Item" type="tag" text="the quiet hour" field="#2E6BE6" flippable="{{ false }}" rot="3" zoom="1.5" hint-size="186px,300px"></dc-import></div>
+            <div style="position:absolute;left:0;right:0;top:720px;display:flex;justify-content:center">
+              <div style="position:relative;width:132px;height:60px;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer">
+                <svg width="132" height="60" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M70 3 C120 1 132 18 130 32 C128 50 100 58 64 57 C24 56 3 46 3 30 C3 12 30 4 78 6"></path></g></svg>
+                <span style="position:relative">send</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">08 · sending — the key frame (loops)</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="08 sending transition" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#CFE8D8;color:#111111">
+            <div style="position:absolute;left:-30px;top:110px"><dc-import name="Item" type="note" text="saw a dog in a raincoat and it was so obviously your dog. you don't have a dog." attach="clip" field="#CFE8D8" rot="3" zoom="0.85" flippable="{{ false }}" hint-size="170px,145px"></dc-import></div>
+            <div style="position:absolute;left:250px;top:120px"><dc-import name="Item" type="tag" text="songs for buses" field="#CFE8D8" rot="-6" zoom="0.82" flippable="{{ false }}" hint-size="102px,164px"></dc-import></div>
+            <div style="position:absolute;left:200px;top:640px"><dc-import name="Item" type="voice" dur="0:31" attach="tape" field="#CFE8D8" rot="4" zoom="0.9" flippable="{{ false }}" hint-size="207px,131px"></dc-import></div>
+            <svg width="120" height="260" style="position:absolute;left:120px;top:560px;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round;animation:co-trail 3.4s ease-out infinite"><g style="filter:url(#ink)"><path d="M14 250 C0 170 40 90 30 10 M58 256 C50 180 70 110 66 30 M96 246 C104 170 92 100 100 24"></path></g></svg>
+            <div style="position:absolute;left:110px;top:300px;animation:co-fly 3.4s cubic-bezier(.2,.8,.3,1.1) infinite">
+              <dc-import name="Item" type="stamp" text="that fit, on you, in that light" label="the market" denom="2" postmark="{{ false }}" attach="tape" field="#CFE8D8" flippable="{{ false }}" zoom="1.15" hint-size="173px,225px"></dc-import>
+              <svg width="172" height="101" viewBox="0 0 132 78" style="position:absolute;left:-46px;top:-30px;overflow:visible;fill:none;stroke:#111111;stroke-width:1.9;stroke-linecap:round;transform-origin:36px 38px;animation:co-press 3.4s linear infinite">
+                <g style="filter:url(#ink)">
+                  <circle cx="36" cy="38" r="28"></circle>
+                  <circle cx="36" cy="38" r="19"></circle>
+                  <path d="M68 26 q8 -5 16 0 t16 0 t16 0 t14 0 M68 38 q8 -5 16 0 t16 0 t16 0 t14 0 M68 50 q8 -5 16 0 t16 0 t16 0 t14 0"></path>
+                  <text style="font-family:'Barlow Condensed',sans-serif;font-size:8px;letter-spacing:1.2px;fill:#111111;stroke:none"><textPath href="#pm-arc-r" startOffset="50%" text-anchor="middle">LISBON</textPath></text>
+                  <text x="36" y="38" text-anchor="middle" style="font-family:'Barlow Condensed',sans-serif;font-size:9.5px;letter-spacing:.8px;fill:#111111;stroke:none">18 OCT</text>
+                  <text x="36" y="48" text-anchor="middle" style="font-family:'Barlow Condensed',sans-serif;font-size:7.5px;letter-spacing:1px;fill:#111111;stroke:none">2026</text>
+                </g>
+              </svg>
+              <svg width="90" height="70" style="position:absolute;left:-58px;top:-40px;overflow:visible;transform-origin:45px 35px;animation:co-spat 3.4s linear infinite"><g style="filter:url(#ink)"><circle cx="8" cy="14" r="3" fill="#111111"></circle><circle cx="18" cy="4" r="1.6" fill="#111111"></circle><circle cx="2" cy="40" r="2.2" fill="#111111"></circle><circle cx="14" cy="62" r="1.4" fill="#111111"></circle><circle cx="74" cy="2" r="2.4" fill="#111111"></circle><circle cx="86" cy="12" r="1.3" fill="#111111"></circle><path d="M26 10 C22 4 30 0 32 6 C34 10 30 14 26 10 Z" fill="#111111"></path></g></svg>
+            </div>
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#111111;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#111111;stroke:none"></path></g></svg>
+            <div style="position:absolute;top:62px;left:26px;display:flex;align-items:center;gap:12px">
+              <svg width="30" height="22" style="overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M28 11.5 C20 10.5 11 11.8 3 11 M10 4 L2.5 11.2 L10.5 18.5"></path></g></svg>
+              <div style="font-size:20px">maya</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">09 · my scrapbook — owner canvas</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="09 owner canvas" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#FAF7F0;color:#111111">
+            <div style="position:absolute;left:24px;top:126px"><dc-import name="Item" type="note" viewer="owner" from="ana" text="you made everyone at the table switch seats so the shy kid could see the band." attach="tape" rot="-3" zoom="0.85" hint-size="170px,145px"></dc-import></div>
+            <div style="position:absolute;left:222px;top:118px"><dc-import name="Item" type="stamp" viewer="owner" from="maya" text="graduation, you crying first" label="the hall" city="pune" date="30 may" denom="4" attach="clip" rot="5" zoom="0.85" hint-size="128px,167px"></dc-import></div>
+            <div style="position:absolute;left:36px;top:356px"><dc-import name="Item" type="tag" viewer="owner" from="theo" text="a recipe you'd ruin" rot="-5" zoom="0.8" hint-size="99px,160px"></dc-import></div>
+            <div style="position:absolute;left:150px;top:378px"><dc-import name="Item" type="voice" viewer="owner" from="priya" dur="0:38" attach="tape" rot="3" zoom="0.86" hint-size="198px,126px"></dc-import></div>
+            <div style="position:absolute;left:28px;top:566px"><dc-import name="Item" type="stamp" viewer="owner" from="jun" text="" label="the 3am diner" city="bristol" date="9 aug" denom="1" attach="corners" rot="-2" zoom="0.88" hint-size="132px,172px"></dc-import></div>
+            <div style="position:absolute;left:206px;top:592px"><dc-import name="Item" type="note" viewer="owner" from="sam" text="happy birthday from the group chat you muted" attach="tape" rot="4" zoom="0.8" hint-size="160px,136px"></dc-import></div>
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#111111;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#111111;stroke:none"></path></g></svg>
+            <div style="position:absolute;top:62px;left:26px;display:flex;align-items:center;gap:12px">
+              <svg width="30" height="22" style="overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M28 11.5 C20 10.5 11 11.8 3 11 M10 4 L2.5 11.2 L10.5 18.5"></path></g></svg>
+              <div style="font-size:20px">vishruth</div>
+            </div>
+            <div style="position:absolute;top:56px;right:24px;display:flex;flex-direction:row-reverse">
+              <div style="position:relative;width:34px;height:34px;margin-left:-9px;display:flex;align-items:center;justify-content:center;font-size:15px"><svg width="34" height="34" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:1.8"><g style="filter:url(#ink)"><circle cx="17" cy="17" r="15.5" style="fill:#FAF7F0"></circle></g></svg><span style="position:relative">s</span></div>
+              <div style="position:relative;width:34px;height:34px;margin-left:-9px;display:flex;align-items:center;justify-content:center;font-size:15px"><svg width="34" height="34" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:1.8"><g style="filter:url(#ink)"><circle cx="17" cy="17" r="15.5" style="fill:#FAF7F0"></circle></g></svg><span style="position:relative">p</span></div>
+              <div style="position:relative;width:34px;height:34px;margin-left:-9px;display:flex;align-items:center;justify-content:center;font-size:15px"><svg width="34" height="34" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:1.8"><g style="filter:url(#ink)"><circle cx="17" cy="17" r="15.5" style="fill:#FAF7F0"></circle></g></svg><span style="position:relative">j</span></div>
+              <div style="position:relative;width:34px;height:34px;margin-left:-9px;display:flex;align-items:center;justify-content:center;font-size:15px"><svg width="34" height="34" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:1.8"><g style="filter:url(#ink)"><circle cx="17" cy="17" r="15.5" style="fill:#FAF7F0"></circle></g></svg><span style="position:relative">m</span></div>
+            </div>
+            <div style="position:absolute;left:0;right:0;bottom:46px;display:flex;flex-direction:column;align-items:center;gap:0">
+              <div style="font-size:20px">others write this one.</div>
+              <svg width="200" height="8" style="overflow:visible;fill:none;stroke:#111111;stroke-width:1.6;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M-2 5 C60 2 130 6 202 2"></path></g></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section data-screen-label="screens 10–16" style="display:flex;flex-direction:column;gap:28px">
+    <div style="font-size:30px">turning things over, people, the quiet parts</div>
+    <div style="display:flex;flex-wrap:nowrap;gap:64px;align-items:flex-start">
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">10 · item detail — contributor / public</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="10 item detail contributor" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#F2C230;color:#111111">
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#111111;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#111111;stroke:none"></path></g></svg>
+            <div style="position:absolute;top:62px;left:26px;display:flex;align-items:center;gap:12px">
+              <svg width="30" height="22" style="overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M28 11.5 C20 10.5 11 11.8 3 11 M10 4 L2.5 11.2 L10.5 18.5"></path></g></svg>
+              <div style="font-size:20px">maya</div>
+            </div>
+            <div style="position:absolute;left:65px;top:196px"><dc-import name="Item" type="stamp" viewer="other" owner="maya" flipped="{{ true }}" text="you, mid-sentence, as always" label="the pier, july" city="brighton" date="14 jul" denom="3" field="#F2C230" rot="-2" zoom="1.75" hint-size="263px,343px"></dc-import></div>
+            <div style="position:absolute;left:0;right:0;top:640px;text-align:center;font-size:17px">tap to turn it over</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">10b · item detail — one you left</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="10b item detail own" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#F2C230;color:#111111">
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#111111;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#111111;stroke:none"></path></g></svg>
+            <div style="position:absolute;top:62px;left:26px;display:flex;align-items:center;gap:12px">
+              <svg width="30" height="22" style="overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M28 11.5 C20 10.5 11 11.8 3 11 M10 4 L2.5 11.2 L10.5 18.5"></path></g></svg>
+              <div style="font-size:20px">maya</div>
+            </div>
+            <div style="position:absolute;left:36px;top:230px"><dc-import name="Item" type="note" viewer="self" owner="maya" text="saw a dog in a raincoat and it was so obviously your dog. you don't have a dog." field="#F2C230" rot="2" zoom="1.6" hint-size="320px,272px"></dc-import></div>
+            <div style="position:absolute;left:0;right:0;top:700px;display:flex;justify-content:center">
+              <div style="display:flex;align-items:center;gap:10px;font-size:22px;cursor:pointer">
+                <svg width="30" height="24" style="overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M26 22 C30 8 20 3 6 6 M11 0 L4 6 L11 12"></path></g></svg>
+                <div style="display:flex;flex-direction:column;white-space:nowrap">
+                  <span>take it back</span>
+                  <svg width="112" height="6" style="overflow:visible;fill:none;stroke:#111111;stroke-width:1.6;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M-2 3 C30 1 70 5 114 2"></path></g></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">11 · item detail — owner</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="11 item detail owner" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#0F3B2E;color:#FAF7F0">
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#FAF7F0;stroke:none"></path></g></svg>
+            <div style="position:absolute;top:62px;left:26px;display:flex;align-items:center;gap:12px">
+              <svg width="30" height="22" style="overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M28 11.5 C20 10.5 11 11.8 3 11 M10 4 L2.5 11.2 L10.5 18.5"></path></g></svg>
+              <div style="font-size:20px">vishruth</div>
+            </div>
+            <div style="position:absolute;left:65px;top:180px"><dc-import name="Item" type="stamp" viewer="owner" from="jun" flipped="{{ true }}" text="" label="the 3am diner" city="bristol" date="9 aug" time="3:12 am" denom="1" ink="#FAF7F0" field="#0F3B2E" rot="2" zoom="1.75" hint-size="263px,343px"></dc-import></div>
+            <div style="position:absolute;left:0;right:0;top:690px;display:flex;justify-content:center">
+              <div style="position:relative;padding:14px 22px 16px;font-size:22px;transform:rotate(-3deg);cursor:pointer">
+                <svg width="214" height="64" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M-3 2 L216 0 M213 -3 L215 66 M217 63 L-2 64 M1 67 L0 -3 M5 8 L209 7 M208 6 L209 57 M209 57 L6 58 M6 58 L5 7"></path></g></svg>
+                <span style="position:relative">return to sender</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">12 · people &amp; access</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="12 people and access" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#FAF7F0;color:#111111">
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#111111;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#111111;stroke:none"></path></g></svg>
+            <div style="position:absolute;top:62px;left:26px;display:flex;align-items:center;gap:12px">
+              <svg width="30" height="22" style="overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M28 11.5 C20 10.5 11 11.8 3 11 M10 4 L2.5 11.2 L10.5 18.5"></path></g></svg>
+            </div>
+            <div style="position:absolute;top:116px;left:84px;font-size:30px;line-height:1">who can write here</div>
+            <svg width="393" height="852" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:1.2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M70 100 L71 860" style="stroke:#D8422C;stroke-width:1.8"></path><path d="M-4 236 L398 234 M-4 306 L398 307 M-4 376 L398 375 M-4 446 L398 447 M-4 516 L398 515 M-4 586 L398 587 M-4 656 L398 655 M-4 726 L398 727"></path></g></svg>
+            <div style="position:absolute;left:84px;right:24px;top:180px;display:flex;flex-direction:column">
+              <div style="height:70px;display:flex;align-items:flex-end;gap:16px;padding-bottom:8px;box-sizing:border-box"><svg width="34" height="42" style="overflow:visible;fill:none;stroke:#111111;stroke-width:1.8"><g style="filter:url(#ink)"><ellipse cx="17" cy="21" rx="15" ry="19" fill="url(#h-d)"></ellipse></g></svg><span style="font-size:24px;line-height:1.1">maya</span></div>
+              <div style="height:70px;display:flex;align-items:flex-end;gap:16px;padding-bottom:8px;box-sizing:border-box"><svg width="34" height="42" style="overflow:visible;fill:none;stroke:#111111;stroke-width:1.8"><g style="filter:url(#ink)"><ellipse cx="17" cy="21" rx="15" ry="19" fill="url(#h-d)"></ellipse></g></svg><span style="font-size:24px;line-height:1.1">jun</span></div>
+              <div style="height:70px;display:flex;align-items:flex-end;gap:16px;padding-bottom:8px;box-sizing:border-box"><svg width="34" height="42" style="overflow:visible;fill:none;stroke:#111111;stroke-width:1.8"><g style="filter:url(#ink)"><ellipse cx="17" cy="21" rx="15" ry="19" fill="url(#h-d)"></ellipse></g></svg><span style="font-size:24px;line-height:1.1">priya</span></div>
+              <div style="height:70px;display:flex;align-items:flex-end;gap:16px;padding-bottom:8px;box-sizing:border-box"><svg width="34" height="42" style="overflow:visible;fill:none;stroke:#111111;stroke-width:1.8"><g style="filter:url(#ink)"><ellipse cx="17" cy="21" rx="15" ry="19" fill="url(#h-d)"></ellipse></g></svg><span style="font-size:24px;line-height:1.1">theo</span></div>
+              <div style="height:70px;display:flex;align-items:flex-end;gap:16px;padding-bottom:8px;box-sizing:border-box"><svg width="34" height="42" style="overflow:visible;fill:none;stroke:#111111;stroke-width:1.8"><g style="filter:url(#ink)"><ellipse cx="17" cy="21" rx="15" ry="19" fill="url(#h-d)"></ellipse></g></svg><span style="font-size:24px;line-height:1.1">ana</span></div>
+              <div style="position:relative;height:70px;display:flex;align-items:flex-end;gap:16px;padding-bottom:8px;box-sizing:border-box"><svg width="34" height="42" style="overflow:visible;fill:none;stroke:#111111;stroke-width:1.8"><g style="filter:url(#ink)"><ellipse cx="17" cy="21" rx="15" ry="19" fill="url(#h-d)"></ellipse></g></svg><span style="font-size:24px;line-height:1.1">sam</span>
+                <div style="position:absolute;left:58px;top:14px;padding:6px 12px 5px;transform:rotate(-7deg);font-family:'Barlow Condensed',sans-serif;font-size:19px;letter-spacing:.14em;color:#D8422C">
+                  <svg width="180" height="38" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#D8422C;stroke-width:2"><g style="filter:url(#ink)"><path d="M-2 1 L182 0 M181 -2 L180 39 M182 38 L-1 37 M0 40 L1 -2"></path></g></svg>
+                  <span style="position:relative;white-space:nowrap">RETURN TO SENDER</span>
+                </div>
+              </div>
+              <div style="height:84px;display:flex;align-items:flex-end;gap:14px;padding-bottom:10px;box-sizing:border-box;cursor:pointer">
+                <svg width="40" height="28" style="overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M2 3 L38 2 L38 26 L3 27 Z M2 3 L20 16 L38 2"></path></g></svg>
+                <span style="font-size:22px;line-height:1.1">invite someone</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">13 · invite</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="13 invite sheet" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#0F3B2E;color:#FAF7F0">
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#FAF7F0;stroke:none"></path></g></svg>
+            <svg width="24" height="24" style="position:absolute;left:28px;top:64px;overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M3 3 L21 22 M22 2 L2 21"></path></g></svg>
+            <div style="position:absolute;left:30px;top:170px;width:333px;height:220px;transform:rotate(-3deg)">
+              <svg width="333" height="220" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:2;stroke-linecap:round;stroke-linejoin:round">
+                <g style="filter:url(#ink)">
+                  <path d="M-4 2 L337 0 M334 -3 L335 223 M338 220 L-3 221 M1 224 L0 -3"></path>
+                  <path d="M1 2 L166 118 L334 1" style="stroke-width:1.4"></path>
+                  <path d="M270 18 L314 17 L315 70 L271 71 Z" fill="url(#h-l)"></path>
+                  <path d="M118 168 L300 166 M118 196 L280 195" style="stroke-width:1.3"></path>
+                </g>
+              </svg>
+              <div style="position:absolute;left:62px;top:136px;display:flex;align-items:flex-end;gap:8px;white-space:nowrap"><span style="font-size:15px">to —</span><span style="font-size:21px;line-height:1">someone who'd know</span><span style="display:inline-block;width:1.5px;height:20px;background:#FAF7F0;animation:co-caret 1s steps(1) infinite"></span></div>
+            </div>
+            <div style="position:absolute;left:46px;top:470px;width:300px;height:92px;transform:rotate(2deg)">
+              <svg width="300" height="92" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M-3 1 L303 0 M301 -3 L300 95 M303 92 L-2 91 M0 95 L1 -3 M14 64 L286 63" style="fill:none"></path></g></svg>
+              <div style="position:absolute;left:18px;top:30px;font-size:22px;line-height:1">c-o.page/vishruth</div>
+              <svg width="98" height="58" viewBox="0 0 132 78" style="position:absolute;right:-40px;top:-30px;overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:1.9;stroke-linecap:round;transform:rotate(12deg)">
+                <g style="filter:url(#ink)">
+                  <circle cx="36" cy="38" r="28"></circle><circle cx="36" cy="38" r="19"></circle>
+                  <path d="M68 26 q8 -5 16 0 t16 0 t16 0 t14 0 M68 38 q8 -5 16 0 t16 0 t16 0 t14 0 M68 50 q8 -5 16 0 t16 0 t16 0 t14 0"></path>
+                  <text style="font-family:'Barlow Condensed',sans-serif;font-size:8px;letter-spacing:1.2px;fill:#FAF7F0;stroke:none"><textPath href="#pm-arc-r" startOffset="50%" text-anchor="middle">INVITATION</textPath></text>
+                  <text x="36" y="42" text-anchor="middle" style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.8px;fill:#FAF7F0;stroke:none">18 OCT</text>
+                </g>
+              </svg>
+            </div>
+            <div style="position:absolute;left:0;right:0;top:700px;display:flex;justify-content:center;align-items:center;gap:44px">
+              <div style="display:flex;flex-direction:column;align-items:center;white-space:nowrap;font-size:22px;cursor:pointer">
+                <span>copy it</span>
+                <svg width="66" height="6" style="overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:1.6;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M-2 3 C20 1 44 5 68 2"></path></g></svg>
+              </div>
+              <div style="position:relative;width:132px;height:60px;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer">
+                <svg width="132" height="60" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#FAF7F0;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M70 3 C120 1 132 18 130 32 C128 50 100 58 64 57 C24 56 3 46 3 30 C3 12 30 4 78 6"></path></g></svg>
+                <span style="position:relative">send it</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">14 · updates</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="14 updates" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#CFE8D8;color:#111111">
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#111111;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#111111;stroke:none"></path></g></svg>
+            <div style="position:absolute;top:62px;left:26px;display:flex;align-items:center;gap:12px">
+              <svg width="30" height="22" style="overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M28 11.5 C20 10.5 11 11.8 3 11 M10 4 L2.5 11.2 L10.5 18.5"></path></g></svg>
+            </div>
+            <div style="position:absolute;top:116px;left:28px;font-size:30px;line-height:1">in the tray</div>
+            <div style="position:absolute;left:62px;top:574px;width:270px;height:110px;transform:rotate(-1deg)">
+              <svg width="270" height="110" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:1.8;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M2 3 L267 1 L268 108 L3 109 Z" fill="url(#h-d)"></path></g></svg>
+            </div>
+            <div style="position:absolute;left:58px;top:600px;width:270px;height:110px;transform:rotate(2deg)">
+              <svg width="270" height="110" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:1.8;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M2 3 L267 1 L268 108 L3 109 Z" style="fill:#CFE8D8"></path><path d="M2 3 L135 70 L267 1"></path><path d="M2 3 L267 1 L268 108 L3 109 Z" fill="url(#h-d)" style="stroke:none"></path></g></svg>
+            </div>
+            <div style="position:absolute;left:66px;top:432px;width:262px;height:118px;transform:rotate(-3deg);cursor:pointer">
+              <svg width="262" height="118" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M2 3 L259 1 L260 116 L3 117 Z" style="fill:#CFE8D8"></path><path d="M2 3 L131 74 L259 1"></path><path d="M220 12 L246 12 L246 42 L220 42 Z" style="fill:#D8422C;stroke:none"></path></g></svg>
+              <div style="position:absolute;left:18px;bottom:12px;font-size:20px">for theo</div>
+            </div>
+            <div style="position:absolute;left:74px;top:322px;width:250px;height:116px;transform:rotate(4deg);cursor:pointer">
+              <svg width="250" height="116" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linejoin:round;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M2 2 L247 3 L248 114 L3 113 Z" style="fill:#CFE8D8"></path><path d="M-4 60 L254 58 M150 -4 L152 120"></path><path d="M210 12 L236 12 L236 40 L210 40 Z" style="fill:#D8422C;stroke:none"></path></g></svg>
+              <div style="position:absolute;left:18px;bottom:12px;font-size:20px">for maya</div>
+            </div>
+            <div style="position:absolute;left:60px;top:200px;width:270px;height:124px;transform:rotate(-2deg);cursor:pointer">
+              <svg width="270" height="124" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M2 3 L267 1 L268 122 L3 123 Z" style="fill:#CFE8D8"></path><path d="M2 3 L135 78 L267 1"></path><path d="M228 12 L254 12 L254 42 L228 42 Z" style="fill:#D8422C;stroke:none"></path></g></svg>
+              <div style="position:absolute;left:18px;bottom:12px;font-size:22px">for you</div>
+            </div>
+            <svg width="333" height="120" style="position:absolute;left:30px;top:650px;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M2 8 L331 6 L314 110 L18 112 Z" style="fill:#CFE8D8"></path><path d="M-4 6 L338 5 M12 30 L322 28"></path></g></svg>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">15 · you</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="15 settings profile" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#F2C230;color:#111111">
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#111111;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#111111;stroke:none"></path></g></svg>
+            <div style="position:absolute;top:62px;left:26px;display:flex;align-items:center;gap:12px">
+              <svg width="30" height="22" style="overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M28 11.5 C20 10.5 11 11.8 3 11 M10 4 L2.5 11.2 L10.5 18.5"></path></g></svg>
+            </div>
+            <div style="position:absolute;left:28px;top:150px;width:337px;height:470px;transform:rotate(-1.5deg)">
+              <svg width="337" height="470" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M-3 2 L340 0 M338 -3 L337 473 M340 470 L-2 471 M1 474 L0 -3"></path><path d="M-2 150 L339 149" style="stroke:#D8422C;stroke-width:1.8"></path><path d="M10 200 L327 199 M10 250 L327 251 M10 300 L327 299 M10 350 L327 351 M10 400 L327 399" style="stroke-width:1.1"></path><ellipse cx="66" cy="76" rx="36" ry="46" fill="url(#h-d)"></ellipse></g></svg>
+              <div style="position:absolute;left:124px;top:60px;font-size:32px;line-height:1">vishruth</div>
+              <div style="position:absolute;left:24px;top:196px;right:20px;display:grid;grid-template-columns:44px minmax(0,1fr);column-gap:18px;align-items:center">
+                <svg width="44" height="160" style="grid-row:1 / span 2;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><rect x="6" y="2" width="32" height="156" rx="16" style="fill:#F2C230"></rect><path d="M22 18 L22 140" style="stroke-width:1.2;stroke-dasharray:3 6"></path><circle cx="22" cy="124" r="20" style="fill:#F2C230"></circle><circle cx="22" cy="124" r="20" fill="url(#h-d)" style="stroke:none"></circle></g></svg>
+                <div style="font-size:19px;line-height:1.2;align-self:start;padding-top:6px">anyone with the link can look</div>
+                <div style="display:flex;flex-direction:column;align-self:end;padding-bottom:12px">
+                  <span style="font-size:19px;line-height:1.2">only the people i've let in</span>
+                  <svg width="190" height="7" style="overflow:visible;fill:none;stroke:#111111;stroke-width:1.6;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M-2 4 C60 1 120 6 192 2"></path></g></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:18px">16 · empty — my scrapbook</div>
+        <div style="width:393px;height:852px;padding:11px;background:#0b0b0b;border-radius:60px">
+          <div data-screen-label="16 empty state" style="position:relative;width:393px;height:852px;border-radius:50px;overflow:hidden;background:#2E6BE6;color:#111111">
+            <div style="position:absolute;top:11px;left:136px;width:121px;height:34px;border-radius:20px;background:#0b0b0b"></div>
+            <div style="position:absolute;top:16px;left:38px;font-size:16px">9:41</div>
+            <svg width="30" height="16" style="position:absolute;top:19px;right:32px;overflow:visible;fill:none;stroke:#111111;stroke-width:1.6"><g style="filter:url(#ink)"><path d="M2 2 L25 1.5 L25.5 13 L1.5 13.5 Z M28 5 L28 10"></path><path d="M5 5 L21 5 L21 10 L5 10 Z" style="fill:#111111;stroke:none"></path></g></svg>
+            <div style="position:absolute;top:62px;left:26px;display:flex;align-items:center;gap:12px">
+              <svg width="30" height="22" style="overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M28 11.5 C20 10.5 11 11.8 3 11 M10 4 L2.5 11.2 L10.5 18.5"></path></g></svg>
+              <div style="font-size:20px">vishruth</div>
+            </div>
+            <svg width="393" height="380" style="position:absolute;left:0;top:200px;overflow:visible;fill:none;stroke:#111111;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round">
+              <g style="filter:url(#ink)">
+                <path d="M204 186 L203 330 M232 187 L234 329"></path>
+                <path d="M112 188 L111 92 C111 52 150 36 222 37 C296 37 330 52 331 92 L332 189 Z" style="fill:#2E6BE6"></path>
+                <path d="M112 188 L111 92 C111 62 124 46 140 42 C156 46 168 62 168 92 L169 188 Z" fill="url(#h-d)"></path>
+                <path d="M306 150 L307 112 M307 112 L326 113"></path>
+                <path d="M76 336 L320 334 M98 344 L104 334 M114 345 L116 335 M286 345 L290 335 M302 344 L300 334"></path>
+              </g>
+              <g style="filter:url(#boil)">
+                <path d="M112 188 L58 262 C52 238 54 160 76 120 C88 98 104 92 111 92" style="fill:#2E6BE6"></path>
+                <path d="M84 150 C80 180 78 210 80 236" style="stroke-width:1.4"></path>
+              </g>
+            </svg>
+            <div style="position:absolute;left:44px;right:44px;top:592px;text-align:center;font-size:22px;line-height:1.3;text-wrap:pretty">nothing yet. somebody out there is about to think of you.</div>
+            <div style="position:absolute;left:0;right:0;top:712px;display:flex;justify-content:center">
+              <div style="position:relative;width:236px;height:62px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:22px;cursor:pointer">
+                <svg width="236" height="62" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M126 3 C210 1 236 18 234 33 C232 52 190 60 116 59 C40 58 3 48 3 31 C3 13 44 4 140 6"></path></g></svg>
+                <svg width="30" height="21" style="position:relative;overflow:visible;fill:none;stroke:#111111;stroke-width:2;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M2 2 L28 1 L28 19 L2 20 Z M2 2 L15 12 L28 1"></path></g></svg>
+                <span style="position:relative">invite someone</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section data-screen-label="public page" style="display:flex;flex-direction:column;gap:28px">
+    <div style="font-size:30px">the public page — desktop, 1440 × 900</div>
+    <div data-screen-label="public page desktop" style="position:relative;width:1440px;height:900px;overflow:hidden;background:#FAF7F0;color:#111111;border-radius:6px">
+      <div style="position:absolute;left:48px;top:40px;font-size:26px">c/o</div>
+      <div style="position:absolute;left:0;right:0;top:120px;text-align:center;font-size:34px;line-height:1">vishruth</div>
+      <div style="position:absolute;left:720px;top:450px;transform:translate(-50%,-50%)"><dc-import name="Item" type="stamp" text="graduation, you crying first" label="the hall" city="pune" date="30 may" denom="4" rot="0" zoom="1" flippable="{{ false }}" hint-size="150px,196px"></dc-import></div>
+      <div style="position:absolute;left:535px;top:464px;transform:translate(-50%,-50%)"><dc-import name="Item" type="note" text="you made everyone at the table switch seats so the shy kid could see the band." rot="-8.5" zoom="0.85" flippable="{{ false }}" hint-size="170px,145px"></dc-import></div>
+      <div style="position:absolute;left:905px;top:464px;transform:translate(-50%,-50%)"><dc-import name="Item" type="stamp" text="" label="the 3am diner" city="bristol" date="9 aug" denom="1" rot="8.5" zoom="1" flippable="{{ false }}" hint-size="150px,196px"></dc-import></div>
+      <div style="position:absolute;left:355px;top:505px;transform:translate(-50%,-50%)"><dc-import name="Item" type="stamp" text="first snow" label="snow" city="oslo" date="2 dec" year="2025" denom="5" rot="-17" zoom="1" flippable="{{ false }}" hint-size="150px,196px"></dc-import></div>
+      <div style="position:absolute;left:1085px;top:505px;transform:translate(-50%,-50%)"><dc-import name="Item" type="tag" text="a recipe you'd ruin" rot="17" zoom="0.9" flippable="{{ false }}" hint-size="112px,180px"></dc-import></div>
+      <div style="position:absolute;left:182px;top:572px;transform:translate(-50%,-50%)"><dc-import name="Item" type="stamp" text="tuesday soup" label="kitchen" city="leeds" date="3 jun" denom="1" rot="-25.5" zoom="1" flippable="{{ false }}" hint-size="150px,196px"></dc-import></div>
+      <div style="position:absolute;left:1258px;top:572px;transform:translate(-50%,-50%)"><dc-import name="Item" type="stamp" text="you, mid-sentence, as always" label="the pier, july" city="brighton" date="14 jul" denom="3" rot="25.5" zoom="1" flippable="{{ false }}" hint-size="150px,196px"></dc-import></div>
+      <div style="position:absolute;left:21px;top:664px;transform:translate(-50%,-50%)"><dc-import name="Item" type="voice" dur="0:38" rot="-34" zoom="0.85" flippable="{{ false }}" hint-size="196px,124px"></dc-import></div>
+      <div style="position:absolute;left:1419px;top:664px;transform:translate(-50%,-50%)"><dc-import name="Item" type="stamp" text="" label="the market" city="lisbon" date="18 oct" denom="2" rot="34" zoom="1" flippable="{{ false }}" hint-size="150px,196px"></dc-import></div>
+      <div style="position:absolute;left:0;right:0;top:700px;display:flex;flex-direction:column;align-items:center;gap:22px">
+        <div style="font-size:21px;line-height:1.35;text-align:center;max-width:520px;text-wrap:pretty">a scrapbook vishruth doesn't fill in. everything here was left by people who know them.</div>
+        <div style="display:flex;flex-direction:column;align-items:center;white-space:nowrap;font-size:18px;cursor:pointer">
+          <span>start your own</span>
+          <svg width="118" height="6" style="overflow:visible;fill:none;stroke:#111111;stroke-width:1.5;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M-2 3 C30 1 80 5 120 2"></path></g></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+</body>
+</html>

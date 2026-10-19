@@ -1,0 +1,138 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 96px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 56px 48px 140px;
+  box-sizing: border-box;
+}
+h1 {
+  font-size: 40px;
+  line-height: 1;
+  margin: 0 0 12px;
+  font-weight: 300;
+}
+h2 {
+  font-size: 22px;
+  line-height: 1.1;
+  margin: 0 0 6px;
+  font-weight: 300;
+}
+.note {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #6b6b6b;
+  margin: 0;
+  max-width: 560px;
+}
+.cond {
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.shelf {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 44px 40px;
+  margin-top: 36px;
+}
+.shelf .item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.shelf .cap {
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.shelf .cap b {
+  font-weight: 500;
+  display: block;
+  font-size: 15px;
+  letter-spacing: 0.1em;
+}
+
+.play {
+  display: grid;
+  grid-template-columns: minmax(380px, 1fr) minmax(300px, 380px);
+  gap: 56px;
+  align-items: start;
+  margin-top: 36px;
+}
+.stage {
+  min-height: 700px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.controls label.t {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 92px;
+  resize: vertical;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.35;
+  color: #111;
+  background: #fff;
+  border: 1.5px solid #111;
+  border-radius: 6px;
+  padding: 10px 12px;
+  outline: none;
+}
+textarea:focus {
+  box-shadow: 0 0 0 3px #11111122;
+}
+.seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.seg button,
+.upload {
+  font: inherit;
+  font-size: 14px;
+  color: #111;
+  background: #fff;
+  border: 1.5px solid #111;
+  border-radius: 999px;
+  padding: 6px 14px 7px;
+  cursor: pointer;
+}
+.seg button.on {
+  background: #111;
+  color: #fff;
+}
+.upload {
+  display: inline-block;
+}
+.upload input {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .play {
+    grid-template-columns: 1fr;
+  }
+  .stage {
+    min-height: 560px;
+  }
+  .page {
+    padding: 40px 20px 100px;
+  }
+}

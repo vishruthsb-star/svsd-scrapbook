@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shantell+Sans:wght@300..500&family=Barlow+Condensed:wght@400;500&display=swap" rel="stylesheet">
+<style>@keyframes co-caret{0%,49%{opacity:1}50%,100%{opacity:0}}</style>
+</helmet>
+<div style="position:relative;width:{{ w }}px;height:{{ h }}px;zoom:{{ z }};transform:rotate({{ rot }}deg);perspective:1100px;cursor:{{ cursor }};font-family:'Shantell Sans',cursive;font-weight:300;color:{{ ink }};-webkit-tap-highlight-color:transparent;user-select:none" onClick="{{ toggle }}">
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <filter id="ink" filterUnits="userSpaceOnUse" x="-300" y="-300" width="2400" height="2400"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="3"></feTurbulence><feDisplacementMap in="SourceGraphic" scale="2.4"></feDisplacementMap></filter>
+      <pattern id="h-d" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" style="stroke:#111111;stroke-width:1.1"></line></pattern>
+      <pattern id="h-l" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" style="stroke:#FAF7F0;stroke-width:1.1"></line></pattern>
+      <path id="pm-arc" d="M12 38 A24 24 0 0 1 60 38"></path>
+    </defs>
+  </svg>
+  <div style="position:absolute;inset:0;transform-style:preserve-3d;transition:transform 560ms cubic-bezier(.34,1.56,.64,1);transform:rotateY({{ deg }}deg)">
+    <div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;visibility:{{ fv }};transition:visibility 0s linear 230ms">
+      <svg width="{{ w }}" height="{{ h }}" style="position:absolute;left:0;top:0;overflow:visible;fill:none;stroke:{{ ink }};stroke-width:{{ sw }};stroke-linecap:round;stroke-linejoin:round">
+        <g style="filter:url(#ink)">
+          <path d="{{ fillD }}" style="fill:{{ field }};stroke:none"></path>
+          <path d="{{ outline }}"></path>
+          <path d="{{ frontLines }}"></path>
+          <path d="{{ redD }}" style="fill:#D8422C;stroke:none"></path>
+          <path d="{{ blueD }}" style="fill:#2E6BE6;stroke:none"></path>
+          <path d="{{ inkFill }}" style="fill:{{ ink }};stroke:none"></path>
+        </g>
+      </svg>
+      <sc-if value="{{ isStamp }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute;left:14px;top:32px;width:122px;height:118px;overflow:hidden">
+          <sc-if value="{{ hasSrc }}"><img src="{{ src }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></sc-if>
+          <sc-if value="{{ noSrc }}" hint-placeholder-val="{{ true }}">
+            <svg width="122" height="118" style="display:block"><rect x="0" y="0" width="122" height="118" fill="url(#{{ hatch }})"></rect></svg>
+            <div style="position:absolute;left:6px;bottom:6px;padding:1px 4px 0;background:{{ field }};font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:.12em">{{ label }}</div>
+          </sc-if>
+        </div>
+        <div style="position:absolute;top:4px;right:16px;font-size:21px;line-height:1">{{ denom }}</div>
+        <sc-if value="{{ showCaption }}">
+          <div style="position:absolute;left:15px;right:12px;top:153px;font-size:11.5px;line-height:1.18;text-wrap:pretty">{{ text }}</div>
+        </sc-if>
+        <sc-if value="{{ showPm }}">
+          <svg width="132" height="78" style="position:absolute;left:-38px;top:-24px;overflow:visible;transform:rotate(-14deg);fill:none;stroke:{{ ink }};stroke-width:{{ sw }};stroke-linecap:round">
+            <g style="filter:url(#ink)">
+              <circle cx="36" cy="38" r="28"></circle>
+              <circle cx="36" cy="38" r="19"></circle>
+              <path d="M68 26 q8 -5 16 0 t16 0 t16 0 t14 0 M68 38 q8 -5 16 0 t16 0 t16 0 t14 0 M68 50 q8 -5 16 0 t16 0 t16 0 t14 0"></path>
+              {{ pmText }}
+            </g>
+          </svg>
+        </sc-if>
+      </sc-if>
+      <sc-if value="{{ isNote }}">
+        <div style="position:absolute;left:22px;right:20px;top:20px;bottom:18px;font-size:14px;line-height:1.32;white-space:pre-wrap;text-wrap:pretty">{{ text }}<sc-if value="{{ typing }}"><span style="display:inline-block;width:1.5px;height:15px;margin-left:2px;vertical-align:-2px;background:{{ ink }};animation:co-caret 1s steps(1) infinite"></span></sc-if></div>
+      </sc-if>
+      <sc-if value="{{ isVoice }}">
+        <div style="position:absolute;right:16px;bottom:9px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:.14em">{{ dur }}</div>
+      </sc-if>
+      <sc-if value="{{ isTag }}">
+        <div style="position:absolute;left:30px;top:56px;width:64px;height:64px;overflow:hidden">
+          <sc-if value="{{ hasSrc }}"><img src="{{ src }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></sc-if>
+          <sc-if value="{{ noSrc }}"><svg width="64" height="64" style="display:block"><rect x="0" y="0" width="64" height="64" fill="url(#{{ hatch }})"></rect></svg></sc-if>
+        </div>
+        <div style="position:absolute;left:8px;right:8px;top:134px;text-align:center;font-size:13.5px;line-height:1.1">{{ text }}</div>
+      </sc-if>
+    </div>
+    <div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);visibility:{{ bv }};transition:visibility 0s linear 230ms">
+      <svg width="{{ w }}" height="{{ h }}" style="position:absolute;left:0;top:0;overflow:visible;fill:none;stroke:{{ ink }};stroke-width:{{ sw }};stroke-linecap:round;stroke-linejoin:round">
+        <g style="filter:url(#ink)">
+          <path d="{{ fillD }}" style="fill:{{ field }};stroke:none"></path>
+          <path d="{{ outline }}"></path>
+          <path d="{{ backLines }}" style="stroke-width:{{ swThin }}"></path>
+        </g>
+      </svg>
+      <div style="position:absolute;left:{{ px }}px;right:{{ px }}px;top:{{ bt }}px;display:flex;flex-direction:column">
+        <div style="height:24px;display:flex;align-items:flex-end;gap:5px;font-size:12px;white-space:nowrap;padding-bottom:3px;box-sizing:border-box"><span>to —</span><span style="font-size:16px;line-height:1">{{ owner }}</span></div>
+        <div style="height:{{ gapH }}px"></div>
+        <div style="height:24px;display:flex;align-items:flex-end;gap:5px;font-size:12px;white-space:nowrap;padding-bottom:3px;box-sizing:border-box">
+          <span>from —</span>
+          <sc-if value="{{ showName }}"><span style="font-size:17px;line-height:1">{{ fromName }}</span></sc-if>
+          <sc-if value="{{ redacted }}">
+            <svg width="{{ cw }}" height="20" viewBox="0 0 90 22" preserveAspectRatio="none" style="overflow:visible;margin-bottom:-1px"><g style="filter:url(#ink)"><path d="{{ censorFill }}" style="fill:{{ ink }}"></path><path d="{{ censorScribble }}" style="fill:none;stroke:{{ ink }};stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round"></path></g></svg>
+          </sc-if>
+        </div>
+        <sc-if value="{{ showDate }}">
+          <div style="height:24px;display:flex;align-items:flex-end;padding-bottom:4px;box-sizing:border-box;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.13em;white-space:nowrap">{{ pmLine }}</div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+  <sc-if value="{{ isTape }}">
+    <svg width="74" height="28" style="position:absolute;left:{{ attachX }}px;top:-14px;overflow:visible;transform:rotate({{ attachRot }}deg);fill:none;stroke:{{ ink }};stroke-width:{{ sw }};stroke-linejoin:round">
+      <g style="filter:url(#ink)">
+        <path d="M5 3 L69 1 L72 5 L68 9 L72 13 L68 17 L71 22 L5 26 L2 22 L6 18 L2 14 L6 10 L2 6 Z" style="fill:{{ field }}"></path>
+        <path d="M5 3 L69 1 L72 5 L68 9 L72 13 L68 17 L71 22 L5 26 L2 22 L6 18 L2 14 L6 10 L2 6 Z" fill="url(#{{ hatch }})" style="stroke:none"></path>
+      </g>
+    </svg>
+  </sc-if>
+  <sc-if value="{{ isClip }}">
+    <svg width="44" height="44" style="position:absolute;left:{{ attachX2 }}px;top:-30px;overflow:visible;fill:none;stroke:{{ ink }};stroke-width:{{ sw }};stroke-linecap:round;stroke-linejoin:round">
+      <g style="filter:url(#ink)">
+        <path d="M12 24 C10 15 8 9 9 3 L35 3 C36 9 34 15 32 24"></path>
+        <path d="M5 23 L39 22 L36 38 L8 39 Z" style="fill:{{ field }}"></path>
+        <path d="M5 23 L39 22 L36 38 L8 39 Z" fill="url(#{{ hatch }})" style="stroke:none"></path>
+      </g>
+    </svg>
+  </sc-if>
+  <sc-if value="{{ isCorners }}">
+    <svg width="30" height="30" style="position:absolute;left:-7px;top:-7px;overflow:visible;fill:none;stroke:{{ ink }};stroke-width:{{ sw }};stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M1 1 L29 2 L2 29 Z" style="fill:{{ field }}"></path><path d="M1 1 L29 2 L2 29 Z" fill="url(#{{ hatch }})" style="stroke:none"></path></g></svg>
+    <svg width="30" height="30" style="position:absolute;right:-7px;bottom:-7px;overflow:visible;transform:rotate(180deg);fill:none;stroke:{{ ink }};stroke-width:{{ sw }};stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M1 1 L29 2 L2 29 Z" style="fill:{{ field }}"></path><path d="M1 1 L29 2 L2 29 Z" fill="url(#{{ hatch }})" style="stroke:none"></path></g></svg>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:360,&quot;height&quot;:320},&quot;type&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;stamp&quot;,&quot;note&quot;,&quot;voice&quot;,&quot;tag&quot;],&quot;default&quot;:&quot;stamp&quot;,&quot;tsType&quot;:&quot;'stamp'|'note'|'voice'|'tag'&quot;},&quot;viewer&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;other&quot;,&quot;owner&quot;,&quot;self&quot;],&quot;default&quot;:&quot;other&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;text&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;the night the bus never came&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;from&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;jun&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;owner&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;vishruth&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;attach&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;tape&quot;,&quot;clip&quot;,&quot;corners&quot;],&quot;default&quot;:&quot;tape&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;rot&quot;:{&quot;editor&quot;:&quot;float&quot;,&quot;default&quot;:-3,&quot;min&quot;:-10,&quot;max&quot;:10,&quot;tsType&quot;:&quot;number&quot;},&quot;zoom&quot;:{&quot;editor&quot;:&quot;float&quot;,&quot;default&quot;:1,&quot;min&quot;:0.3,&quot;max&quot;:3,&quot;tsType&quot;:&quot;number&quot;},&quot;flipped&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;ink&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#111111&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;field&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#FAF7F0&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;label&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;photo&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;src&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string&quot;},&quot;city&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;lisbon&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;date&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;18 oct&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;dur&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;0:42&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;denom&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;2&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;postmark&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;bare&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;recording&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;typing&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;flippable&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;seed&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  state = { flipped: null, bars: 0 };
+  componentDidMount() {
+    if (this.props.recording) this.t = setInterval(() => this.setState(s => ({ bars: s.bars >= 34 ? 0 : s.bars + 1 })), 170);
+  }
+  componentWillUnmount() { clearInterval(this.t); }
+  renderVals() {
+    const p = this.props;
+    const type = p.type ?? 'stamp';
+    const ink = p.ink ?? '#111111', field = p.field ?? '#FAF7F0';
+    const z = p.zoom ?? 1;
+    const text = p.text ?? '';
+    let seed = p.seed ?? [...(type + text + (p.from ?? ''))].reduce((a, c) => (a * 31 + c.charCodeAt(0)) | 0, 7);
+    const R = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    const J = a => (R() - .5) * 2 * a;
+    const f = n => n.toFixed(1);
+    const ln = (x1, y1, x2, y2, o = 3, bow = 1.1) => {
+      const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
+      const o1 = o * (.3 + R()), o2 = o * (.3 + R());
+      const ax = x1 - ux * o1 + J(.5), ay = y1 - uy * o1 + J(.5), bx = x2 + ux * o2 + J(.5), by = y2 + uy * o2 + J(.5);
+      const mx = (ax + bx) / 2 - uy * J(bow), my = (ay + by) / 2 + ux * J(bow);
+      return `M${f(ax)} ${f(ay)}Q${f(mx)} ${f(my)} ${f(bx)} ${f(by)}`;
+    };
+    const box = (x, y, w, h, o = 3) => ln(x, y, x + w, y, o) + ln(x + w, y, x + w, y + h, o) + ln(x + w, y + h, x, y + h, o) + ln(x, y + h, x, y, o);
+    const poly = pts => 'M' + pts.map(([x, y]) => f(x + J(.7)) + ' ' + f(y + J(.7))).join('L') + 'Z';
+    const scal = (x, y, w, h, r) => {
+      let d = `M${x} ${y}`;
+      const edge = (x1, y1, x2, y2) => {
+        const L = Math.hypot(x2 - x1, y2 - y1), n = Math.max(2, Math.round(L / (r * 3.3))), ux = (x2 - x1) / L, uy = (y2 - y1) / L, st = L / n;
+        for (let i = 0; i < n; i++) { const s = i * st + st / 2 - r, e = s + 2 * r; d += `L${f(x1 + ux * s)} ${f(y1 + uy * s)}A${r} ${r} 0 0 0 ${f(x1 + ux * e)} ${f(y1 + uy * e)}`; }
+        d += `L${x2} ${y2}`;
+      };
+      edge(x, y, x + w, y); edge(x + w, y, x + w, y + h); edge(x + w, y + h, x, y + h); edge(x, y + h, x, y);
+      return d + 'Z';
+    };
+    const S = { stamp: { w: 150, h: 196, bt: 24, px: 18, rows: 6, gap: 24 }, note: { w: 200, h: 170, bt: 22, px: 22, rows: 5, gap: 24 }, voice: { w: 230, h: 146, bt: 14, px: 20, rows: 5, gap: 0 }, tag: { w: 124, h: 200, bt: 54, px: 14, rows: 5, gap: 0 } }[type] || {};
+    const { w, h } = S;
+    let fillD = '', outline = '', frontLines = '', redD = '', blueD = '', inkFill = '';
+    if (type === 'stamp') { fillD = outline = scal(4, 4, w - 8, h - 8, 4.2); frontLines = box(14, 32, 122, 118, 2); }
+    if (type === 'note' || type === 'voice') { fillD = poly([[2, 2], [w - 2, 2], [w - 2, h - 2], [2, h - 2]]); outline = box(2, 2, w - 4, h - 4, 3.5); }
+    if (type === 'tag') {
+      fillD = outline = poly([[4, 34], [34, 4], [90, 4], [120, 34], [120, 196], [4, 196]]);
+      frontLines = 'M55 30a7 7 0 1 0 14 0a7 7 0 1 0 -14 0' + 'M50 30a12 12 0 1 0 24 0a12 12 0 1 0 -24 0' + 'M62 30C42 8 72 -16 54 -46M62 30C80 6 58 -18 72 -48' + box(30, 56, 64, 64, 2) + ln(16, 158, 108, 158, 3);
+    }
+    if (type === 'note') {
+      const q = (a) => a.map(([x, y]) => `${f(x)} ${f(y)}`).join('L');
+      let k = 0;
+      const push = d => { (k++ % 2 ? blueD += d : redD += d); };
+      for (let x = 12; x < w - 14; x += 13) push(`M${q([[x, 5], [x + 7, 5], [x + 3, 12], [x - 4, 12]])}Z`);
+      for (let y = 18; y < h - 16; y += 13) push(`M${q([[w - 5, y], [w - 5, y + 7], [w - 12, y + 3], [w - 12, y - 4]])}Z`);
+      for (let x = w - 14; x > 12; x -= 13) push(`M${q([[x, h - 5], [x - 7, h - 5], [x - 3, h - 12], [x + 4, h - 12]])}Z`);
+      for (let y = h - 18; y > 16; y -= 13) push(`M${q([[5, y], [5, y - 7], [12, y - 3], [12, y + 4]])}Z`);
+    }
+    if (type === 'voice') {
+      frontLines += ln(118, 16, 118, h - 16, 2);
+      const n = 24, shown = p.recording ? Math.min(this.state.bars, n) : Math.round(n * (p.progress ?? 1));
+      for (let i = 0; i < n; i++) { const env = Math.pow(Math.sin(Math.PI * (i + .5) / n), .6), hh = 5 + R() * 40 * env + 6 * env; if (i < shown) frontLines += `M${f(16 + i * 4 + J(.3))} ${f(60 - hh / 2)}L${f(16 + i * 4 + J(.5))} ${f(60 + hh / 2)}`; }
+      frontLines += ln(134, 76, 212, 76, 3) + ln(134, 98, 212, 98, 3) + ln(134, 120, 200, 120, 3) + scal(184, 14, 30, 36, 2.4);
+      inkFill = poly([[18, 112], [18, 132], [34, 122]]);
+    }
+    let backLines = '';
+    for (let k = 0; k < S.rows; k++) { const y = S.bt + 24 * k + 21; backLines += ln(S.px - 4, y, w - S.px + 4, y, 2, .8); }
+    let cs = '', cx = -3;
+    for (let i = 0; i < 19; i++) { cx += 4.8 + J(1.2); cs += (i ? 'L' : 'M') + f(cx) + ' ' + f(i % 2 ? 21 + J(1.5) : 1 + J(1.5)); }
+    const viewer = p.viewer ?? 'other';
+    const flipped = this.state.flipped ?? !!p.flipped;
+    const flippable = p.flippable !== false;
+    const attach = p.bare ? 'none' : (p.attach ?? 'none');
+    const showPm = type === 'stamp' && p.postmark !== false && !p.bare;
+    const ce = React.createElement, tf = { fontFamily: "'Barlow Condensed',sans-serif", fill: ink, stroke: 'none' };
+    const pmText = showPm ? ce(React.Fragment, null,
+      ce('text', { style: { ...tf, fontSize: 8, letterSpacing: 1.2 } }, ce('textPath', { href: '#pm-arc', startOffset: '50%', textAnchor: 'middle' }, (p.city ?? 'lisbon').toUpperCase())),
+      ce('text', { x: 36, y: 38, textAnchor: 'middle', style: { ...tf, fontSize: 9.5, letterSpacing: .8 } }, (p.date ?? '18 oct').toUpperCase()),
+      ce('text', { x: 36, y: 48, textAnchor: 'middle', style: { ...tf, fontSize: 7.5, letterSpacing: 1 } }, String(p.year ?? '2026'))) : null;
+    return {
+      w, h, z, ink, field, text, rot: p.rot ?? 0, sw: f(2 / z), swThin: f(1.4 / z),
+      deg: flipped ? 180 : 0, fv: flipped ? 'hidden' : 'visible', bv: flipped ? 'visible' : 'hidden', cursor: flippable ? 'pointer' : 'default',
+      toggle: flippable ? (e) => { e.stopPropagation(); this.setState({ flipped: !flipped }); } : undefined,
+      fillD, outline, frontLines, redD, blueD, inkFill, backLines,
+      isStamp: type === 'stamp', isNote: type === 'note', isVoice: type === 'voice', isTag: type === 'tag',
+      src: p.src, hasSrc: !!p.src, noSrc: !p.src, hatch: ink.toUpperCase() === '#FAF7F0' ? 'h-l' : 'h-d',
+      label: (p.label ?? 'PHOTO').toUpperCase(), denom: p.denom ?? '2', showCaption: !p.bare && !!text,
+      showPm, pmText, pmCity: (p.city ?? 'lisbon').toUpperCase(), pmDate: (p.date ?? '18 oct').toUpperCase(), pmYear: (p.year ?? '2026'),
+      typing: !!p.typing, dur: (p.dur ?? '0:42').toUpperCase(),
+      px: S.px, bt: S.bt, gapH: S.gap, owner: p.owner ?? 'vishruth',
+      showName: viewer !== 'other', redacted: viewer === 'other', fromName: viewer === 'self' ? 'you' : (p.from ?? 'jun'),
+      showDate: viewer === 'owner', pmLine: `${(p.date ?? '18 oct')} ${(p.year ?? '2026')} · ${(p.time ?? '9:14 pm')}`.toUpperCase(),
+      cw: Math.min(86, w - 2 * S.px - 50), censorFill: poly([[0, 4], [88, 2], [90, 18], [2, 20]]), censorScribble: cs,
+      isTape: attach === 'tape', isClip: attach === 'clip', isCorners: attach === 'corners',
+      attachX: f(w / 2 - 37 + J(10)), attachX2: f(w / 2 - 22), attachRot: f(J(9))
+    };
+  }
+}
+</script>
+</body>
+</html>
