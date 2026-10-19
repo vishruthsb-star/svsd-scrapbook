@@ -1,0 +1,127 @@
+.invite-root {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 56px 28px 56px;
+  background: #faf7f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--font-hand);
+  color: #111111;
+}
+
+.invite-flower {
+  display: block;
+}
+
+.invite-copy {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 150%;
+  letter-spacing: -0.36px;
+}
+
+.invite-copy-strong {
+  color: #000000;
+}
+
+.invite-copy-muted {
+  color: #a1a1a1;
+}
+
+.invite-link-row {
+  margin-top: 44px;
+  width: 100%;
+  max-width: 300px;
+  position: relative;
+}
+
+.invite-link-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 44px;
+}
+
+.invite-copy-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.invite-link-input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 2px;
+  margin: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #111111;
+  font-family: var(--font-hand);
+  font-weight: 300;
+  font-size: 19px;
+}
+
+.invite-link-underline {
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.invite-copied {
+  position: absolute;
+  right: 0;
+  top: -22px;
+  font-family: var(--font-hand);
+  font-weight: 300;
+  font-size: 14px;
+  color: #111111;
+}
+
+.invite-button {
+  margin-top: 40px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  min-width: 132px;
+  padding: 0 34px;
+  background: none;
+  border: 0;
+  color: #faf7f0;
+  cursor: pointer;
+  font-family: var(--font-hand);
+  font-weight: 300;
+  font-size: 19px;
+  line-height: 1;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 120ms ease-out;
+}
+
+.invite-button-blob {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.invite-button-label {
+  position: relative;
+}

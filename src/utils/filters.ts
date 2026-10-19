@@ -18,3 +18,9 @@ export const FIELD_PAPER = '#FAF7F0';
 
 /** stamp-test.html's field override (pure white) — Stamp only; it's the source of truth there. */
 export const FIELD_WHITE = '#fff';
+
+/** The house red accent — already used for the unread mark and Note's red notches. */
+export const ACCENT_RED = '#D8422C';
+
+/** A light tint of ACCENT_RED, for the remove button's fill. */
+export const ACCENT_RED_TINT = 'rgba(216, 66, 44, 0.14)';

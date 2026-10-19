@@ -1,0 +1,142 @@
+.gallery-root {
+  min-height: 100dvh;
+  background: #f2f2f0;
+  color: #333;
+  font-family: system-ui, sans-serif;
+  padding: 32px 24px 64px;
+  box-sizing: border-box;
+}
+
+.gallery-masthead h1 {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.gallery-masthead p {
+  margin: 0 0 32px;
+  font-size: 14px;
+  color: #777;
+}
+
+.gallery-section h2 {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #999;
+  margin: 0 0 14px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e2df;
+}
+
+.gallery-section:first-of-type h2 {
+  border-top: none;
+  padding-top: 0;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+  margin-bottom: 8px;
+}
+
+.gallery-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: #ffffff;
+  border: 1px solid #e2e2df;
+  border-radius: 10px;
+  padding: 14px;
+  transition: box-shadow 120ms ease-out, border-color 120ms ease-out;
+}
+
+.gallery-card:hover {
+  border-color: #c9c9c4;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.gallery-card-preview {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #fafaf8;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.gallery-card-preview-scale {
+  transform: scale(0.42);
+  pointer-events: none;
+}
+
+.gallery-card-preview-screen {
+  background: #e9e9e6;
+  padding: 10px 0;
+}
+
+/* a phone-sized frame so screen previews read as screens, not raw content */
+.gallery-card-preview-scale-screen {
+  transform: scale(0.34);
+  width: 402px;
+  min-height: 874px;
+  box-shadow: 0 0 0 6px #1a1a1a, 0 0 0 7px #3a3a3a;
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.gallery-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.gallery-card-description {
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.gallery-stage-page {
+  min-height: 100dvh;
+  background: #f2f2f0;
+  box-sizing: border-box;
+  padding: 24px;
+  font-family: system-ui, sans-serif;
+}
+
+.gallery-back-link {
+  display: inline-block;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: #777;
+  text-decoration: none;
+}
+
+.gallery-back-link:hover {
+  color: #333;
+}
+
+.gallery-stage-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 20px;
+}
+
+.gallery-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  background: #ffffff;
+  border: 1px solid #e2e2df;
+  border-radius: 10px;
+  padding: 40px;
+}

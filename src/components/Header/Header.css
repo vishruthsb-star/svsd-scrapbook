@@ -1,0 +1,48 @@
+.header-root {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.header-eyebrow,
+.header-title {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.5;
+}
+
+.header-eyebrow {
+  color: var(--color-text-muted);
+}
+
+.header-title {
+  color: var(--color-text-strong);
+}
+
+.header-send {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 0;
+  color: var(--color-text-strong);
+  cursor: pointer;
+}
+
+.header-send svg {
+  width: 32px;
+  height: auto;
+}

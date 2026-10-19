@@ -7,7 +7,7 @@ import { useMeasuredHeight } from '../utils/useMeasuredHeight';
 import FlipCard from './FlipCard';
 import ItemBack from './ItemBack';
 import Decor from './Decor';
-import RemoveAction from './RemoveAction';
+import RemoveButton from './RemoveButton';
 import { shouldShowRemoveAction } from '../utils/removeAction';
 import './Item.css';
 import './ParcelTag.css';
@@ -169,6 +169,9 @@ export default function ParcelTag({
     </>
   );
 
+  const handleRemove = onRemove ? () => onRemove(id) : undefined;
+  const showRemove = shouldShowRemoveAction(viewer, handleRemove);
+
   const back = (
     <>
       <svg className="item-lay" width={L.W} height={L.H} style={{ strokeWidth: sw.thick }}>
@@ -190,22 +193,12 @@ export default function ParcelTag({
         censorScribble={G.censorScribble}
         censorWidth={censorWidth}
       />
+      {showRemove && <RemoveButton cardWidth={L.W} seed={seed} ink={DEFAULT_INK} onRemove={handleRemove!} />}
     </>
   );
 
-  const handleRemove = onRemove ? () => onRemove(id) : undefined;
-  const showRemove = shouldShowRemoveAction(viewer, flipped, true, handleRemove);
-
   return (
-    <Decor
-      seed={seed}
-      width={L.W}
-      height={L.H}
-      zoom={zoom}
-      rot={rot}
-      field={FIELD_PAPER}
-      remove={showRemove ? <RemoveAction variant={viewer as 'self' | 'owner'} ink={DEFAULT_INK} onRemove={handleRemove!} /> : undefined}
-    >
+    <Decor seed={seed} width={L.W} height={L.H} zoom={zoom} rot={rot} field={FIELD_PAPER}>
       <FlipCard front={front} back={back} width={L.W} height={L.H} flipped={flipped} onFlip={setFlipped} />
     </Decor>
   );

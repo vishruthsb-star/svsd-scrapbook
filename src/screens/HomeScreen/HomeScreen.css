@@ -1,0 +1,42 @@
+.home-root {
+  --home-gap-header-library: 44px;
+  --home-gap-library-invite: 64px;
+
+  /* Figma frame 125:1823 — the Home screen's source frame */
+  --home-frame-width: 402px;
+  --home-frame-side-padding: 24px;
+  --home-frame-top-padding: 62px;
+
+  width: 100%;
+  min-height: 100dvh;
+  background: #faf7f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-header-wrap {
+  width: 100%;
+  max-width: var(--home-frame-width);
+  box-sizing: border-box;
+  padding: var(--home-frame-top-padding) var(--home-frame-side-padding) 0;
+}
+
+.home-library-wrap {
+  width: 100%;
+  max-width: var(--home-frame-width);
+  display: flex;
+  justify-content: center;
+  /* InviteSection's own SVG line art overshoots slightly beyond the folder's drawn box,
+     measured in-browser via getBoundingClientRect and folded into this margin so the
+     *visible* gap to the header — not just the box gap — is 44px. */
+  margin-top: var(--home-gap-header-library);
+}
+
+.home-invite-wrap {
+  width: 100%;
+  max-width: var(--home-frame-width);
+  /* InviteSection has 56px of its own top padding before its first visible pixel (the
+     flower doodle); subtract it here so the visible gap from Library's bottom edge is 64px. */
+  margin-top: calc(var(--home-gap-library-invite) - 56px);
+}

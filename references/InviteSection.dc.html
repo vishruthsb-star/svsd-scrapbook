@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Shantell+Sans:wght@300..500&display=swap" rel="stylesheet">
+<style>a{color:#111111}a:hover{color:#111111}</style>
+</helmet>
+<section data-screen-label="invite section" style="width:100%;box-sizing:border-box;padding:56px 28px 56px;background:#FAF7F0;display:flex;flex-direction:column;align-items:center;font-family:'Shantell Sans',cursive;color:#111111">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+    <filter id="inv-ink" filterUnits="userSpaceOnUse" x="-300" y="-300" width="2400" height="2400"><feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="5"></feTurbulence><feDisplacementMap in="SourceGraphic" scale="1.1"></feDisplacementMap></filter>
+    <filter id="inv-boil" filterUnits="userSpaceOnUse" x="-300" y="-300" width="2400" height="2400"><feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="5"><animate attributeName="seed" values="5;9;14" dur="0.42s" calcMode="discrete" repeatCount="indefinite"></animate></feTurbulence><feDisplacementMap in="SourceGraphic" scale="1.8"></feDisplacementMap></filter>
+  </defs></svg>
+
+  <img src="assets/rose.svg" width="55" height="83" alt="" style="display:block;width:55px;height:83px">
+
+  <div style="margin-top:28px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;font-family:'Inter',sans-serif;font-weight:400;font-size:18px;line-height:150%;letter-spacing:-0.36px">
+    <div style="color:#000000">someone belongs in your scrapbook</div>
+    <div style="color:#A1A1A1">give them a way in</div>
+  </div>
+
+  <div style="margin-top:44px;width:100%;max-width:300px;position:relative">
+    <div style="display:flex;align-items:center;gap:12px;height:44px">
+      <div style="width:24px;height:24px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center" onClick="{{ copy }}" role="button" aria-label="copy link">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible"><g style="filter:url(#inv-ink)"><path d="{{ iconPath }}" stroke-width="1.75"></path></g></svg>
+      </div>
+      <input readonly value="{{ link }}" aria-label="your link" onFocus="{{ selectAll }}" style="flex:1;min-width:0;height:44px;padding:0 2px;margin:0;border:0;outline:0;background:transparent;color:#111111;font-family:'Shantell Sans',cursive;font-weight:300;font-size:19px">
+    </div>
+    <svg width="100%" height="8" viewBox="0 0 300 8" preserveAspectRatio="none" style="position:absolute;left:0;bottom:-3px;overflow:visible;pointer-events:none"><g style="filter:url(#inv-ink)"><path d="M-2 4 C84 2 192 6 302 3" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></g></svg>
+  </div>
+
+  <button type="button" onClick="{{ invite }}" onPointerDown="{{ pdown }}" onPointerUp="{{ pup }}" onPointerEnter="{{ henter }}" onPointerLeave="{{ hleave }}" style="margin-top:40px;position:relative;display:inline-flex;align-items:center;justify-content:center;height:60px;min-width:132px;padding:0 34px;background:none;border:0;color:#FAF7F0;cursor:pointer;font-family:'Shantell Sans',cursive;font-weight:300;font-size:19px;line-height:1;white-space:nowrap;-webkit-tap-highlight-color:transparent;transform:{{ btnTf }};transition:transform 120ms ease-out">
+    <svg width="100%" height="100%" viewBox="0 0 132 60" preserveAspectRatio="none" style="position:absolute;inset:0;overflow:visible;pointer-events:none"><g style="filter:{{ btnFilter }}"><path d="M70 3 C120 1 132 18 130 32 C128 50 100 58 64 57 C24 56 3 46 3 30 C3 12 30 4 78 6" fill="#494444" stroke="#494444" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></g></svg>
+    <span style="position:relative">invite a friend</span>
+  </button>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:393,&quot;height&quot;:560},&quot;link&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;c-o.page/vishruth&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;onInvite&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
+class Component extends DCLogic {
+  state = { copied: false, press: false, hover: false };
+  copy = () => {
+    const l = this.props.link ?? 'c-o.page/vishruth';
+    try { navigator.clipboard && navigator.clipboard.writeText(l); } catch (_) {}
+    this.setState({ copied: true });
+    clearTimeout(this.ct);
+    this.ct = setTimeout(() => this.setState({ copied: false }), 1600);
+  };
+  renderVals() {
+    const S = this.state;
+    return {
+      link: this.props.link ?? 'c-o.page/vishruth',
+      iconPath: S.copied ? 'M5 12.5l4.5 4.5L19 7.5' : 'M8.5 8.5h11v11h-11z M15.5 8.5V4.5h-11v11h4',
+      copy: this.copy,
+      selectAll: e => e.target.select(),
+      invite: () => { if (this.props.onInvite) this.props.onInvite(); },
+      pdown: () => this.setState({ press: true }),
+      pup: () => this.setState({ press: false }),
+      henter: () => this.setState({ hover: true }),
+      hleave: () => this.setState({ press: false, hover: false }),
+      btnTf: S.press ? 'scale(.96) rotate(-1deg)' : 'none',
+      btnFilter: S.hover ? 'url(#inv-boil)' : 'url(#inv-ink)'
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -4,8 +4,16 @@
      the font stacks (fonts themselves are imported once in main.tsx via @fontsource) */
   --font-hand: 'Shantell Sans', 'Comic Sans MS', cursive;
   --font-condensed: 'Barlow Condensed', sans-serif;
+  /* Figma's header type uses 'SF Pro', which isn't a distributable web font — this stack
+     renders as real SF Pro on Apple platforms and falls back to each OS's native UI font
+     elsewhere, matching the design's intent ("system UI type") rather than its literal name. */
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   /* link color used wherever an item shows a real hyperlink (e.g. ParcelTag's link line) */
   --ink-link: #2e6be6;
+  /* Header text colors (Figma node 125:1841) — distinct from --ink-link and the hand-drawn
+     ink colors in utils/filters.ts, which are warmer/softer than this UI text's pure black/grey. */
+  --color-text-muted: #a1a1a1;
+  --color-text-strong: #000000;
 }
 
 html,

@@ -96,22 +96,20 @@ Shared infrastructure every item is built on:
   front/back layer draws on: `.item-lay` (the base stroke/line-art layer), `.media-slot`
   (+ its `img`/`video` rules, shared by Stamp's photo slot and ParcelTag's preview slot),
   `.media-chip` (the empty-slot label chip, shared by Stamp and ParcelTag).
-- **`RemoveAction`** (`components/RemoveAction.tsx` + `.css`) — the "take it back"
-  (`viewer === 'self'`) / "return to sender" (`viewer === 'owner'`) control. New feature,
-  not in any original reference file — spec is `references/co-scrapbook-v2.dc.html`
-  (screens `10b item detail own` / `11 item detail owner`). Every item kind takes an
-  optional `onRemove?: (id: string) => void` and an `id` prop; whether the control
-  actually renders is centralized in `utils/removeAction.ts`'s `shouldShowRemoveAction`
-  (flippable + flipped + viewer is self/owner + `onRemove` given). Rendered through
-  `<Decor>`'s `remove` slot — a sibling of the zoom/rot-scaled `.decor-wrap`, not a
-  descendant of it, so the control is never scaled by the item's `zoom` and never rotates
-  with the flip (or with the item's own `rot` tilt — the owner variant has its own
-  independent -3° per the spec). The slot is absolutely positioned below the card and
-  doesn't add to `Decor`'s own layout footprint, so flipping an item never shifts its
-  neighbors (verified on the Board). `Decor`'s root is now two nested divs —
-  `.decor-outer` (unscaled, sized by its zoomed content) wrapping `.decor-wrap` (the
-  zoomed/rotated one) — specifically so the remove slot has an unscaled coordinate space
-  to anchor to.
+- **`RemoveButton`** (`components/RemoveButton.tsx` + `.css`) — the remove control. It is
+  part of each item's **back face content** (not a separate overlay outside the card) —
+  a small hand-drawn red-outlined, lightly-tinted rectangle with a red X icon and the
+  word "remove" in the item's ink color, positioned near the bottom of the back, deliberately
+  overlapping the ruled lines. Because it's inside the back face, it flips and tilts with
+  the card for free — no special-casing needed. New feature; no reference file actually
+  has it (`Item.dc.html` and `co-scrapbook-v2.dc.html` were both checked — `co-scrapbook-v2.dc.html`
+  only `<dc-import>`s the Item component by reference and can't carry its internal
+  markup), so it's built from a written spec rather than ported pixel-for-pixel. Every
+  item kind takes an optional `onRemove?: (id: string) => void` and an `id` prop;
+  whether the button actually renders is centralized in `utils/removeAction.ts`'s
+  `shouldShowRemoveAction` (viewer is self/owner + `onRemove` given) — "only when
+  flipped" needs no extra logic since it's already handled by the same front/back
+  visibility CSS that gates `ItemBack`.
 
 ## File map
 
@@ -129,8 +127,8 @@ src/
     ScrapDefs.tsx           shared SVG <defs> (ink filter, hatch pattern)
     FlipCard.tsx/.css       shared flip mechanics
     ItemBack.tsx/.css       shared back face
-    Decor.tsx/.css          shared seeded decor wrapper + the remove slot
-    RemoveAction.tsx/.css   "take it back" / "return to sender" control
+    Decor.tsx/.css          shared seeded decor wrapper
+    RemoveButton.tsx/.css   back-face "remove" control (red X + tinted rect)
     Item.css                shared front-layer classes (.item-lay/.media-slot/.media-chip)
     Stamp.tsx/.css
     Note.tsx/.css
@@ -157,10 +155,29 @@ filenames exactly as given):
   and ParcelTag (Stamp defers to stamp-test.html instead, per above).
 - `references/co Scrapbook.dc.html` — the design board these components come from.
   Context only.
-- `references/co-scrapbook-v2.dc.html` — a newer design file. Source of truth for the
-  `RemoveAction` control (screens `10b item detail own` / `11 item detail owner`); not a
-  source for anything else — the rest of the file (including the "RETURN TO SENDER"
-  rubber stamp on screen 12) is out of scope and hasn't been built.
+- `references/co-scrapbook-v2.dc.html` — a newer design file, but only a board/screens
+  file: it `<dc-import>`s the Item component by reference and never contains that
+  component's own template, so it is **not** a source of truth for anything drawn inside
+  an item (including `RemoveButton` — checked, confirmed absent). Its only actual
+  diff from `co Scrapbook.dc.html` is an unrelated new Library card-catalog screen
+  (`01b card catalog`), which hasn't been built and is out of scope. If a real
+  component-level export for the back-face remove control shows up later (e.g.
+  `Item-v2.dc.html`), treat it as the source of truth over `RemoveButton`'s current
+  from-spec implementation.
+
+## Screens, the gallery, and mock data
+
+- Screens live in `src/screens/<ScreenName>/`, components in `src/components/`. A screen
+  composes components; it never copies a component's markup, CSS, or SVG into itself —
+  import the real component so editing it propagates everywhere via HMR.
+- Every new screen or component must be registered in `src/gallery/registry.ts` (the single
+  list the gallery renders from) — that's the only file a new addition needs to touch.
+- The Home screen's exact spacing values (44px header→Library, 64px Library→InviteSection)
+  are CSS variables declared at the top of `src/screens/HomeScreen/HomeScreen.css`.
+- Mock/sample data lives in one file, `src/data/mock.ts`, so it can be swapped for real data
+  later without touching the components or screens that consume it.
+- Opening the dev server root (`/`) shows the gallery index, not the app — routing is
+  `HashRouter`-based (`react-router-dom`) since the site deploys to Vercel as a static build.
 
 ## Harness notes (App.tsx)
 

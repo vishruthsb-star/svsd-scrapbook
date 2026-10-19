@@ -6,7 +6,7 @@ import { DEFAULT_INK, FIELD_PAPER, INK_FILTER_STYLE } from '../utils/filters';
 import FlipCard from './FlipCard';
 import ItemBack from './ItemBack';
 import Decor from './Decor';
-import RemoveAction from './RemoveAction';
+import RemoveButton from './RemoveButton';
 import { shouldShowRemoveAction } from '../utils/removeAction';
 import './Item.css';
 import './VoicePostcard.css';
@@ -136,6 +136,9 @@ export default function VoicePostcard({
     </>
   );
 
+  const handleRemove = onRemove ? () => onRemove(id) : undefined;
+  const showRemove = shouldShowRemoveAction(viewer, handleRemove);
+
   const back = (
     <>
       <svg className="item-lay" width={VOICE_W} height={VOICE_H} style={{ strokeWidth: sw.thick }}>
@@ -157,22 +160,12 @@ export default function VoicePostcard({
         censorScribble={G.censorScribble}
         censorWidth={censorWidth}
       />
+      {showRemove && <RemoveButton cardWidth={VOICE_W} seed={seed} ink={DEFAULT_INK} onRemove={handleRemove!} />}
     </>
   );
 
-  const handleRemove = onRemove ? () => onRemove(id) : undefined;
-  const showRemove = shouldShowRemoveAction(viewer, flipped, true, handleRemove);
-
   return (
-    <Decor
-      seed={seed}
-      width={VOICE_W}
-      height={VOICE_H}
-      zoom={zoom}
-      rot={rot}
-      field={FIELD_PAPER}
-      remove={showRemove ? <RemoveAction variant={viewer as 'self' | 'owner'} ink={DEFAULT_INK} onRemove={handleRemove!} /> : undefined}
-    >
+    <Decor seed={seed} width={VOICE_W} height={VOICE_H} zoom={zoom} rot={rot} field={FIELD_PAPER}>
       <FlipCard front={front} back={back} width={VOICE_W} height={VOICE_H} flipped={flipped} onFlip={setFlipped} />
     </Decor>
   );

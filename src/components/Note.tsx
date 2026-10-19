@@ -6,7 +6,7 @@ import { DEFAULT_INK, FIELD_PAPER, INK_FILTER_STYLE } from '../utils/filters';
 import FlipCard from './FlipCard';
 import ItemBack from './ItemBack';
 import Decor from './Decor';
-import RemoveAction from './RemoveAction';
+import RemoveButton from './RemoveButton';
 import { shouldShowRemoveAction } from '../utils/removeAction';
 import './Item.css';
 import './Note.css';
@@ -45,6 +45,9 @@ export default function Note({ id = '', text, owner, senderName, date, viewer, s
     </>
   );
 
+  const handleRemove = onRemove ? () => onRemove(id) : undefined;
+  const showRemove = shouldShowRemoveAction(viewer, handleRemove);
+
   const back = (
     <>
       <svg className="item-lay" width={NOTE_W} height={NOTE_H} style={{ strokeWidth: sw.thick }}>
@@ -66,22 +69,12 @@ export default function Note({ id = '', text, owner, senderName, date, viewer, s
         censorScribble={G.censorScribble}
         censorWidth={censorWidth}
       />
+      {showRemove && <RemoveButton cardWidth={NOTE_W} seed={seed} ink={DEFAULT_INK} onRemove={handleRemove!} />}
     </>
   );
 
-  const handleRemove = onRemove ? () => onRemove(id) : undefined;
-  const showRemove = shouldShowRemoveAction(viewer, flipped, true, handleRemove);
-
   return (
-    <Decor
-      seed={seed}
-      width={NOTE_W}
-      height={NOTE_H}
-      zoom={zoom}
-      rot={rot}
-      field={FIELD_PAPER}
-      remove={showRemove ? <RemoveAction variant={viewer as 'self' | 'owner'} ink={DEFAULT_INK} onRemove={handleRemove!} /> : undefined}
-    >
+    <Decor seed={seed} width={NOTE_W} height={NOTE_H} zoom={zoom} rot={rot} field={FIELD_PAPER}>
       <FlipCard front={front} back={back} width={NOTE_W} height={NOTE_H} flipped={flipped} onFlip={setFlipped} />
     </Decor>
   );

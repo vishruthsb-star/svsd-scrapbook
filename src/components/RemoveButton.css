@@ -1,0 +1,48 @@
+.remove-button {
+  position: absolute;
+  bottom: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px 0 30px;
+  margin: 0;
+  background: none;
+  border: none;
+  font-family: var(--font-hand);
+  font-weight: 300;
+  font-size: 13px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+.remove-button-art {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  fill: none;
+  pointer-events: none;
+}
+
+.remove-button-label {
+  position: relative;
+  color: inherit;
+  white-space: nowrap;
+}
+
+/* at least a 44x44 hit target, without changing the drawn footprint */
+.remove-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+}
+
+.remove-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
