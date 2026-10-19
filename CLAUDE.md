@@ -96,6 +96,22 @@ Shared infrastructure every item is built on:
   front/back layer draws on: `.item-lay` (the base stroke/line-art layer), `.media-slot`
   (+ its `img`/`video` rules, shared by Stamp's photo slot and ParcelTag's preview slot),
   `.media-chip` (the empty-slot label chip, shared by Stamp and ParcelTag).
+- **`RemoveAction`** (`components/RemoveAction.tsx` + `.css`) — the "take it back"
+  (`viewer === 'self'`) / "return to sender" (`viewer === 'owner'`) control. New feature,
+  not in any original reference file — spec is `references/co-scrapbook-v2.dc.html`
+  (screens `10b item detail own` / `11 item detail owner`). Every item kind takes an
+  optional `onRemove?: (id: string) => void` and an `id` prop; whether the control
+  actually renders is centralized in `utils/removeAction.ts`'s `shouldShowRemoveAction`
+  (flippable + flipped + viewer is self/owner + `onRemove` given). Rendered through
+  `<Decor>`'s `remove` slot — a sibling of the zoom/rot-scaled `.decor-wrap`, not a
+  descendant of it, so the control is never scaled by the item's `zoom` and never rotates
+  with the flip (or with the item's own `rot` tilt — the owner variant has its own
+  independent -3° per the spec). The slot is absolutely positioned below the card and
+  doesn't add to `Decor`'s own layout footprint, so flipping an item never shifts its
+  neighbors (verified on the Board). `Decor`'s root is now two nested divs —
+  `.decor-outer` (unscaled, sized by its zoomed content) wrapping `.decor-wrap` (the
+  zoomed/rotated one) — specifically so the remove slot has an unscaled coordinate space
+  to anchor to.
 
 ## File map
 
@@ -108,17 +124,20 @@ src/
     decor.ts               pickDecor — seeded 0–2 tape/clip/corners pieces
     filters.ts             INK_FILTER_ID/STYLE, HATCH_PATTERN_ID, DEFAULT_INK, FIELD_PAPER/WHITE
     useMeasuredHeight.ts    shared "measure from hidden DOM, re-measure on fonts-ready" hook
+    removeAction.ts         shouldShowRemoveAction — the one place the remove-visibility rule lives
   components/
     ScrapDefs.tsx           shared SVG <defs> (ink filter, hatch pattern)
     FlipCard.tsx/.css       shared flip mechanics
     ItemBack.tsx/.css       shared back face
-    Decor.tsx/.css          shared seeded decor wrapper
+    Decor.tsx/.css          shared seeded decor wrapper + the remove slot
+    RemoveAction.tsx/.css   "take it back" / "return to sender" control
     Item.css                shared front-layer classes (.item-lay/.media-slot/.media-chip)
     Stamp.tsx/.css
     Note.tsx/.css
     VoicePostcard.tsx/.css
     ParcelTag.tsx/.css
-  App.tsx/.css              demo harness: a "board" (mixed scatter, all four kinds) plus a
+  App.tsx/.css              demo harness: a "board" (mixed scatter, all four kinds, persisted
+                             to localStorage with a 220ms remove transition) plus a
                              playground + preset shelf per item kind
   index.css                 global reset, --font-hand/--font-condensed/--ink-link vars
 ```
@@ -138,6 +157,10 @@ filenames exactly as given):
   and ParcelTag (Stamp defers to stamp-test.html instead, per above).
 - `references/co Scrapbook.dc.html` — the design board these components come from.
   Context only.
+- `references/co-scrapbook-v2.dc.html` — a newer design file. Source of truth for the
+  `RemoveAction` control (screens `10b item detail own` / `11 item detail owner`); not a
+  source for anything else — the rest of the file (including the "RETURN TO SENDER"
+  rubber stamp on screen 12) is out of scope and hasn't been built.
 
 ## Harness notes (App.tsx)
 
@@ -149,3 +172,10 @@ filenames exactly as given):
 - The "Board" section's decor/tilt comes from `seededRot(seed)`, a deterministic jitter
   derived from the item's own seed (not `Math.random()`) — it never changes on re-render.
   Its global viewer toggle is independent of each playground section's own viewer state.
+- The Board's set of present items (which of the 12 fixed ids haven't been removed) is
+  state, persisted to `localStorage` (key `scrapbook-board-v1`) — reload the page and
+  removed items stay gone. Removing one runs a ~220ms exit transition (opacity + slight
+  translate/rotate, `.board-item-leaving`) before it actually leaves state/storage, and
+  that duration drops to 0 under `prefers-reduced-motion: reduce`. "reset board" restores
+  the full set. Each playground page's single instance has its own local "removed" flag
+  (not persisted) plus a "reset" button, for trying the control repeatedly.

@@ -6,10 +6,13 @@ import { DEFAULT_INK, FIELD_PAPER, INK_FILTER_STYLE } from '../utils/filters';
 import FlipCard from './FlipCard';
 import ItemBack from './ItemBack';
 import Decor from './Decor';
+import RemoveAction from './RemoveAction';
+import { shouldShowRemoveAction } from '../utils/removeAction';
 import './Item.css';
 import './VoicePostcard.css';
 
 export interface VoicePostcardProps {
+  id?: string;
   audioSrc?: string;
   durationSec?: number;
   owner: string;
@@ -19,6 +22,7 @@ export interface VoicePostcardProps {
   seed: number;
   zoom?: number;
   rot?: number;
+  onRemove?: (id: string) => void;
 }
 
 function formatDuration(totalSeconds: number): string {
@@ -98,6 +102,7 @@ function VoicePlayback({ audioSrc, durationSec, bars, strokeWidth }: VoicePlayba
 }
 
 export default function VoicePostcard({
+  id = '',
   audioSrc,
   durationSec,
   owner,
@@ -107,6 +112,7 @@ export default function VoicePostcard({
   seed,
   zoom = 1,
   rot = 0,
+  onRemove,
 }: VoicePostcardProps) {
   const [flipped, setFlipped] = useState(false);
   const G = useMemo(() => voiceGeometry(seed), [seed]);
@@ -154,8 +160,19 @@ export default function VoicePostcard({
     </>
   );
 
+  const handleRemove = onRemove ? () => onRemove(id) : undefined;
+  const showRemove = shouldShowRemoveAction(viewer, flipped, true, handleRemove);
+
   return (
-    <Decor seed={seed} width={VOICE_W} height={VOICE_H} zoom={zoom} rot={rot} field={FIELD_PAPER}>
+    <Decor
+      seed={seed}
+      width={VOICE_W}
+      height={VOICE_H}
+      zoom={zoom}
+      rot={rot}
+      field={FIELD_PAPER}
+      remove={showRemove ? <RemoveAction variant={viewer as 'self' | 'owner'} ink={DEFAULT_INK} onRemove={handleRemove!} /> : undefined}
+    >
       <FlipCard front={front} back={back} width={VOICE_W} height={VOICE_H} flipped={flipped} onFlip={setFlipped} />
     </Decor>
   );

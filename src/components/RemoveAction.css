@@ -1,0 +1,79 @@
+/*
+ * The "take it back" / "return to sender" control. New feature (co-scrapbook-v2.dc.html),
+ * drawn outside the item itself — see <Decor>'s remove slot, which keeps this unscaled by
+ * the item's zoom and untouched by its flip rotation.
+ */
+.remove-action {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-hand);
+  font-weight: 300;
+  font-size: 22px;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* at least a 44x44 hit target, without changing the visible footprint */
+.remove-action::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+}
+
+.remove-action:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+.remove-action svg {
+  fill: none;
+  overflow: visible;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- self: "take it back" ---- */
+.remove-action--self {
+  gap: 10px;
+}
+.remove-action--self .remove-action-icon {
+  flex: none;
+  stroke-width: 2;
+}
+.remove-action-label {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+}
+.remove-action--self .remove-action-underline {
+  stroke-width: 1.6;
+  margin-top: 1px;
+}
+
+/* ---- owner: "return to sender" ---- */
+.remove-action--owner {
+  padding: 14px 22px 16px;
+  transform: rotate(-3deg);
+}
+.remove-action--owner .remove-action-box {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  stroke-width: 2;
+}
+.remove-action--owner .remove-action-text {
+  position: relative;
+  white-space: nowrap;
+}

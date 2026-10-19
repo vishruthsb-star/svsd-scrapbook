@@ -2,11 +2,13 @@ import { useMemo, useState, type MouseEvent } from 'react';
 import type { StampMedia, StampViewer } from '../types';
 import { TAG_LINK_ICON_GAP, TAG_LINK_ICON_W, TAG_LINK_TEXT_W, censorWidthFor, measureLinkHeight, tagLayout } from '../utils/layout';
 import { inkStrokeWidths, tagGeometry } from '../utils/geometry';
-import { FIELD_PAPER, HATCH_PATTERN_ID, INK_FILTER_STYLE } from '../utils/filters';
+import { DEFAULT_INK, FIELD_PAPER, HATCH_PATTERN_ID, INK_FILTER_STYLE } from '../utils/filters';
 import { useMeasuredHeight } from '../utils/useMeasuredHeight';
 import FlipCard from './FlipCard';
 import ItemBack from './ItemBack';
 import Decor from './Decor';
+import RemoveAction from './RemoveAction';
+import { shouldShowRemoveAction } from '../utils/removeAction';
 import './Item.css';
 import './ParcelTag.css';
 
@@ -61,6 +63,7 @@ function TagPreviewMedia({ preview, url, host, faviconUrl }: TagPreviewMediaProp
 }
 
 export interface ParcelTagProps {
+  id?: string;
   url: string;
   linkLabel: string;
   /** the preview slot's media — same shape as the Stamp's `media` prop (image/video/empty) */
@@ -72,6 +75,7 @@ export interface ParcelTagProps {
   seed: number;
   zoom?: number;
   rot?: number;
+  onRemove?: (id: string) => void;
 }
 
 const BACK_PX = 14;
@@ -86,6 +90,7 @@ function hostnameOf(url: string): string {
 }
 
 export default function ParcelTag({
+  id = '',
   url,
   linkLabel,
   preview,
@@ -96,6 +101,7 @@ export default function ParcelTag({
   seed,
   zoom = 1,
   rot = 0,
+  onRemove,
 }: ParcelTagProps) {
   const [flipped, setFlipped] = useState(false);
 
@@ -187,8 +193,19 @@ export default function ParcelTag({
     </>
   );
 
+  const handleRemove = onRemove ? () => onRemove(id) : undefined;
+  const showRemove = shouldShowRemoveAction(viewer, flipped, true, handleRemove);
+
   return (
-    <Decor seed={seed} width={L.W} height={L.H} zoom={zoom} rot={rot} field={FIELD_PAPER}>
+    <Decor
+      seed={seed}
+      width={L.W}
+      height={L.H}
+      zoom={zoom}
+      rot={rot}
+      field={FIELD_PAPER}
+      remove={showRemove ? <RemoveAction variant={viewer as 'self' | 'owner'} ink={DEFAULT_INK} onRemove={handleRemove!} /> : undefined}
+    >
       <FlipCard front={front} back={back} width={L.W} height={L.H} flipped={flipped} onFlip={setFlipped} />
     </Decor>
   );

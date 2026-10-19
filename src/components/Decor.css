@@ -1,7 +1,19 @@
-.decor-wrap {
+.decor-outer {
   position: relative;
   overflow: visible;
   flex: none;
+}
+.decor-wrap {
+  position: relative;
+  overflow: visible;
+}
+.decor-remove-slot {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  margin-top: 14px;
+  z-index: 50;
 }
 .decor-piece {
   position: absolute;

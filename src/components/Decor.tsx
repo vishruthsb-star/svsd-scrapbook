@@ -14,6 +14,10 @@ export interface DecorProps {
   ink?: string;
   field?: string;
   children: ReactNode;
+  /** e.g. a <RemoveAction/> — rendered below the item, outside the zoom/rot-scaled box
+   * entirely, so it's never scaled by `zoom` and never rotates with the flip or `rot`. Its
+   * own slot is absolutely positioned and doesn't change this component's footprint. */
+  remove?: ReactNode;
 }
 
 type ZoomableStyle = CSSProperties & { zoom?: number };
@@ -24,19 +28,24 @@ type ZoomableStyle = CSSProperties & { zoom?: number };
  * outside the item's own clipped content, overhanging its edges, and never rotates with
  * the flip (it's "physically" on top of the card, not printed on either face).
  */
-export default function Decor({ seed, width, height, zoom = 1, rot = 0, ink = DEFAULT_INK, field = FIELD_WHITE, children }: DecorProps) {
+export default function Decor({ seed, width, height, zoom = 1, rot = 0, ink = DEFAULT_INK, field = FIELD_WHITE, children, remove }: DecorProps) {
   const pieces = useMemo(() => pickDecor(seed, width), [seed, width]);
   const strokeWidth = inkStrokeWidths(zoom).thick;
 
   return (
-    <div
-      className="decor-wrap"
-      style={{ width, height, zoom, transform: `rotate(${rot}deg)` } as ZoomableStyle}
-    >
-      {children}
-      {pieces.map((piece, i) => (
-        <DecorPieceSvg key={i} piece={piece} ink={ink} field={field} strokeWidth={strokeWidth} />
-      ))}
+    // decor-outer is intentionally unsized here — zoom inflates decor-wrap's own
+    // *rendered* footprint, and decor-outer (a normal-flow parent) naturally sizes to
+    // that, so the remove slot below (top: 100%) always sits right under the card as it
+    // actually appears on screen, at any zoom, without decor-outer scaling its own
+    // contents (only decor-wrap, and everything inside it, is zoomed).
+    <div className="decor-outer">
+      <div className="decor-wrap" style={{ width, height, zoom, transform: `rotate(${rot}deg)` } as ZoomableStyle}>
+        {children}
+        {pieces.map((piece, i) => (
+          <DecorPieceSvg key={i} piece={piece} ink={ink} field={field} strokeWidth={strokeWidth} />
+        ))}
+      </div>
+      {remove && <div className="decor-remove-slot">{remove}</div>}
     </div>
   );
 }

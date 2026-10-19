@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import Stamp from './components/Stamp';
 import Note from './components/Note';
 import VoicePostcard from './components/VoicePostcard';
@@ -20,6 +20,13 @@ const EMPTY_PREVIEW: StampMedia = { kind: 'empty', ratio: 1 };
 
 function rerollSeed(seed: number): number {
   return seed + 1 + Math.floor(Math.random() * 999);
+}
+
+const BOARD_STORAGE_KEY = 'scrapbook-board-v1';
+const BOARD_REMOVE_MS = 220;
+
+function prefersReducedMotion(): boolean {
+  return typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
 }
 
 /** A small, deterministic tilt derived from an item's own seed — not Math.random(), so it never jitters on re-render. */
@@ -62,6 +69,27 @@ const TAG_PRESET_RATIOS: RatioSpec[] = [
   { key: 'square', ratio: 1 },
   { key: 'wide', ratio: 16 / 9 },
 ];
+
+const ALL_BOARD_IDS = [
+  'b-stamp-1', 'b-note-1', 'b-voice-1', 'b-tag-1',
+  'b-stamp-2', 'b-note-2', 'b-voice-2', 'b-tag-2',
+  'b-stamp-3', 'b-note-3', 'b-voice-3', 'b-tag-3',
+];
+
+function loadBoardIds(): string[] {
+  try {
+    const raw = localStorage.getItem(BOARD_STORAGE_KEY);
+    if (!raw) return ALL_BOARD_IDS;
+    const parsed: unknown = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      const kept = parsed.filter((x): x is string => typeof x === 'string' && ALL_BOARD_IDS.includes(x));
+      if (kept.length) return kept;
+    }
+  } catch {
+    // ignore malformed storage, fall back to the full board
+  }
+  return ALL_BOARD_IDS;
+}
 
 /** Hand-picked scatter positions for the board — a loose flat-lay, not a grid. */
 const BOARD_LAYOUT: Array<{ left: string; top: number }> = [
@@ -108,6 +136,7 @@ function App() {
   const [caption, setCaption] = useState(SAMPLE_CAPTION);
   const [viewer, setViewer] = useState<StampViewer>('other');
   const [upload, setUpload] = useState<StampMedia | null>(null);
+  const [stampRemoved, setStampRemoved] = useState(false);
   const uploadUrlRef = useRef<string | null>(null);
 
   const [noteText, setNoteText] = useState(SAMPLE_NOTE_TEXT);
@@ -115,12 +144,14 @@ function App() {
   const [noteSender, setNoteSender] = useState(FROM);
   const [noteDate, setNoteDate] = useState(DATE);
   const [noteSeed, setNoteSeed] = useState(31);
+  const [noteRemoved, setNoteRemoved] = useState(false);
 
   const [voiceAudioSrc, setVoiceAudioSrc] = useState<string | undefined>(undefined);
   const [voiceViewer, setVoiceViewer] = useState<StampViewer>('other');
   const [voiceSender, setVoiceSender] = useState('priya');
   const [voiceDate, setVoiceDate] = useState(DATE);
   const [voiceSeed, setVoiceSeed] = useState(41);
+  const [voiceRemoved, setVoiceRemoved] = useState(false);
   const voiceUrlRef = useRef<string | null>(null);
 
   const [tagUrl, setTagUrl] = useState(SAMPLE_URL);
@@ -132,10 +163,40 @@ function App() {
   const [tagPreview, setTagPreview] = useState<StampMedia>(EMPTY_PREVIEW);
   const [tagFetching, setTagFetching] = useState(false);
   const [tagFetchError, setTagFetchError] = useState<string | null>(null);
+  const [tagRemoved, setTagRemoved] = useState(false);
   const tagUrlRef = useRef<string | null>(null);
 
   const [librarySel, setLibrarySel] = useState(2);
   const [libraryLastOpen, setLibraryLastOpen] = useState<string | null>(null);
+
+  const [boardIds, setBoardIds] = useState<string[]>(loadBoardIds);
+  const [leavingBoardIds, setLeavingBoardIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(BOARD_STORAGE_KEY, JSON.stringify(boardIds));
+    } catch {
+      // storage unavailable (private mode, quota) — board just won't persist across reloads
+    }
+  }, [boardIds]);
+
+  const handleBoardRemove = useCallback((id: string) => {
+    setLeavingBoardIds((prev) => new Set(prev).add(id));
+    const delay = prefersReducedMotion() ? 0 : BOARD_REMOVE_MS;
+    window.setTimeout(() => {
+      setBoardIds((ids) => ids.filter((x) => x !== id));
+      setLeavingBoardIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }, delay);
+  }, []);
+
+  function handleBoardReset() {
+    setLeavingBoardIds(new Set());
+    setBoardIds(ALL_BOARD_IDS);
+  }
 
   useEffect(() => {
     const img = new Image();
@@ -189,31 +250,32 @@ function App() {
       {
         key: 'b-stamp-1',
         node: (
-          <Stamp media={stampMedia[0]} caption="the night the bus never came" owner={OWNER} from="maya" date={DATE} viewer={boardViewer} seed={201} zoom={0.95} rot={seededRot(201)} />
+          <Stamp id="b-stamp-1" media={stampMedia[0]} caption="the night the bus never came" owner={OWNER} from="maya" date={DATE} viewer={boardViewer} seed={201} zoom={0.95} rot={seededRot(201)} onRemove={handleBoardRemove} />
         ),
       },
       {
         key: 'b-note-1',
-        node: <Note text={SAMPLE_NOTE_TEXT} owner={OWNER} senderName="jun" date={DATE} viewer={boardViewer} seed={211} zoom={0.85} rot={seededRot(211)} />,
+        node: <Note id="b-note-1" text={SAMPLE_NOTE_TEXT} owner={OWNER} senderName="jun" date={DATE} viewer={boardViewer} seed={211} zoom={0.85} rot={seededRot(211)} onRemove={handleBoardRemove} />,
       },
       {
         key: 'b-voice-1',
-        node: <VoicePostcard owner={OWNER} senderName="priya" date={DATE} viewer={boardViewer} seed={221} zoom={0.85} rot={seededRot(221)} />,
+        node: <VoicePostcard id="b-voice-1" owner={OWNER} senderName="priya" date={DATE} viewer={boardViewer} seed={221} zoom={0.85} rot={seededRot(221)} onRemove={handleBoardRemove} />,
       },
       {
         key: 'b-tag-1',
         node: (
-          <ParcelTag url={SAMPLE_URL} linkLabel={SAMPLE_LINK_LABEL} preview={tagPreviewImg} owner={OWNER} senderName="theo" date={DATE} viewer={boardViewer} seed={231} zoom={0.9} rot={seededRot(231)} />
+          <ParcelTag id="b-tag-1" url={SAMPLE_URL} linkLabel={SAMPLE_LINK_LABEL} preview={tagPreviewImg} owner={OWNER} senderName="theo" date={DATE} viewer={boardViewer} seed={231} zoom={0.9} rot={seededRot(231)} onRemove={handleBoardRemove} />
         ),
       },
       {
         key: 'b-stamp-2',
-        node: <Stamp media={stampMedia[1]} caption="" owner={OWNER} from="sam" date={DATE} viewer={boardViewer} seed={202} zoom={0.9} rot={seededRot(202)} />,
+        node: <Stamp id="b-stamp-2" media={stampMedia[1]} caption="" owner={OWNER} from="sam" date={DATE} viewer={boardViewer} seed={202} zoom={0.9} rot={seededRot(202)} onRemove={handleBoardRemove} />,
       },
       {
         key: 'b-note-2',
         node: (
           <Note
+            id="b-note-2"
             text="ok but who taught you to whistle like that"
             owner={OWNER}
             senderName="ana"
@@ -222,17 +284,19 @@ function App() {
             seed={212}
             zoom={0.8}
             rot={seededRot(212)}
+            onRemove={handleBoardRemove}
           />
         ),
       },
       {
         key: 'b-voice-2',
-        node: <VoicePostcard owner={OWNER} senderName="sam" date={DATE} viewer={boardViewer} seed={222} zoom={0.8} rot={seededRot(222)} />,
+        node: <VoicePostcard id="b-voice-2" owner={OWNER} senderName="sam" date={DATE} viewer={boardViewer} seed={222} zoom={0.8} rot={seededRot(222)} onRemove={handleBoardRemove} />,
       },
       {
         key: 'b-tag-2',
         node: (
           <ParcelTag
+            id="b-tag-2"
             url="https://songs-for-buses.example/playlist"
             linkLabel="songs for buses"
             preview={EMPTY_PREVIEW}
@@ -243,17 +307,19 @@ function App() {
             seed={232}
             zoom={0.85}
             rot={seededRot(232)}
+            onRemove={handleBoardRemove}
           />
         ),
       },
       {
         key: 'b-stamp-3',
-        node: <Stamp media={stampMedia[2]} caption={SAMPLE_CAPTION} owner={OWNER} from="jun" date={DATE} viewer={boardViewer} seed={203} zoom={1} rot={seededRot(203)} />,
+        node: <Stamp id="b-stamp-3" media={stampMedia[2]} caption={SAMPLE_CAPTION} owner={OWNER} from="jun" date={DATE} viewer={boardViewer} seed={203} zoom={1} rot={seededRot(203)} onRemove={handleBoardRemove} />,
       },
       {
         key: 'b-note-3',
         node: (
           <Note
+            id="b-note-3"
             text="the way you say 'anyway' like a door closing"
             owner={OWNER}
             senderName="theo"
@@ -262,17 +328,19 @@ function App() {
             seed={213}
             zoom={0.85}
             rot={seededRot(213)}
+            onRemove={handleBoardRemove}
           />
         ),
       },
       {
         key: 'b-voice-3',
-        node: <VoicePostcard owner={OWNER} senderName="ana" date={DATE} viewer={boardViewer} seed={223} zoom={0.85} rot={seededRot(223)} />,
+        node: <VoicePostcard id="b-voice-3" owner={OWNER} senderName="ana" date={DATE} viewer={boardViewer} seed={223} zoom={0.85} rot={seededRot(223)} onRemove={handleBoardRemove} />,
       },
       {
         key: 'b-tag-3',
         node: (
           <ParcelTag
+            id="b-tag-3"
             url="https://example.com/a-recipe-youd-ruin"
             linkLabel="a recipe you'd ruin"
             preview={EMPTY_PREVIEW}
@@ -283,11 +351,12 @@ function App() {
             seed={233}
             zoom={0.9}
             rot={seededRot(233)}
+            onRemove={handleBoardRemove}
           />
         ),
       },
     ];
-  }, [baseImg, boardViewer]);
+  }, [baseImg, boardViewer, handleBoardRemove]);
 
   function handleFile(file: File) {
     const url = URL.createObjectURL(file);
@@ -381,16 +450,29 @@ function App() {
           <p className="note">
             a mixed scatter of stamps, notes, voice postcards, and parcel tags — for screen-recording them together.
           </p>
-          <div>
-            <label className="t">viewing as (applies to the whole board)</label>
-            <ViewerToggle value={boardViewer} onChange={setBoardViewer} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+            <div>
+              <label className="t">viewing as (applies to the whole board)</label>
+              <ViewerToggle value={boardViewer} onChange={setBoardViewer} />
+            </div>
+            <button type="button" className="dev-reroll" onClick={handleBoardReset}>
+              reset board
+            </button>
           </div>
           <div className="board">
-            {boardEntries.map((entry, i) => (
-              <div className="board-item" key={entry.key} style={{ left: BOARD_LAYOUT[i].left, top: BOARD_LAYOUT[i].top }}>
-                {entry.node}
-              </div>
-            ))}
+            {boardEntries.map((entry, i) => {
+              const isLeaving = leavingBoardIds.has(entry.key);
+              if (!boardIds.includes(entry.key) && !isLeaving) return null;
+              return (
+                <div
+                  className={`board-item${isLeaving ? ' board-item-leaving' : ''}`}
+                  key={entry.key}
+                  style={{ left: BOARD_LAYOUT[i].left, top: BOARD_LAYOUT[i].top }}
+                >
+                  {entry.node}
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -431,11 +513,12 @@ function App() {
 
         <section>
           <h2>try it</h2>
-          <p className="note">type in the caption, toggle who's viewing, or drop in your own photo or video.</p>
+          <p className="note">type in the caption, toggle who's viewing, or drop in your own photo or video. flip to the back as owner/sender to see the remove control.</p>
           <div className="play">
             <div className="stage">
-              {playgroundMedia && (
+              {playgroundMedia && !stampRemoved && (
                 <Stamp
+                  id="stamp-playground"
                   media={playgroundMedia}
                   caption={caption}
                   owner={OWNER}
@@ -445,6 +528,7 @@ function App() {
                   seed={11}
                   zoom={2}
                   rot={-2}
+                  onRemove={() => setStampRemoved(true)}
                 />
               )}
             </div>
@@ -457,14 +541,7 @@ function App() {
               </div>
               <div>
                 <label className="t">viewing as</label>
-                <div className="seg">
-                  <button type="button" className={viewer === 'other' ? 'on' : ''} onClick={() => setViewer('other')}>
-                    someone else
-                  </button>
-                  <button type="button" className={viewer === 'owner' ? 'on' : ''} onClick={() => setViewer('owner')}>
-                    the owner
-                  </button>
-                </div>
+                <ViewerToggle value={viewer} onChange={setViewer} />
               </div>
               <div>
                 <label className="upload">
@@ -479,6 +556,12 @@ function App() {
                   />
                 </label>
               </div>
+              <div className="readout">{stampRemoved ? 'removed' : 'not removed'}</div>
+              <div>
+                <button type="button" className="dev-reroll" onClick={() => setStampRemoved(false)}>
+                  reset
+                </button>
+              </div>
             </div>
           </div>
         </section>
@@ -488,7 +571,20 @@ function App() {
           <p className="note">a handwritten text card — fixed size, no auto-growing. overflowing text spills past the card, same as the design.</p>
           <div className="play">
             <div className="stage">
-              <Note text={noteText} owner={OWNER} senderName={noteSender} date={noteDate} viewer={noteViewer} seed={noteSeed} zoom={1.6} rot={-2} />
+              {!noteRemoved && (
+                <Note
+                  id="note-playground"
+                  text={noteText}
+                  owner={OWNER}
+                  senderName={noteSender}
+                  date={noteDate}
+                  viewer={noteViewer}
+                  seed={noteSeed}
+                  zoom={1.6}
+                  rot={-2}
+                  onRemove={() => setNoteRemoved(true)}
+                />
+              )}
             </div>
             <div className="controls">
               <div>
@@ -518,6 +614,12 @@ function App() {
                   dev: reroll decor
                 </button>
               </div>
+              <div className="readout">{noteRemoved ? 'removed' : 'not removed'}</div>
+              <div>
+                <button type="button" className="dev-reroll" onClick={() => setNoteRemoved(false)}>
+                  reset
+                </button>
+              </div>
             </div>
           </div>
         </section>
@@ -529,16 +631,20 @@ function App() {
           </p>
           <div className="play">
             <div className="stage">
-              <VoicePostcard
-                audioSrc={voiceAudioSrc}
-                owner={OWNER}
-                senderName={voiceSender}
-                date={voiceDate}
-                viewer={voiceViewer}
-                seed={voiceSeed}
-                zoom={1.4}
-                rot={2}
-              />
+              {!voiceRemoved && (
+                <VoicePostcard
+                  id="voice-playground"
+                  audioSrc={voiceAudioSrc}
+                  owner={OWNER}
+                  senderName={voiceSender}
+                  date={voiceDate}
+                  viewer={voiceViewer}
+                  seed={voiceSeed}
+                  zoom={1.4}
+                  rot={2}
+                  onRemove={() => setVoiceRemoved(true)}
+                />
+              )}
             </div>
             <div className="controls">
               <div>
@@ -573,6 +679,12 @@ function App() {
               <div>
                 <button type="button" className="dev-reroll" onClick={() => setVoiceSeed(rerollSeed)}>
                   dev: reroll decor
+                </button>
+              </div>
+              <div className="readout">{voiceRemoved ? 'removed' : 'not removed'}</div>
+              <div>
+                <button type="button" className="dev-reroll" onClick={() => setVoiceRemoved(false)}>
+                  reset
                 </button>
               </div>
             </div>
@@ -612,18 +724,22 @@ function App() {
           <p className="note">a link, wearing a tag. drop in a preview image/video, or fetch a screenshot of the link itself.</p>
           <div className="play">
             <div className="stage">
-              <ParcelTag
-                url={tagUrl}
-                linkLabel={tagLinkLabel}
-                preview={tagPreview}
-                owner={OWNER}
-                senderName={tagSender}
-                date={tagDate}
-                viewer={tagViewer}
-                seed={tagSeed}
-                zoom={1.6}
-                rot={3}
-              />
+              {!tagRemoved && (
+                <ParcelTag
+                  id="tag-playground"
+                  url={tagUrl}
+                  linkLabel={tagLinkLabel}
+                  preview={tagPreview}
+                  owner={OWNER}
+                  senderName={tagSender}
+                  date={tagDate}
+                  viewer={tagViewer}
+                  seed={tagSeed}
+                  zoom={1.6}
+                  rot={3}
+                  onRemove={() => setTagRemoved(true)}
+                />
+              )}
             </div>
             <div className="controls">
               <div>
@@ -679,6 +795,12 @@ function App() {
               <div>
                 <button type="button" className="dev-reroll" onClick={() => setTagSeed(rerollSeed)}>
                   dev: reroll decor
+                </button>
+              </div>
+              <div className="readout">{tagRemoved ? 'removed' : 'not removed'}</div>
+              <div>
+                <button type="button" className="dev-reroll" onClick={() => setTagRemoved(false)}>
+                  reset
                 </button>
               </div>
             </div>
