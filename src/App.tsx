@@ -3,6 +3,7 @@ import Stamp from './components/Stamp';
 import Note from './components/Note';
 import VoicePostcard from './components/VoicePostcard';
 import ParcelTag from './components/ParcelTag';
+import { Library } from './components/Library';
 import ScrapDefs from './components/ScrapDefs';
 import { makeRng } from './utils/geometry';
 import type { StampMedia, StampViewer } from './types';
@@ -132,6 +133,9 @@ function App() {
   const [tagFetching, setTagFetching] = useState(false);
   const [tagFetchError, setTagFetchError] = useState<string | null>(null);
   const tagUrlRef = useRef<string | null>(null);
+
+  const [librarySel, setLibrarySel] = useState(2);
+  const [libraryLastOpen, setLibraryLastOpen] = useState<string | null>(null);
 
   useEffect(() => {
     const img = new Image();
@@ -672,6 +676,19 @@ function App() {
                   dev: reroll decor
                 </button>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>library</h2>
+          <p className="note">a card-catalog drawer — tap a tab to open that folder, tap the open tab or its cover to "open" it.</p>
+          <div className="play">
+            <div className="stage" id="library-demo">
+              <Library selected={librarySel} onSelect={setLibrarySel} onOpen={(i) => setLibraryLastOpen(`opened #${i}`)} />
+            </div>
+            <div className="controls">
+              <div className="readout">{libraryLastOpen ?? 'tap the open tab (or its cover) to fire onOpen'}</div>
             </div>
           </div>
         </section>

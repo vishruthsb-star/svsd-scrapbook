@@ -1,0 +1,82 @@
+.library-root {
+  position: relative;
+  color: var(--lib-ink);
+}
+.library-stack {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.library-drawer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* folder = slot translate (rAF/spring or CSS transition) > lift (WAAPI bump) > press (WAAPI scale) */
+.library-folder,
+.library-lift,
+.library-press {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+.library-folder,
+.library-lift,
+.library-press {
+  will-change: transform;
+}
+.library-f.library-op,
+.library-tabname span {
+  will-change: opacity;
+}
+.library-f {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  overflow: visible;
+  pointer-events: none;
+  fill: none;
+  stroke: var(--lib-ink);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.library-tabname {
+  position: absolute;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+  text-align: center;
+  /* reset button chrome — this must look exactly like the original plain div */
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  display: block;
+}
+.library-tabname span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.library-cover-hit {
+  position: absolute;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+}

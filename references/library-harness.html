@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Library Harness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shantell+Sans:wght@300..500&family=Barlow+Condensed:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{ --paper:#FAF7F0; --ink:#111111; --stage:#E8E2D6; --panel:#121211; --panelLine:#2a2a27; --accent:#F2C230; }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--stage);display:flex;font-family:'Barlow Condensed',system-ui,sans-serif;color:var(--ink);overflow:hidden}
+
+  /* stage: margin:auto centring stays scrollable when the component is taller than the window */
+  #stage{flex:1;min-width:0;display:flex;overflow:auto;padding:24px}
+  #fit{margin:auto;position:relative;flex:none}
+  #scaler{position:absolute;left:0;top:0;transform-origin:0 0}
+  #comp{position:relative;overflow:hidden}
+  #stack{position:absolute;inset:0;z-index:1}
+  #drawer{position:absolute;left:0;top:0;z-index:3;pointer-events:none}
+
+  /* folder = slot translate (CSS transition) > lift (WAAPI bump) > press (WAAPI scale) */
+  .folder,.lift,.press{position:absolute;left:0;top:0;width:0;height:0}
+  .folder,.lift,.press{will-change:transform}
+  svg.op,.tabname span{will-change:opacity}
+  svg.f{position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none;fill:none;stroke:var(--ink);stroke-linecap:round;stroke-linejoin:round}
+  .tabname{position:absolute;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;white-space:nowrap;text-align:center}
+  .tabname span{position:absolute;left:0;right:0;top:0;bottom:0}
+
+  aside{width:290px;flex:none;background:var(--panel);color:#e9e6df;overflow-y:auto;font-size:13px;border-left:1px solid #000}
+  aside h1{font-size:14px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin:0;padding:12px 14px;border-bottom:1px solid var(--panelLine);position:sticky;top:0;background:var(--panel);z-index:2;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  aside h1 .btns{display:flex;gap:5px}
+  button{background:#22221f;color:#e9e6df;border:1px solid #34342f;border-radius:6px;padding:4px 8px;font:inherit;cursor:pointer}
+  button:hover{border-color:var(--accent);color:var(--accent)}
+  .sec{padding:10px 14px 12px;border-bottom:1px solid #1e1e1b}
+  .sec>h2{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8d8a82;margin:0 0 6px;font-weight:500}
+  .row{margin:9px 0}
+  .rt{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+  .rt b{font-weight:400}
+  .val{color:var(--accent);font-variant-numeric:tabular-nums;font-family:'DM Mono',monospace;font-size:11px}
+  input[type=range]{width:100%;margin:6px 0 0;accent-color:var(--accent)}
+  .hint{color:#77746d;font-size:11px;margin-top:3px;line-height:1.3}
+  .seg{display:flex;gap:5px;margin-top:6px}
+  .seg button{flex:1;padding:4px 2px}
+  .seg button.on{background:var(--accent);border-color:var(--accent);color:#1a1a19}
+  #out{width:100%;height:110px;background:#1c1c1a;color:#9f9b92;border:1px solid #34342f;border-radius:6px;font-family:'DM Mono',monospace;font-size:10px;padding:8px;resize:vertical}
+</style>
+</head>
+<body>
+
+<div id="stage"><div id="fit"><div id="scaler"><div id="comp">
+  <div id="stack"></div>
+  <div id="drawer"><svg class="f"><g id="drawerG"><path id="drawerP"></path><path id="creaseP"></path></g></svg></div>
+</div></div></div></div>
+
+<aside>
+  <h1>Library harness <span class="btns"><button id="play" title="Select the next folder">Play</button><button id="stress" title="Click through every tab every 70ms">Stress</button><button id="reset">Reset</button></span></h1>
+  <div id="controls"></div>
+  <div class="sec"><h2>Settings</h2><textarea id="out" readonly></textarea><div class="seg"><button id="copy">Copy JSON</button></div></div>
+</aside>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="ink" filterUnits="userSpaceOnUse" x="-10" y="-90" width="392" height="720">
+    <feTurbulence id="inkTurb" type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="3"/>
+    <feDisplacementMap id="inkDisp" in="SourceGraphic" scale="2.4"/>
+  </filter>
+  <filter id="inkTab" filterUnits="userSpaceOnUse" x="-10" y="-80" width="392" height="100">
+    <feTurbulence id="inkTurbT" type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="3"/>
+    <feDisplacementMap id="inkDispT" in="SourceGraphic" scale="2.4"/>
+  </filter>
+  <filter id="soft" filterUnits="userSpaceOnUse" x="-10" y="-90" width="392" height="720">
+    <feGaussianBlur stdDeviation="6"/>
+  </filter>
+  <pattern id="hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+    <rect id="hatchBg" width="6" height="6" fill="#ECE6D8"/>
+    <path id="hatchLine" d="M0.5 0 L0.5 6" stroke="#111" stroke-width="1" stroke-opacity=".55"/>
+  </pattern>
+</defs></svg>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------------- data ---------------- */
+// col = which third of the card the tab sits in, keeping the original left / middle / right stagger
+var PEOPLE = [
+  { n:'maya',  col:2, unread:1 },
+  { n:'priya', col:1, unread:0 },
+  { n:'jun',   col:0, unread:0 },
+  { n:'theo',  col:2, unread:1 },
+  { n:'ana',   col:0, unread:0 },
+  { n:'sam',   col:1, unread:0 }
+];
+var N = PEOPLE.length, CW = 372, CX = CW/2, WF = 325, BELT = 470, OY = 14, BODY = 620;
+
+var CURVES = { ios:'cubic-bezier(0.32, 0.72, 0, 1)', expo:'cubic-bezier(0.16, 1, 0.3, 1)', standard:'cubic-bezier(0.4, 0, 0.2, 1)' };
+var FONTS = { hand:["'Shantell Sans', cursive",300], condensed:["'Barlow Condensed', sans-serif",400], mono:["'DM Mono', monospace",400] };
+
+var DEFAULTS = {
+  zoom:100,
+  quality:100, grain:0.045, stroke:2, font:'hand',
+  tabH:26, tabW:30, slant:57, tabRadius:6, fillet:4, tabSize:15, gap:24,
+  growth:1.8, sheetRadius:4, shadow:4, overhang:12, lip:7, converge:7, crop:90,
+  preview:'shaded', hatch:6,
+  engine:'spring', duration:450, bounce:0.1, curve:'ios', stagger:0, press:0.97, pressMs:80, lift:2, liftShadow:0.28, fillDelay:150, fillMs:150, motion:'auto'
+};
+var CFG = Object.assign({}, DEFAULTS);
+var sel = 2, readMark = {};
+
+/* ---------------- geometry helpers ---------------- */
+function hsh(a,b){ var v = Math.sin(a*127.1 + b*311.7)*43758.5453; return (v - Math.floor(v))*2 - 1; }
+function amp(){ return 1.1*CFG.quality/100; }
+function jit(pts, seed, a){ return pts.map(function(p,i){ return a ? [p[0]+a*hsh(seed,i*2+1), p[1]+a*hsh(seed+0.37,i*2+2)] : [p[0],p[1]]; }); }
+function corners(pts, rad){
+  var n = pts.length;
+  return pts.map(function(P,i){
+    var A = pts[(i-1+n)%n], B = pts[(i+1)%n];
+    var la = Math.hypot(A[0]-P[0],A[1]-P[1]) || 1, lb = Math.hypot(B[0]-P[0],B[1]-P[1]) || 1;
+    var r = Math.min(rad[i]||0, la/2, lb/2);
+    return { a:[P[0]+(A[0]-P[0])*r/la, P[1]+(A[1]-P[1])*r/la], P:P, b:[P[0]+(B[0]-P[0])*r/lb, P[1]+(B[1]-P[1])*r/lb] };
+  });
+}
+function fp(p){ return p[0].toFixed(2)+' '+p[1].toFixed(2); }
+function ser(cs, idx){ return idx.map(function(i,k){ var c = cs[i]; return (k?'L':'M')+fp(c.a)+' Q'+fp(c.P)+' '+fp(c.b); }).join(' ')+' Z'; }
+function shape(pts, rad, seed){ var cs = corners(jit(pts, seed, amp()), rad); return ser(cs, pts.map(function(_,i){ return i; })); }
+function polyline(pts, seed){ return jit(pts, seed, amp()).map(function(p,i){ return (i?'L':'M')+fp(p); }).join(' '); }
+function rectPts(x,y,w,h){ return [[x,y],[x+w,y],[x+w,y+h],[x,y+h]]; }
+
+/* ---------------- layout model ----------------
+   Depth is a property of the folder (its index), never of where it currently sits:
+   0 = backmost and narrowest, each nearer folder ~growth% wider, all centred on CX.
+   A folder only ever occupies one of two slots: top (behind / at the open folder) or shelf (in front). */
+function widthOf(i){ return WF / Math.pow(1 + CFG.growth/100, N-1-i); }
+function topBase(){ return OY + CFG.tabH + 6; }
+function slotTop(i){ return topBase() + CFG.gap*i; }
+function slotShelf(i){ return BELT - CFG.gap*(N-i); }
+function targetY(i){ return i <= sel ? slotTop(i) : slotShelf(i); }
+function windowH(){ return BELT - CFG.gap*(N-1) - CFG.tabH - topBase(); }   // same for every open folder
+function compH(){ return BELT + CFG.lip + CFG.crop; }
+
+/* ---------------- build DOM once: every folder and its content always exists ---------------- */
+var stack = document.getElementById('stack'), comp = document.getElementById('comp'), els = [];
+PEOPLE.forEach(function(p, i){
+  var folder = document.createElement('div'); folder.className = 'folder'; folder.style.zIndex = i*10;
+  folder.innerHTML =
+    '<div class="lift"><div class="press">' +
+      '<svg class="f op sh" style="opacity:0"><path class="shp" style="fill:#000;stroke:none;filter:url(#soft)"></path></svg>' +
+      '<svg class="f main"><g class="ink">' +
+        '<path class="body"></path><path class="pshadow"></path><path class="frame"></path>' +
+      '</g></svg>' +
+      /* fill + mark live in their own small layers with an identical ink filter, so fading them never re-filters the folder */
+      '<svg class="f op fillSvg"><g class="inkT"><path class="fill"></path></g></svg>' +
+      '<svg class="f op markSvg"><g class="inkT"><path class="mark"></path></g></svg>' +
+      '<div class="tabname"><span class="lInk"></span><span class="lPaper"></span></div>' +
+    '</div></div>';
+  stack.appendChild(folder);
+  var q = function(s){ return folder.querySelector(s); };
+  var e = { folder:folder, lift:q('.lift'), press:q('.press'), sh:q('.sh'), shp:q('.shp'), ink:q('.ink'),
+            inkT:folder.querySelectorAll('.inkT'), fillSvg:q('.fillSvg'), markSvg:q('.markSvg'),
+            body:q('.body'), pshadow:q('.pshadow'), frame:q('.frame'), fill:q('.fill'), mark:q('.mark'),
+            tab:q('.tabname'), lInk:q('.lInk'), lPaper:q('.lPaper') };
+  e.lInk.textContent = e.lPaper.textContent = p.n;
+  e.tab.addEventListener('click', function(){ select(i); });
+  els.push(e);
+});
+var drawerP = document.getElementById('drawerP'), creaseP = document.getElementById('creaseP'), drawerG = document.getElementById('drawerG');
+
+/* ---------------- static geometry (only changes when a harness control changes) ---------------- */
+function applyGeometry(){
+  var a = amp(), th = CFG.tabH, g = CFG.gap, font = FONTS[CFG.font];
+  var ink = CFG.quality > 0 ? 'url(#ink)' : 'none';
+  document.getElementById('inkDisp').setAttribute('scale', (2.4*CFG.quality/100).toFixed(2));
+  document.getElementById('inkTurb').setAttribute('baseFrequency', CFG.grain);
+  document.getElementById('inkDispT').setAttribute('scale', (2.4*CFG.quality/100).toFixed(2));
+  document.getElementById('inkTurbT').setAttribute('baseFrequency', CFG.grain);
+  var hp = document.getElementById('hatch'), hb = document.getElementById('hatchBg');
+  hp.setAttribute('width', CFG.hatch); hp.setAttribute('height', CFG.hatch);
+  hb.setAttribute('width', CFG.hatch); hb.setAttribute('height', CFG.hatch);
+  document.getElementById('hatchLine').setAttribute('d', 'M0.5 0 L0.5 '+CFG.hatch);
+
+  var py0 = g + 8, py1 = windowH() + th + 22;           // panel starts under the next folder's sliver, ends behind the shelf
+
+  els.forEach(function(e, i){
+    var W = widthOf(i), L = CX - W/2, R = CX + W/2;
+    var tw = W*CFG.tabW/100, m = W*0.04, tl = L + m + PEOPLE[i].col*(W - 2*m - tw)/2;
+    var dx = Math.min(th / Math.tan(CFG.slant*Math.PI/180), tw*0.34);
+    // one continuous edge: flat · concave fillet · slanted rise · convex corner · flat top · mirror · flat
+    var pts = [[L,0],[tl,0],[tl+dx,-th],[tl+tw-dx,-th],[tl+tw,0],[R,0],[R,BODY],[L,BODY]];
+    var cs = corners(jit(pts, i*13+1, a), [CFG.sheetRadius, CFG.fillet, CFG.tabRadius, CFG.tabRadius, CFG.fillet, CFG.sheetRadius, 0, 0]);
+    var bodyD = ser(cs, [0,1,2,3,4,5,6,7]);
+
+    e.ink.style.filter = ink;
+    var inkT = CFG.quality > 0 ? 'url(#inkTab)' : 'none';
+    e.inkT.forEach(function(gg){ gg.style.filter = inkT; });
+    e.body.setAttribute('d', bodyD); e.body.style.fill = 'var(--paper)'; e.body.style.strokeWidth = CFG.stroke;
+    e.shp.setAttribute('d', bodyD); e.shp.setAttribute('transform', 'translate(0 3)');
+    e.fill.setAttribute('d', ser(cs, [1,2,3,4])); e.fill.style.fill = 'var(--ink)'; e.fill.style.stroke = 'none';
+
+    var px = L + 13, pw = W - 26, ph = py1 - py0;
+    e.pshadow.setAttribute('d', CFG.shadow > 0 ? shape(rectPts(px + CFG.shadow, py0 + CFG.shadow, pw, ph), [0,0,0,0], i*13+4) : 'M0 0');
+    e.pshadow.style.fill = 'var(--ink)'; e.pshadow.style.stroke = 'none';
+    e.frame.setAttribute('d', shape(rectPts(px, py0, pw, ph), [0,0,0,0], i*13+5));
+    e.frame.style.fill = CFG.preview === 'shaded' ? 'url(#hatch)' : 'var(--paper)';
+    e.frame.style.strokeWidth = (CFG.stroke*0.75).toFixed(2);
+
+    // unread mark sits at the right end of the tab top; the label box gives up that space so they never touch
+    var mk = PEOPLE[i].unread ? 11 : 0;
+    e.mark.setAttribute('d', mk ? shape(rectPts(tl+tw-dx-8, -th*0.62, 5, 6), [0,0,0,0], i*13+9) : 'M0 0');
+    e.mark.style.fill = '#D8422C'; e.mark.style.stroke = 'none';
+
+    var s = e.tab.style;
+    s.left = (tl+dx) + 'px'; s.width = (tw - 2*dx - mk) + 'px'; s.top = (-th) + 'px'; s.height = th + 'px'; s.lineHeight = th + 'px';
+    s.fontSize = (CFG.tabSize * W/WF).toFixed(2) + 'px'; s.fontFamily = font[0]; s.fontWeight = font[1];
+    e.lInk.style.color = 'var(--ink)'; e.lPaper.style.color = 'var(--paper)';
+    e.press.style.transformOrigin = (tl + tw/2).toFixed(1) + 'px ' + (-th/2).toFixed(1) + 'px';
+  });
+
+  /* drawer front: wider than the cabinet, top lip (its top surface, back edge narrower), sides converging downward */
+  var hw = WF/2 + CFG.overhang, lip = CFG.lip, inset = lip*0.9, H = 420, cv = CFG.converge/100*H;
+  drawerG.style.filter = ink;
+  // drawn in drawer-local coords (y = 0 at the lip) so it stays inside the shared ink filter region
+  document.getElementById('drawer').style.top = BELT + 'px';
+  drawerP.setAttribute('d', shape([
+    [CX-hw+inset, 0], [CX+hw-inset, 0], [CX+hw, lip], [CX+hw-cv, lip+H], [CX-hw+cv, lip+H], [CX-hw, lip]
+  ], [2,2,1.5,0,0,1.5], 101));
+  drawerP.style.fill = 'var(--paper)'; drawerP.style.strokeWidth = CFG.stroke;
+  creaseP.setAttribute('d', lip > 0 ? polyline([[CX-hw+1, lip],[CX+hw-1, lip]], 103) : 'M0 0');
+  creaseP.style.strokeWidth = (CFG.stroke*0.8).toFixed(2);
+
+  comp.style.width = CW + 'px'; comp.style.height = compH() + 'px';
+  fit();
+  document.getElementById('out').value = JSON.stringify(CFG, null, 1);
+}
+
+/* ---------------- motion ---------------- */
+var mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches:false };
+function reduced(){ return CFG.motion === 'reduced' || (CFG.motion === 'auto' && mq.matches); }
+var lastY = [];
+
+/* Spring engine (default). SwiftUI-style spring(duration, bounce): ω = 2π/duration, ζ = 1 − bounce.
+   Solved analytically, so it is frame-rate independent, and a retarget carries the folder's current
+   position AND velocity into the new spring — interruptions redirect instead of restarting from rest. */
+var S = [], rafId = 0;
+function sParams(){ return { w: 2*Math.PI/(CFG.duration/1000), z: Math.max(0.05, Math.min(1, 1 - CFG.bounce)) }; }
+function sEval(st, now){
+  var t = Math.max(0, now - st.t0), w = st.w, z = st.z, x0 = st.x0, v0 = st.v0, x, v;
+  if(z < 1){
+    var wd = w*Math.sqrt(1 - z*z), e = Math.exp(-z*w*t), B = (v0 + z*w*x0)/wd, c = Math.cos(wd*t), sn = Math.sin(wd*t);
+    x = e*(x0*c + B*sn); v = e*((B*wd - z*w*x0)*c - (x0*wd + z*w*B)*sn);
+  } else {
+    var e2 = Math.exp(-w*t); x = (x0 + (v0 + w*x0)*t)*e2; v = (v0 - w*(v0 + w*x0)*t)*e2;
+  }
+  return { y: st.target + x, v: v };
+}
+function sRetarget(i, target, at){
+  var cur = S[i] ? sEval(S[i], at) : { y: target, v: 0 }, P = sParams();
+  S[i] = { target: target, x0: cur.y - target, v0: cur.v, t0: at, w: P.w, z: P.z, rest: false, pending: null };
+}
+function sTick(ts){
+  var now = ts/1000, busy = false;
+  for(var i=0;i<N;i++){
+    var st = S[i]; if(!st) continue;
+    if(st.pending && now >= st.pending.at){ var pd = st.pending; st.pending = null; sRetarget(i, pd.target, pd.at); st = S[i]; }
+    if(st.rest && !st.pending) continue;
+    var r = sEval(st, now), y = r.y;
+    if(!st.pending && Math.abs(y - st.target) < 0.02 && Math.abs(r.v) < 2){ y = st.target; st.rest = true; } else busy = true;
+    els[i].folder.style.transform = 'translate3d(0,'+y.toFixed(2)+'px,0)';
+  }
+  rafId = busy ? requestAnimationFrame(sTick) : 0;
+}
+
+// Move folders to their slots. Only transform is animated, and every retarget starts from
+// wherever the folder currently is (spring: position + velocity; curve: position).
+function place(snap){
+  var moving = [], i, now = performance.now()/1000;
+  for(i=0;i<N;i++) if(lastY[i] !== targetY(i)) moving.push(i);
+  moving.sort(function(a,b){ return b-a; });                         // front folder first
+  for(i=0;i<N;i++){
+    var st = els[i].folder.style, rank = moving.indexOf(i), y = targetY(i), delay = rank > 0 ? rank*CFG.stagger : 0;
+    if(snap){
+      st.transition = 'none'; st.transform = 'translate3d(0,'+y.toFixed(2)+'px,0)';
+      S[i] = { target:y, x0:0, v0:0, t0:now, w:1, z:1, rest:true, pending:null };
+    } else if(CFG.engine === 'spring'){
+      st.transition = 'none';
+      if(rank >= 0){
+        if(delay > 0){ if(!S[i]) sRetarget(i, lastY[i], now); S[i].pending = { target:y, at: now + delay/1000 }; S[i].rest = false; }
+        else sRetarget(i, y, now);
+      }
+    } else {
+      if(rafId){ cancelAnimationFrame(rafId); rafId = 0; }
+      st.transition = 'transform '+CFG.duration+'ms '+CURVES[CFG.curve]+' '+delay+'ms';
+      st.transform = 'translate3d(0,'+y.toFixed(2)+'px,0)';
+      S[i] = { target:y, x0:0, v0:0, t0:now, w:1, z:1, rest:true, pending:null };
+    }
+    lastY[i] = y;
+  }
+  if(snap){ if(rafId){ cancelAnimationFrame(rafId); rafId = 0; } void stack.offsetHeight; }
+  else if(CFG.engine === 'spring' && !rafId) rafId = requestAnimationFrame(sTick);
+}
+
+// Selected state crossfades in the middle of the motion, never ahead of it.
+function setFills(snap){
+  var tr = snap ? 'none' : 'opacity '+CFG.fillMs+'ms ease '+CFG.fillDelay+'ms';
+  els.forEach(function(e, i){
+    var on = i === sel;
+    [e.fillSvg, e.lInk, e.lPaper, e.markSvg].forEach(function(n){ n.style.transition = tr; });
+    e.fillSvg.style.opacity = on ? 1 : 0;
+    e.lPaper.style.opacity = on ? 1 : 0;
+    e.lInk.style.opacity = on ? 0 : 1;
+    e.markSvg.style.opacity = PEOPLE[i].unread && !readMark[i] ? 1 : 0;
+  });
+}
+
+function matrixOf(el){ var t = getComputedStyle(el).transform; return t && t !== 'none' ? new DOMMatrixReadOnly(t) : new DOMMatrixReadOnly(); }
+function stopAnims(el){ if(el.getAnimations) el.getAnimations().forEach(function(a){ a.cancel(); }); }
+
+// Press feedback: ~80ms down to 0.97, then back. Starts from the current scale so repeat taps don't jump.
+function pressBump(i){
+  var el = els[i].press, s0 = matrixOf(el).a, d = CFG.pressMs;
+  stopAnims(el);
+  if(CFG.press >= 1 || !el.animate) return;
+  el.animate([
+    { transform:'scale('+s0+')', easing:'cubic-bezier(0.3, 0, 0.6, 1)' },
+    { transform:'scale('+CFG.press+')', offset: 1/2.6, easing:'cubic-bezier(0.2, 0.8, 0.3, 1)' },
+    { transform:'scale(1)' }
+  ], { duration: d*2.6 });
+}
+
+// The folder being uncovered rises 2px and its shadow swells, then both settle, over the same 450ms.
+function liftBump(i){
+  var e = els[i];
+  if(!e.lift.animate) return;
+  var y0 = matrixOf(e.lift).f, o0 = parseFloat(getComputedStyle(e.sh).opacity) || 0;
+  stopAnims(e.lift); stopAnims(e.sh);
+  e.lift.animate([
+    { transform:'translateY('+y0+'px)', easing:'cubic-bezier(0.3, 0.7, 0.4, 1)' },
+    { transform:'translateY('+(-CFG.lift)+'px)', offset:0.4, easing:'cubic-bezier(0.5, 0, 0.3, 1)' },
+    { transform:'translateY(0px)' }
+  ], { duration: CFG.duration });
+  e.sh.animate([
+    { opacity:o0, easing:'cubic-bezier(0.3, 0.7, 0.4, 1)' },
+    { opacity:CFG.liftShadow, offset:0.4, easing:'cubic-bezier(0.5, 0, 0.3, 1)' },
+    { opacity:0 }
+  ], { duration: CFG.duration });
+}
+
+// prefers-reduced-motion: snapshot the current stack, snap to the new state underneath, fade the snapshot out.
+function crossfade(){
+  var ghost = stack.cloneNode(true);
+  ghost.removeAttribute('id'); ghost.style.zIndex = 2; ghost.style.pointerEvents = 'none';
+  comp.appendChild(ghost);
+  place(true); setFills(true);
+  var done = function(){ ghost.remove(); };
+  if(ghost.animate) ghost.animate([{opacity:1},{opacity:0}], { duration:150, easing:'linear' }).onfinish = done; else done();
+}
+
+function select(i){
+  if(reduced()){
+    if(i === sel) return;
+    sel = i; readMark[i] = 1; crossfade(); return;
+  }
+  pressBump(i);                       // 0ms: press feedback, no state change yet
+  if(i === sel) return;
+  sel = i; readMark[i] = 1;
+  place(false);                       // 0ms: folders that move start together
+  liftBump(i);                        // 0–450ms: uncovered folder lifts and settles
+  setFills(false);                    // ~150ms: selected fill crossfades in
+}
+
+/* ---------------- fit to window ---------------- */
+var stage = document.getElementById('stage'), fitBox = document.getElementById('fit'), scaler = document.getElementById('scaler');
+function fit(){
+  var h = compH(), aw = Math.max(100, stage.clientWidth - 48), ah = Math.max(100, stage.clientHeight - 48);
+  var s = Math.min(aw/CW, ah/h) * CFG.zoom/100;
+  fitBox.style.width = (CW*s) + 'px'; fitBox.style.height = (h*s) + 'px';
+  scaler.style.transform = 'scale('+s+')';
+}
+
+/* ---------------- harness ---------------- */
+var SPEC = [
+  ['View', [
+    { k:'zoom', l:'Zoom % of fit', min:40, max:200, step:1 }
+  ]],
+  ['Line', [
+    { k:'quality', l:'Line quality', min:0, max:150, step:1, h:'0 = ruler-straight and mechanical · 100 = the current hand-drawn feel · 150 = rougher' },
+    { k:'grain', l:'Ink grain', min:0.01, max:0.12, step:0.005, h:'Tightness of the wobble along each line' },
+    { k:'stroke', l:'Stroke weight', min:0.5, max:3.5, step:0.05 },
+    { k:'font', l:'Type', t:'seg', o:['hand','condensed','mono'] }
+  ]],
+  ['Tabs', [
+    { k:'tabH', l:'Tab height', min:14, max:60, step:1, h:'Reads as a card top seen from above at about 1–1.2× the row gap' },
+    { k:'tabW', l:'Tab width % of card', min:20, max:40, step:0.5 },
+    { k:'slant', l:'Tab slant °', min:35, max:85, step:1, h:'Angle of the rise from horizontal' },
+    { k:'tabRadius', l:'Tab corner radius', min:0, max:14, step:0.5 },
+    { k:'fillet', l:'Tab base fillet', min:0, max:10, step:0.5, h:'Concave curve where the tab leaves the card edge' },
+    { k:'tabSize', l:'Name size', min:9, max:22, step:0.5 },
+    { k:'gap', l:'Row gap', min:14, max:40, step:1 }
+  ]],
+  ['Perspective', [
+    { k:'growth', l:'Depth growth % per card', min:0, max:4, step:0.1, h:'How much wider each nearer folder is. Fixed per folder, so nothing changes width while moving' },
+    { k:'sheetRadius', l:'Card corner radius', min:0, max:14, step:0.5 },
+    { k:'shadow', l:'Content offset shadow', min:0, max:12, step:0.5 },
+    { k:'overhang', l:'Drawer overhang', min:0, max:24, step:0.5, h:'How far the drawer front sticks out past the frontmost card' },
+    { k:'lip', l:'Drawer lip', min:0, max:16, step:0.5, h:'Thickness of the drawer front, seen from above' },
+    { k:'converge', l:'Drawer side taper', min:0, max:20, step:0.5, h:'Sides converge going down (px per 100px)' }
+  ]],
+  ['Bottom panel', [
+    { k:'crop', l:'Crop bottom panel', min:0, max:220, step:1, h:'Visible height of the drawer front below the lip' }
+  ]],
+  ['Content', [
+    { k:'preview', l:'Album cover', t:'seg', o:['shaded','plain'] },
+    { k:'hatch', l:'Shading density', min:3, max:14, step:0.5, h:'Hatch spacing — lower is denser' }
+  ]],
+  ['Motion', [
+    { k:'engine', l:'Engine', t:'seg', o:['spring','curve'], h:'spring keeps velocity through interruptions; curve = CSS transition, cubic-bezier' },
+    { k:'duration', l:'Duration ms', min:200, max:900, step:10 },
+    { k:'bounce', l:'Spring bounce', min:0, max:0.4, step:0.01, h:'Spring only. 0 = critically damped' },
+    { k:'curve', l:'Curve', t:'seg', o:['ios','expo','standard'], h:'Curve engine only. ios = cubic-bezier(0.32, 0.72, 0, 1)' },
+    { k:'stagger', l:'Stagger ms', min:0, max:20, step:1, h:'Per moving folder, front first. 0 keeps the moving folders one rigid block' },
+    { k:'press', l:'Press scale', min:0.9, max:1, step:0.005 },
+    { k:'pressMs', l:'Press ms', min:40, max:160, step:5 },
+    { k:'lift', l:'Lift px', min:0, max:6, step:0.5 },
+    { k:'liftShadow', l:'Lift shadow', min:0, max:0.6, step:0.01 },
+    { k:'fillDelay', l:'Tab fill delay ms', min:0, max:300, step:10 },
+    { k:'fillMs', l:'Tab fill fade ms', min:60, max:300, step:10 },
+    { k:'motion', l:'Motion', t:'seg', o:['auto','full','reduced'], h:'auto follows the OS reduced-motion setting; reduced = 150ms crossfade' }
+  ]]
+];
+var MOTION_KEYS = { engine:1, bounce:1, duration:1, curve:1, stagger:1, press:1, pressMs:1, lift:1, liftShadow:1, fillDelay:1, fillMs:1, motion:1 };
+
+var host = document.getElementById('controls'), inputs = {};
+function changed(k){
+  if(MOTION_KEYS[k]){ document.getElementById('out').value = JSON.stringify(CFG, null, 1); return; }
+  applyGeometry(); place(true); setFills(true);
+}
+SPEC.forEach(function(group){
+  var sec = document.createElement('div'); sec.className = 'sec';
+  var h2 = document.createElement('h2'); h2.textContent = group[0]; sec.appendChild(h2);
+  group[1].forEach(function(s){
+    var row = document.createElement('div'); row.className = 'row';
+    if(s.t === 'seg'){
+      row.innerHTML = '<div class="rt"><b>'+s.l+'</b><span class="val"></span></div><div class="seg"></div>' + (s.h ? '<div class="hint">'+s.h+'</div>' : '');
+      var segHost = row.querySelector('.seg'), val = row.querySelector('.val');
+      var btns = s.o.map(function(opt){
+        var b = document.createElement('button'); b.textContent = opt;
+        b.addEventListener('click', function(){ CFG[s.k] = opt; inputs[s.k].set(opt); changed(s.k); });
+        segHost.appendChild(b); return b;
+      });
+      inputs[s.k] = { set:function(v){ btns.forEach(function(b,i){ b.classList.toggle('on', s.o[i] === v); }); val.textContent = v; } };
+    } else {
+      row.innerHTML = '<div class="rt"><b>'+s.l+'</b><span class="val"></span></div>' +
+        '<input type="range" min="'+s.min+'" max="'+s.max+'" step="'+s.step+'">' + (s.h ? '<div class="hint">'+s.h+'</div>' : '');
+      var ri = row.querySelector('input'), rv = row.querySelector('.val');
+      ri.addEventListener('input', function(){ CFG[s.k] = parseFloat(ri.value); rv.textContent = ri.value; changed(s.k); });
+      inputs[s.k] = { set:function(v){ ri.value = v; rv.textContent = v; } };
+    }
+    sec.appendChild(row);
+  });
+  host.appendChild(sec);
+});
+function sync(){ Object.keys(inputs).forEach(function(k){ inputs[k].set(CFG[k]); }); }
+
+document.getElementById('play').addEventListener('click', function(){ select((sel+1) % N); });
+document.getElementById('stress').addEventListener('click', function(){
+  [5,0,3,1,4,2,5,1,3,0,2].forEach(function(t, k){ setTimeout(function(){ select(t); }, k*70); });
+});
+document.getElementById('reset').addEventListener('click', function(){
+  CFG = Object.assign({}, DEFAULTS); readMark = {}; sync(); applyGeometry(); place(true); setFills(true);
+});
+document.getElementById('copy').addEventListener('click', function(){
+  var ta = document.getElementById('out'); ta.select();
+  try { navigator.clipboard.writeText(ta.value); } catch(e){ try { document.execCommand('copy'); } catch(e2){} }
+});
+
+sync(); applyGeometry(); place(true); setFills(true);
+window.addEventListener('resize', fit);
+window.__lib = { select:select, els:els, applyGeometry:applyGeometry, get sel(){ return sel; }, CFG:function(){ return CFG; } };
+})();
+</script>
+</body>
+</html>
