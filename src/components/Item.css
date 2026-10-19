@@ -1,0 +1,39 @@
+/*
+ * Shared classes used by every item kind's front/back SVG layer and media slot.
+ * Parallel to FlipCard.css/ItemBack.css/Decor.css: not one component's styling, but the
+ * cross-item layer all of Stamp/Note/VoicePostcard/ParcelTag draw on top of.
+ */
+.item-lay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  fill: none;
+  stroke: #111;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.media-slot {
+  position: absolute;
+  overflow: hidden;
+  background: #fff;
+}
+.media-slot img,
+.media-slot video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 55%;
+  display: block;
+}
+.media-chip {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  padding: 1px 4px 0;
+  background: #fff;
+  font-family: var(--font-condensed);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}

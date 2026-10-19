@@ -7,6 +7,14 @@
   padding: 56px 48px 140px;
   box-sizing: border-box;
 }
+.board {
+  position: relative;
+  min-height: 700px;
+  margin-top: 20px;
+}
+.board-item {
+  position: absolute;
+}
 h1 {
   font-size: 40px;
   line-height: 1;
@@ -27,7 +35,7 @@ h2 {
   max-width: 560px;
 }
 .cond {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: var(--font-condensed);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -98,6 +106,35 @@ textarea {
 textarea:focus {
   box-shadow: 0 0 0 3px #11111122;
 }
+input[type='text'] {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 15px;
+  color: #111;
+  background: #fff;
+  border: 1.5px solid #111;
+  border-radius: 6px;
+  padding: 8px 12px;
+  outline: none;
+}
+input[type='text']:focus {
+  box-shadow: 0 0 0 3px #11111122;
+}
+.dev-reroll {
+  font: inherit;
+  font-size: 13px;
+  color: #6b6b6b;
+  background: #fff;
+  border: 1.5px dashed #6b6b6b;
+  border-radius: 999px;
+  padding: 5px 12px 6px;
+  cursor: pointer;
+}
+.dev-reroll:hover {
+  color: #111;
+  border-color: #111;
+}
 .seg {
   display: flex;
   flex-wrap: wrap;
@@ -118,6 +155,17 @@ textarea:focus {
   background: #111;
   color: #fff;
 }
+.seg button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.readout {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.readout.warn {
+  color: #b3361f;
+}
 .upload {
   display: inline-block;
 }
@@ -134,5 +182,15 @@ textarea:focus {
   }
   .page {
     padding: 40px 20px 100px;
+  }
+  .board {
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    min-height: 0;
+  }
+  .board-item {
+    position: static;
   }
 }

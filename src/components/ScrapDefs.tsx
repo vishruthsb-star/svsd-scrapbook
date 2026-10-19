@@ -1,11 +1,12 @@
 import { HATCH_PATTERN_ID, INK_FILTER_ID } from '../utils/filters';
 
 /**
- * The `#ink` displacement filter and `#h-d` hatch pattern used by every <Stamp />.
- * Render this once near the root of the app — SVG filters/patterns are referenced by
- * id via `filter: url(#ink)` / `fill: url(#h-d)`, so a single shared <defs> is enough.
+ * The `#ink` displacement filter and `#h-d` hatch pattern shared by every scrapbook item
+ * (Stamp, Note, VoicePostcard, ParcelTag) and by <Decor />'s tape/clip/corner pieces.
+ * Mount this once near the app root — SVG filters/patterns are referenced by id via
+ * `filter: url(#ink)` / `fill: url(#h-d)`, so a single shared <defs> is enough for everyone.
  */
-export default function StampDefs() {
+export default function ScrapDefs() {
   return (
     <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true">
       <defs>

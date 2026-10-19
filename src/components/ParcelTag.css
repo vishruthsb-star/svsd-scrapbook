@@ -1,0 +1,44 @@
+.tag-favicon-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.tag-favicon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+.tag-hostname {
+  font-size: 10px;
+  line-height: 1.15;
+  text-align: center;
+  padding: 0 4px;
+  word-break: break-word;
+  max-width: 100%;
+}
+.tag-link-row {
+  position: absolute;
+  display: flex;
+  align-items: flex-start;
+  text-decoration: none;
+  color: var(--ink-link);
+  cursor: pointer;
+}
+.tag-link-icon {
+  flex: none;
+  margin-top: 1px;
+}
+.tag-link-label {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.25;
+  text-decoration: underline;
+  word-break: break-word;
+}

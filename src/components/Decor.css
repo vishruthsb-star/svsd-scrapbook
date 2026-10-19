@@ -1,0 +1,14 @@
+.decor-wrap {
+  position: relative;
+  overflow: visible;
+  flex: none;
+}
+.decor-piece {
+  position: absolute;
+  overflow: visible;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* decor is "stuck on top" visually but must never intercept the card's flip tap */
+  pointer-events: none;
+}

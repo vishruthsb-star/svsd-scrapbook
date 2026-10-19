@@ -1,5 +1,11 @@
 :root {
   color-scheme: light;
+  /* house fonts, declared once — every component references these instead of repeating
+     the font stacks (fonts themselves are imported once in main.tsx via @fontsource) */
+  --font-hand: 'Shantell Sans', 'Comic Sans MS', cursive;
+  --font-condensed: 'Barlow Condensed', sans-serif;
+  /* link color used wherever an item shows a real hyperlink (e.g. ParcelTag's link line) */
+  --ink-link: #2e6be6;
 }
 
 html,
@@ -10,7 +16,7 @@ body {
 }
 
 body {
-  font-family: 'Shantell Sans', 'Comic Sans MS', cursive;
+  font-family: var(--font-hand);
   font-weight: 300;
 }
 

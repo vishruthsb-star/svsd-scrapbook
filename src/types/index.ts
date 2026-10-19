@@ -32,6 +32,59 @@ export interface StampGeometry {
   censorScribble: string;
 }
 
+export interface NoteGeometry {
+  fillD: string;
+  outline: string;
+  /** torn-edge zigzag border notches, alternating red/blue, deterministic (not seed-random) */
+  redD: string;
+  blueD: string;
+  backLines: string;
+  censorFill: string;
+  censorScribble: string;
+}
+
+export interface VoiceGeometry {
+  fillD: string;
+  outline: string;
+  divider: string;
+  chipLines: string;
+  scalBox: string;
+  playTriangle: string;
+  /** one path segment per waveform bar, index-aligned; slice by playback progress to reveal */
+  bars: string[];
+  backLines: string;
+  censorFill: string;
+  censorScribble: string;
+}
+
+export interface TagLayout {
+  W: number;
+  H: number;
+  slotX: number;
+  slotY: number;
+  slotW: number;
+  slotH: number;
+  linkX: number;
+  linkY: number;
+  linkW: number;
+  underlineY: number;
+  clamped: boolean;
+}
+
+export interface TagGeometry {
+  fillD: string;
+  outline: string;
+  /** punched-hole grommet rings, fixed geometry (not seed-random) */
+  holes: string;
+  /** string loop curling off the top of the tag, fixed geometry (not seed-random) */
+  string: string;
+  slotFrame: string;
+  underline: string;
+  backLines: string;
+  censorFill: string;
+  censorScribble: string;
+}
+
 export interface SeededRng {
   R: () => number;
   J: (amplitude: number) => number;
@@ -40,3 +93,45 @@ export interface SeededRng {
   poly: (pts: Array<[number, number]>) => string;
   scal: (x: number, y: number, w: number, h: number, r: number) => string;
 }
+
+/* ------------------------------------------------------------------
+   ScrapItem: the app-level data model for the four scrapbook item kinds.
+   Each item component (Stamp, Note, VoicePostcard, ParcelTag) renders one kind.
+------------------------------------------------------------------ */
+export type ScrapViewer = StampViewer;
+
+interface ScrapItemCommon {
+  id: string;
+  seed: number;
+  viewer: ScrapViewer;
+  senderName: string;
+  date: string;
+  caption?: string;
+}
+
+export interface StampScrapItem extends ScrapItemCommon {
+  kind: 'stamp';
+  mediaSrc: string;
+  mediaType: 'image' | 'video';
+}
+
+export interface NoteScrapItem extends ScrapItemCommon {
+  kind: 'note';
+  text: string;
+}
+
+export interface VoiceScrapItem extends ScrapItemCommon {
+  kind: 'voice';
+  audioSrc?: string;
+  durationSec?: number;
+}
+
+export interface TagScrapItem extends ScrapItemCommon {
+  kind: 'tag';
+  url: string;
+  linkLabel: string;
+  previewSrc?: string;
+  previewType?: 'image' | 'video';
+}
+
+export type ScrapItem = StampScrapItem | NoteScrapItem | VoiceScrapItem | TagScrapItem;
