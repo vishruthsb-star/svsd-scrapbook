@@ -4,22 +4,35 @@
      the font stacks (fonts themselves are imported once in main.tsx via @fontsource) */
   --font-hand: 'Shantell Sans', 'Comic Sans MS', cursive;
   --font-condensed: 'Barlow Condensed', sans-serif;
-  /* Figma's header type uses 'SF Pro', which isn't a distributable web font — this stack
-     renders as real SF Pro on Apple platforms and falls back to each OS's native UI font
-     elsewhere, matching the design's intent ("system UI type") rather than its literal name. */
-  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* UI sans used for the header lines and the invite section's two Inter-styled lines
+     (Figma node 125:1841 + InviteSection.dc.html both specify Inter). Loaded once in
+     main.tsx via @fontsource-variable/inter. */
+  --font-inter: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   /* link color used wherever an item shows a real hyperlink (e.g. ParcelTag's link line) */
   --ink-link: #2e6be6;
   /* Header text colors (Figma node 125:1841) — distinct from --ink-link and the hand-drawn
      ink colors in utils/filters.ts, which are warmer/softer than this UI text's pure black/grey. */
   --color-text-muted: #a1a1a1;
   --color-text-strong: #000000;
+
+  /* Global safe-area system (ScreenShell) — change these three values here only, never in
+     an individual screen. --screen-bg is the one place the app's paper background color is
+     declared as a CSS variable; components that hardcode this hex predate this token. */
+  --safe-top: 62px;
+  --safe-bottom: 32px;
+  --safe-side: 24px;
+  --screen-bg: #faf7f0;
+  /* The Figma frame width every mobile screen is designed at (node 125:1841's parent frame) —
+     ScreenShell centers at this width on wide viewports. */
+  --screen-frame-width: 402px;
 }
 
 html,
 body {
   margin: 0;
-  background: #ffffff;
+  /* Neutral letterbox color shown beside a centered ScreenShell on wide viewports. Gallery
+     routes paint their own full-bleed background over this, so it never shows there. */
+  background: #1a1a1a;
   color: #111111;
 }
 

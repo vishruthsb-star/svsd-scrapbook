@@ -1,7 +1,16 @@
 import type { LibraryPerson } from '@/components/Library';
+import type { CanvasStyle } from '@/scrapbook/canvas';
 
 export const OWNER_NAME = 'Vishruth';
 export const OWNER_HANDLE = 'vishruth';
+
+/**
+ * Which scrapbook canvas style (torn-strata / theme-spreads / envelopes-lip / paper-wheel)
+ * the owner's page currently uses. No real "scrapbook page" screen exists yet (only
+ * HomeScreen), so this is the minimal model for that choice — swap for a persisted/
+ * real value later without touching the components that read it.
+ */
+export const DEFAULT_SCRAPBOOK_STYLE: CanvasStyle = 'torn-strata';
 
 export const LIBRARY_PEOPLE: LibraryPerson[] = [
   { name: 'priya', col: 1 },

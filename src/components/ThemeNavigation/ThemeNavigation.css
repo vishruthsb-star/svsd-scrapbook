@@ -1,0 +1,156 @@
+/* Faithful port of references/theme-navigation.html (Figma node 118:1767).
+   Same track/pill/shadow/motion system as HomeBottomNavigation; options here hug their
+   label (12px left + right padding). */
+
+/* Inter Regular (latin), extracted programmatically from the reference's embedded base64
+   woff2 (src/assets/fonts/inter-latin-400.woff2) so the hug widths stay pixel-identical to
+   the original everywhere this ships, independent of whatever Inter build the app loads
+   elsewhere (see @fontsource-variable/inter in main.tsx, which names its family
+   "Inter Variable" rather than "Inter"). */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('../../assets/fonts/inter-latin-400.woff2') format('woff2');
+}
+
+.theme-navigation {
+  /* Track (Frame 14) */
+  --tn-track-bg: #e6e1d5;
+  --tn-track-border: #ddd;
+  --tn-track-border-w: 0.5px;
+  --tn-track-pad: 4.5px;
+  --tn-gap: 4px;
+  --tn-radius: 360px;
+
+  /* Option (hugs text) */
+  --tn-item-h: 44px;
+  --tn-item-pad-x: 12px;
+  --tn-pill-bg: #ffffff;
+
+  /* Label: Inter Regular 16 / 150%, tracking -3% */
+  --tn-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --tn-font-size: 16px;
+  --tn-line-height: 1.5;
+  --tn-letter-spacing: -0.48px;
+  --tn-text: #494444;
+
+  /* Pill shadow: 5 stacked drop shadows, color rgb(157,148,128) */
+  --tn-shadow-rgb: 157, 148, 128;
+  --tn-pill-shadow:
+    0 3px 6px rgba(var(--tn-shadow-rgb), 0.1),
+    0 10px 10px rgba(var(--tn-shadow-rgb), 0.09),
+    0 24px 14px rgba(var(--tn-shadow-rgb), 0.05),
+    0 42px 17px rgba(var(--tn-shadow-rgb), 0.01),
+    0 65px 18px rgba(var(--tn-shadow-rgb), 0);
+
+  /* Motion (identical to HomeBottomNavigation) */
+  --tn-glide-ms: 520ms;
+  --tn-glide-ease: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --pill-x: 0px;
+  --pill-w: 98px; /* overwritten by placePill() to hug the active label */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tn-gap);
+  padding: var(--tn-track-pad);
+  background: var(--tn-track-bg);
+  /* 0.5px INSIDE stroke, drawn as an inset ring so it can't round up to 1px */
+  box-shadow: inset 0 0 0 var(--tn-track-border-w) var(--tn-track-border);
+  border-radius: var(--tn-radius);
+  overflow: visible; /* the pill's shadow must spill outside the track */
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* The white pill that glides and resizes between options */
+.theme-navigation__pill {
+  position: absolute;
+  top: var(--tn-track-pad);
+  left: 0;
+  width: var(--pill-w);
+  height: var(--tn-item-h);
+  background: var(--tn-pill-bg);
+  border-radius: var(--tn-radius);
+  box-shadow: var(--tn-pill-shadow);
+  transform: translate3d(var(--pill-x), 0, 0);
+  will-change: transform, width;
+  pointer-events: none;
+}
+
+/* Transitions switch on only after the first measurement, so it never animates in from 0 */
+.theme-navigation.is-ready .theme-navigation__pill {
+  transition:
+    transform var(--tn-glide-ms) var(--tn-glide-ease),
+    width var(--tn-glide-ms) var(--tn-glide-ease);
+}
+
+/* Options */
+.theme-navigation__item {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--tn-item-h);
+  padding: 0 var(--tn-item-pad-x);
+  margin: 0;
+  border: 0;
+  border-radius: var(--tn-radius);
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+
+  font-family: var(--tn-font);
+  font-size: var(--tn-font-size);
+  font-weight: 400;
+  font-style: normal;
+  font-optical-sizing: none;
+  line-height: var(--tn-line-height);
+  letter-spacing: var(--tn-letter-spacing);
+  color: var(--tn-text);
+  white-space: nowrap;
+}
+
+.theme-navigation__item:focus-visible {
+  box-shadow: 0 0 0 2px rgba(73, 68, 68, 0.55);
+}
+
+.theme-navigation__label {
+  display: block;
+  transform-origin: center;
+  transition: transform 280ms var(--tn-glide-ease);
+}
+
+/* Active + press behaviour */
+.theme-navigation__item[aria-selected='true'] .theme-navigation__label {
+  animation: tn-label-settle 520ms var(--tn-glide-ease);
+}
+
+.theme-navigation__item:active .theme-navigation__label {
+  transform: scale(0.94);
+}
+
+@keyframes tn-label-settle {
+  0% {
+    transform: scale(0.94);
+  }
+  60% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-navigation.is-ready .theme-navigation__pill {
+    transition-duration: 1ms;
+  }
+  .theme-navigation__item[aria-selected='true'] .theme-navigation__label {
+    animation: none;
+  }
+}

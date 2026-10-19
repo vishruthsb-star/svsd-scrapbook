@@ -1,0 +1,68 @@
+/* Faithful port of references/scrapbook-header.html.
+   Frame 13 (118:1744) — 354 x 61. */
+
+.scrapbook-header {
+  width: 354px;
+  height: 61px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 8px 8px 16px;
+
+  background: #ffffff;
+  border: 0.5px solid #ececec;
+  border-radius: 360px;
+
+  /* 5 stacked Figma drop shadows, all rgb(143,143,143), spread 0. Top layer first. */
+  box-shadow:
+    0px 7px 7.5px rgba(143, 143, 143, 0.1),
+    0px 27px 13.5px rgba(143, 143, 143, 0.09),
+    0px 60px 18px rgba(143, 143, 143, 0.05),
+    0px 107px 21.5px rgba(143, 143, 143, 0.01),
+    0px 168px 23.5px rgba(143, 143, 143, 0);
+}
+
+.scrapbook-header-back {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* co-arrow-left-q49 — 24 x 24 */
+.scrapbook-header-icon {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  display: block;
+  overflow: visible;
+}
+
+/* "vishruth's scrapbook" — Inter Regular 16 / 150%, tracking -3% */
+.scrapbook-header-title {
+  margin: 0;
+  font-family: var(--font-inter);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: -0.48px;
+  color: #464646;
+  white-space: nowrap;
+  flex: none;
+}
+
+/* Rectangle 4 — 44 x 44, fully rounded. Gradient is the reference's placeholder fill;
+   an <img> swaps in with object-fit: cover when avatarSrc is given. */
+.scrapbook-header-avatar {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 360px;
+  object-fit: cover;
+  background:
+    radial-gradient(60% 50% at 62% 30%, #b9a58f 0%, rgba(185, 165, 143, 0) 70%),
+    linear-gradient(165deg, #46556e 0%, #7a5f50 55%, #1e1b20 100%);
+}

@@ -1,0 +1,34 @@
+/* Tokens copied from src/components/AddFab/addFabEngine.ts's `.addfab__pill` /
+   `.addfab__pill:focus-visible` CSS rules, minus the icon/gap/pointer-handling (padding
+   changes from "0 22px 0 16px" to "0 22px" since there's no icon to leave the extra 6px
+   left padding for). */
+.pill-button {
+  height: 52px;
+  padding: 0 22px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  color: #464646;
+  border: 0.5px solid #ececec;
+  border-radius: 360px;
+  box-shadow:
+    0 7px 7.5px rgba(143, 143, 143, 0.1),
+    0 27px 13.5px rgba(143, 143, 143, 0.09),
+    0 60px 18px rgba(143, 143, 143, 0.05),
+    0 107px 21.5px rgba(143, 143, 143, 0.01),
+    0 168px 23.5px rgba(143, 143, 143, 0);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.48px;
+  white-space: nowrap;
+  cursor: pointer;
+  outline: none;
+}
+
+.pill-button:focus-visible {
+  outline: 2px solid #464646;
+  outline-offset: 3px;
+}

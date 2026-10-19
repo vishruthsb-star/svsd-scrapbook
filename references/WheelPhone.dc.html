@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Shantell+Sans:wght@300..500&family=Barlow+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+</helmet>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="ink" filterUnits="userSpaceOnUse" x="-300" y="-300" width="2400" height="2400"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="3"></feTurbulence><feDisplacementMap in="SourceGraphic" scale="2.4"></feDisplacementMap></filter>
+  <pattern id="wp-dot" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#F6F1E6"></rect><circle cx="8" cy="8" r="1.1" fill="#111111" fill-opacity="0.26"></circle></pattern>
+  <filter id="wp-grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="2" result="n"></feTurbulence><feColorMatrix in="n" type="matrix" values="0 0 0 0 0.42  0 0 0 0 0.36  0 0 0 0 0.28  0 0 0 0.24 0" result="g"></feColorMatrix><feComposite in="g" in2="SourceGraphic" operator="in"></feComposite></filter>
+  <filter id="wp-rubber" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="4" result="n"></feTurbulence><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -7 4.6" result="m"></feColorMatrix><feComposite in="SourceGraphic" in2="m" operator="in" result="c"></feComposite><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="9" result="w"></feTurbulence><feDisplacementMap in="c" in2="w" scale="2.2" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
+  <pattern id="tp-kraft" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#D7BC8F"></rect><circle cx="2" cy="2" r="0.6" fill="#7A5A30" fill-opacity="0.3"></circle><circle cx="6" cy="5" r="0.5" fill="#FFFFFF" fill-opacity="0.35"></circle></pattern>
+  <pattern id="tp-paper" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#F3EEE3"></rect><path d="M0 9.5H10" stroke="#8FB0CC" stroke-opacity="0.45" stroke-width="1"></path></pattern>
+  <pattern id="tp-red" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#D8422C"></rect><circle cx="2" cy="3" r="0.6" fill="#FFFFFF" fill-opacity="0.18"></circle></pattern>
+  <pattern id="tp-air" width="24" height="24" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="24" height="24" fill="#FAF7F0"></rect><rect width="6" height="24" fill="#D8422C"></rect><rect x="12" width="6" height="24" fill="#2E6BE6"></rect></pattern>
+  <pattern id="tp-check" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#FAF7F0"></rect><rect width="8" height="8" fill="#2E6BE6" fill-opacity="0.6"></rect><rect x="8" y="8" width="8" height="8" fill="#2E6BE6" fill-opacity="0.6"></rect></pattern>
+</defs></svg>
+<div style="width:410px;height:864px;padding:10px;box-sizing:border-box;background:#0b0b0b;border-radius:58px;font-family:'Shantell Sans',cursive;font-weight:300">
+  <div style="position:relative;width:390px;height:844px;border-radius:48px;background:#F6F1E6;color:#111111">
+    <div style="position:absolute;inset:0;border-radius:48px;overflow:hidden;user-select:none">
+      <svg width="390" height="844" style="position:absolute;inset:0"><rect width="390" height="844" fill="url(#wp-dot)"></rect></svg>
+      <div style="position:absolute;left:28px;top:136px;display:flex;align-items:baseline;gap:12px">
+        <div style="font-size:40px;line-height:1">{{ dMonth }}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:.18em">{{ dYear }}</div>
+      </div>
+      <sc-if value="{{ dQuiet }}">
+        <div style="position:absolute;left:95px;top:{{ qTop }}px;width:200px;height:{{ qH }}px;display:flex;align-items:center;justify-content:center">
+          <svg width="200" height="{{ qH }}" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:1.4;stroke-dasharray:6 7"><g style="filter:url(#ink)"><rect x="3" y="3" width="194" height="{{ qHi }}"></rect></g></svg>
+          <div style="position:relative;font-size:17px;color:#5E594F">a quiet month</div>
+        </div>
+      </sc-if>
+      <sc-for list="{{ items }}" as="it" hint-placeholder-count="2">
+        <div style="position:absolute;left:{{ it.x }}px;top:{{ it.y }}px;opacity:{{ it.op }};transform:{{ it.tf }};pointer-events:{{ it.pe }};transition:opacity 300ms ease, transform 300ms cubic-bezier(.2,.8,.2,1)"><dc-import name="Item" type="{{ it.type }}" text="{{ it.text }}" label="{{ it.label }}" city="{{ it.city }}" date="{{ it.date }}" year="{{ it.year }}" denom="{{ it.denom }}" dur="{{ it.dur }}" src="{{ it.src }}" from="{{ it.from }}" viewer="other" attach="{{ it.attach }}" field="#F6F1E6" rot="{{ it.rot }}" zoom="{{ it.z }}" hint-size="{{ it.hint }}"></dc-import></div>
+      </sc-for>
+
+      <sc-if value="{{ isPaper }}"><div style="position:absolute;left:184px;top:{{ tabTop }}px;width:22px;height:34px;background:#D7BC8F;transform:rotate(-3deg);box-shadow:0 1px 2px rgba(60,40,20,.2)"></div></sc-if>
+
+      <div style="position:absolute;left:{{ wx }}px;top:{{ wy }}px;width:{{ wd }}px;height:{{ wd }}px;border-radius:50%;touch-action:none;cursor:grab" onPointerDown="{{ down }}" onPointerMove="{{ move }}" onPointerUp="{{ up }}" onPointerLeave="{{ up }}">
+        <sc-if value="{{ isDot }}"><svg width="{{ wd }}" height="{{ wd }}" style="position:absolute;inset:0;overflow:visible"><circle cx="{{ C }}" cy="{{ C }}" r="{{ outerR }}" fill="#FFFFFF" style="filter:drop-shadow(0 -4px 10px rgba(143,143,143,.22))"></circle></svg></sc-if>
+        <sc-if value="{{ isPaper }}"><svg width="{{ wd }}" height="{{ wd }}" style="position:absolute;inset:0;overflow:visible;filter:drop-shadow(0 -3px 8px rgba(70,50,20,.16))"><path d="{{ pUnder }}" fill="#E8DFCE" transform="translate(6 8)"></path></svg></sc-if>
+
+        <div style="position:absolute;inset:0;transform:rotate({{ dRot }}deg);transform-origin:50% 50%;transition:{{ dTr }};filter:{{ layerFilter }}">
+          <sc-if value="{{ isDot }}">
+            <svg width="{{ wd }}" height="{{ wd }}" style="position:absolute;inset:0;overflow:visible">
+              <g style="filter:url(#ink)" fill="none" stroke="#111111" stroke-linecap="round">
+                <circle cx="{{ C }}" cy="{{ C }}" r="{{ radius }}" stroke-width="1.4"></circle>
+                <path d="{{ tMinor }}" stroke-width="1"></path>
+                <path d="{{ tMajor }}" stroke-width="1.8"></path>
+              </g>
+              <sc-for list="{{ months }}" as="mo" hint-placeholder-count="5"><circle cx="{{ mo.dx }}" cy="{{ mo.dy }}" r="3.6" fill="{{ mo.dotFill }}" stroke="#111111" stroke-width="1.3"></circle></sc-for>
+            </svg>
+          </sc-if>
+          <sc-if value="{{ isPaper }}">
+            <svg width="{{ wd }}" height="{{ wd }}" style="position:absolute;inset:0;overflow:visible">
+              <path d="{{ pFibre }}" fill="#FFFFFF"></path>
+              <path d="{{ pTop }}" fill="#FBF8F1"></path>
+              <path d="{{ pTop }}" fill="#000000" filter="url(#wp-grain)"></path>
+            </svg>
+          </sc-if>
+          <sc-if value="{{ isStamp }}">
+            <svg width="{{ wd }}" height="{{ wd }}" style="position:absolute;inset:0;overflow:visible">
+              <g fill="none" stroke="#111111" opacity="0.22" transform="translate(1.4 1)"><circle cx="{{ C }}" cy="{{ C }}" r="{{ sOut }}" stroke-width="2.4"></circle><circle cx="{{ C }}" cy="{{ C }}" r="{{ sIn }}" stroke-width="2.4"></circle><path d="{{ sDiv }}" stroke-width="2"></path></g>
+              <sc-for list="{{ months }}" as="mo" hint-placeholder-count="5"><path d="{{ mo.sector }}" fill="{{ mo.secFill }}"></path></sc-for>
+              <g fill="none" stroke="#111111" stroke-linecap="round">
+                <circle cx="{{ C }}" cy="{{ C }}" r="{{ sOut }}" stroke-width="2.6"></circle>
+                <circle cx="{{ C }}" cy="{{ C }}" r="{{ sIn }}" stroke-width="2.6"></circle>
+                <circle cx="{{ C }}" cy="{{ C }}" r="{{ sIn2 }}" stroke-width="1.2"></circle>
+                <path d="{{ sDiv }}" stroke-width="2.2"></path>
+                <path d="{{ sTicks }}" stroke-width="1.6"></path>
+              </g>
+            </svg>
+          </sc-if>
+          <sc-if value="{{ isTape }}">
+            <sc-for list="{{ strips }}" as="st" hint-placeholder-count="5">
+              <div style="position:absolute;left:{{ st.left }}px;top:{{ st.top }}px;width:{{ st.L }}px;height:38px;transform-origin:{{ st.ox }}px {{ st.oy }}px;transform:{{ st.tf }};transition:transform 200ms ease, filter 200ms ease;filter:{{ st.filt }};z-index:{{ st.zi }}">
+                <svg width="{{ st.L }}" height="38" style="position:absolute;inset:0;overflow:visible;mix-blend-mode:multiply;opacity:0.88"><path d="{{ st.d }}" fill="url(#tp-{{ st.pat }})"></path></svg>
+              </div>
+            </sc-for>
+          </sc-if>
+          <sc-for list="{{ months }}" as="mo" hint-placeholder-count="5">
+            <div style="position:absolute;left:{{ mo.lx }}px;top:{{ mo.ly }}px;width:90px;height:28px;transform-origin:45px {{ mo.lo }}px;transform:rotate({{ mo.a }}deg);z-index:30;cursor:pointer;display:flex;align-items:center;justify-content:center" onClick="{{ mo.pick }}">
+              <div style="position:relative;display:flex;align-items:center;gap:3px;transform:scale({{ mo.ps }});transition:{{ mo.pTr }};font-family:{{ mo.ff }};font-weight:{{ mo.fw }};font-size:{{ mo.fs }}px;letter-spacing:{{ mo.ls }}px;color:{{ mo.col }};background:{{ mo.bg }};padding:0 4px;border-radius:2px;white-space:nowrap;line-height:1.2">
+                <div style="position:absolute;left:-14px;right:-14px;top:-10px;bottom:-10px;border-radius:50%;background:radial-gradient(closest-side, rgba(17,17,17,.55), rgba(17,17,17,0));filter:blur(3px);opacity:{{ mo.bloom }};transition:opacity 320ms ease-out;pointer-events:none"></div>
+                <span style="position:relative">{{ mo.label }}</span>
+                <sc-if value="{{ mo.penMark }}"><svg width="10" height="10" style="position:relative;overflow:visible;fill:none;stroke:#111111;stroke-width:1.5;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M0 5 L10 5 M5 0 L5 10 M1.5 1.5 L8.5 8.5 M8.5 1.5 L1.5 8.5"></path></g></svg></sc-if>
+                <sc-if value="{{ mo.underline }}"><svg width="40" height="6" style="position:absolute;left:4px;bottom:-5px;overflow:visible;fill:none;stroke:#111111;stroke-width:1.4;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M0 3 C10 1 24 5 40 2"></path></g></svg></sc-if>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <svg width="390" height="844" style="position:absolute;inset:0;overflow:visible;pointer-events:none">
+        <sc-if value="{{ isDot }}"><path d="{{ nLine }}" stroke="#D8422C" stroke-width="2.6" stroke-linecap="round"></path><path d="{{ nTri }}" fill="#D8422C"></path></sc-if>
+        <sc-if value="{{ isPaper }}"><g style="filter:url(#ink)"><path d="{{ nTick }}" fill="none" stroke="#D8422C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></g></sc-if>
+        <sc-if value="{{ isStamp }}"><path d="{{ nStamp }}" fill="#111111" style="filter:url(#wp-rubber)"></path></sc-if>
+        <sc-if value="{{ isTape }}"><g style="filter:url(#ink)"><path d="{{ nCaret }}" fill="none" stroke="#D8422C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></g></sc-if>
+      </svg>
+      <sc-if value="{{ isStamp }}">
+        <div style="position:absolute;left:0;right:0;top:{{ roTop }}px;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:'Barlow Condensed',sans-serif;color:#111111;filter:url(#wp-rubber);pointer-events:none">
+          <div style="font-weight:500;font-size:11px;letter-spacing:.26em">RECEIVED</div>
+          <div style="font-weight:600;font-size:24px;letter-spacing:.06em;line-height:1">{{ roText }}</div>
+        </div>
+      </sc-if>
+      <div style="position:absolute;left:128px;bottom:8px;width:134px;height:5px;border-radius:3px;background:#111111;pointer-events:none"></div>
+    </div>
+    <div style="position:absolute;top:17px;left:38px;z-index:50;font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:15px">9:41</div>
+    <div style="position:absolute;top:52px;left:37.5px;z-index:50"><dc-import name="ScrapbookHeader" hint-size="315px,61px"></dc-import></div>
+    <sc-if value="{{ hasFab }}"><dc-import name="AddFab" placement="{{ fabPlacement }}" x="{{ fabX }}" y="{{ fabY }}" hint-size="390px,844px" style="position:absolute;left:0;top:0;width:390px;height:844px;z-index:60;pointer-events:none"></dc-import></sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:410,&quot;height&quot;:864},&quot;material&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dot&quot;,&quot;paper&quot;,&quot;stamp&quot;,&quot;tape&quot;],&quot;default&quot;:&quot;paper&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;radius&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:140,&quot;max&quot;:320,&quot;step&quot;:1,&quot;default&quot;:246,&quot;tsType&quot;:&quot;number&quot;},&quot;rise&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:40,&quot;max&quot;:300,&quot;step&quot;:1,&quot;default&quot;:198,&quot;tsType&quot;:&quot;number&quot;},&quot;fab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;bc&quot;,&quot;br&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { di: null, ddx: 0, ddrag: false, press: 0 };
+  IDS = ['beer', 'quiet', 'leh', 'film', 'v1', 'beach', 'dog', 'buses', 'soup', 'v2', 'anyway', 'snow'];
+  IT = {
+    beer: { type: 'stamp', text: 'cranberry beer @ vault', label: 'vault', city: 'bengaluru', date: '12 oct', year: '2026', denom: '2', src: 'assets/photo-beer.png', from: 'priya', m: 10 },
+    quiet: { type: 'tag', text: 'the quiet hour', src: 'assets/thumb-quiet.png', date: '4 oct', year: '2026', from: 'maya', m: 10 },
+    leh: { type: 'stamp', text: 'juley', label: 'leh', city: 'leh', date: '28 sep', year: '2026', denom: '5', src: 'assets/photo-leh.png', from: 'jun', m: 9 },
+    film: { type: 'note', text: 'you laughed at the exact same part of the film i did, a full second before everyone else.', date: '19 sep', year: '2026', from: 'priya', m: 9 },
+    v1: { type: 'voice', dur: '0:42', date: '3 sep', year: '2026', from: 'theo', m: 9 },
+    beach: { type: 'stamp', text: 'low tide, all four of us', label: 'marina', city: 'chennai', date: '2 aug', year: '2026', denom: '3', src: 'assets/photo-beach.png', from: 'maya', m: 8 },
+    dog: { type: 'note', text: "saw a dog in a raincoat and it was so obviously your dog. you don't have a dog.", date: '11 aug', year: '2026', from: 'jun', m: 8 },
+    buses: { type: 'tag', text: 'songs for buses', date: '20 jul', year: '2026', from: 'theo', m: 7 },
+    soup: { type: 'stamp', text: 'tuesday soup', label: 'kitchen', city: 'pune', date: '8 jul', year: '2026', denom: '1', from: 'priya', m: 7 },
+    v2: { type: 'voice', dur: '1:07', date: '21 jun', year: '2026', from: 'maya', m: 6 },
+    anyway: { type: 'note', text: "the way you say 'anyway' like a door closing", date: '2 jun', year: '2026', from: 'jun', m: 6 },
+    snow: { type: 'stamp', text: 'first snow', label: 'snow', city: 'manali', date: '14 dec', year: '2025', denom: '5', from: 'theo', m: 0 }
+  };
+  DP = {
+    beer: { x: 30, y: 236, z: 1, rot: -4, attach: 'tape' }, quiet: { x: 222, y: 296, z: .9, rot: 6 },
+    film: { x: 16, y: 236, z: .85, rot: -3, attach: 'clip' }, leh: { x: 216, y: 222, z: .9, rot: 4 }, v1: { x: 90, y: 436, z: .82, rot: 2 },
+    beach: { x: 30, y: 236, z: 1, rot: -3 }, dog: { x: 184, y: 340, z: .85, rot: 3, attach: 'tape' },
+    buses: { x: 64, y: 290, z: .9, rot: -5 }, soup: { x: 204, y: 250, z: .95, rot: 4, attach: 'corners' },
+    v2: { x: 22, y: 250, z: .85, rot: -3, attach: 'tape' }, anyway: { x: 180, y: 390, z: .85, rot: 3 },
+    snow: { x: 118, y: 250, z: 1, rot: -2, attach: 'tape' }
+  };
+  SZ = { stamp: [150, 196], note: [200, 170], voice: [230, 146], tag: [124, 200] };
+  FULL = ['november', 'december', 'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october'];
+  mat() { return this.props.material ?? 'paper'; }
+  cfg() {
+    const dot = this.mat() === 'dot';
+    return dot ? { n: 11, step: 15, k: .3, off: 1 } : { n: 12, step: 30, k: .6, off: 0 };
+  }
+  // month slot index → 1e month index (0 = dec 2025)
+  mOf(i) { return i + this.cfg().off - 1; }
+  di() { return this.state.di ?? this.cfg().n - 1; }
+  eff() { const c = this.cfg(); return Math.max(0, Math.min(c.n - 1, Math.round(this.di() - this.state.ddx * c.k / c.step))); }
+  rng(seed) { let x = (Math.abs(seed) % 2147483646) + 1; return () => (x = x * 16807 % 2147483647) / 2147483647; }
+  buzz(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (_) {} }
+  stampPress() {
+    if (this.mat() !== 'stamp') return;
+    this.buzz([14, 24, 6]);
+    this.setState({ press: 1 });
+    setTimeout(() => this.setState({ press: 2 }), 30);
+    setTimeout(() => this.setState({ press: 0 }), 400);
+  }
+  down = e => { this.sx = e.clientX; this.moved = false; this.lastEff = this.eff(); this.scale = (e.currentTarget.getBoundingClientRect().width / e.currentTarget.offsetWidth) || 1; this.setState({ ddrag: true, ddx: 0 }); };
+  move = e => {
+    if (!this.state.ddrag) return;
+    const ddx = (e.clientX - this.sx) / this.scale;
+    if (Math.abs(ddx) > 4) this.moved = true;
+    this.setState({ ddx }, () => { const f = this.eff(); if (f !== this.lastEff) { this.lastEff = f; if (this.mat() !== 'stamp') this.buzz(4); } });
+  };
+  up = () => { if (!this.state.ddrag) return; const di = this.eff(); this.setState({ ddrag: false, ddx: 0, di }); if (this.moved) this.stampPress(); };
+  torn(C, R, seed, spiky) {
+    const r = this.rng(seed), p1 = r() * 6.28, p2 = r() * 6.28, p3 = r() * 6.28, pts = [];
+    for (let a = 0; a < 360; a += 1.2) {
+      const t = a * Math.PI / 180;
+      let rr = R + 2.2 * Math.sin(3 * t + p1) + 1.6 * Math.sin(7 * t + p2) + Math.sin(13 * t + p3) + r() * (spiky ? 3.4 : 1.3);
+      if (r() < .03) rr -= 2.5;
+      pts.push((C + rr * Math.sin(t)).toFixed(1) + ' ' + (C - rr * Math.cos(t)).toFixed(1));
+    }
+    return 'M' + pts.join('L') + 'Z';
+  }
+  renderVals() {
+    const p = this.props, S = this.state, IT = this.IT, mat = this.mat(), c = this.cfg();
+    const radius = p.radius ?? 246, rise = p.rise ?? 198, outerR = radius + 22;
+    const wt = 844 - rise, cy = wt + outerR, C = outerR + 14, wd = 2 * C;
+    const eff = this.eff(), m = this.mOf(eff), di = this.di();
+    const P = (a, r) => { const t = a * Math.PI / 180; return (C + r * Math.sin(t)).toFixed(1) + ' ' + (C - r * Math.cos(t)).toFixed(1); };
+
+    // fab
+    const fab = p.fab ?? null;
+    let fabX = 195, fabY = wt - 52;
+    if (fab === 'br') { fabX = 318; const dx = 75; const ys = outerR > dx ? cy - Math.sqrt(outerR * outerR - dx * dx) : wt; fabY = Math.round(ys - 38); }
+    let availB = wt - 20;
+    if (fab) availB = Math.min(availB, fabY - 26 - 12);
+
+    // items: per-month fit into 220 → availB
+    const fit = {};
+    this.IDS.forEach(id => { const mm = IT[id].m, d = this.DP[id], s = this.SZ[IT[id].type]; fit[mm] = Math.max(fit[mm] || 0, d.y + s[1] * d.z); });
+    const items = this.IDS.map(id => {
+      const b = IT[id], d = this.DP[id], s = this.SZ[b.type];
+      const k = Math.max(.45, Math.min(1, (availB - 220) / (fit[b.m] - 220)));
+      const w = s[0] * d.z, h = s[1] * d.z, z = d.z * k;
+      const cx = 195 + (d.x + w / 2 - 195) * k;
+      const vis = b.m === m;
+      return { ...b, attach: d.attach, rot: d.rot, z, x: Math.round(cx - w * k / 2), y: Math.round(220 + (d.y - 220) * k), hint: Math.round(s[0] * z) + 'px,' + Math.round(s[1] * z) + 'px',
+        op: vis ? 1 : 0, tf: vis ? 'translateY(0px)' : 'translateY(24px)', pe: vis ? 'auto' : 'none' };
+    });
+    const hasM = mm => this.IDS.some(id => IT[id].m === mm);
+    const qH = Math.max(80, Math.min(200, availB - 236)), qTop = Math.round((220 + availB) / 2 - qH / 2);
+
+    // months
+    const sOut = outerR - 2, sIn = outerR - 52, sIn2 = outerR - 58;
+    const press = S.press;
+    const months = Array.from({ length: c.n }, (_, i) => {
+      const mm = this.mOf(i), has = hasM(mm), a = i * c.step, sel = i === eff;
+      const nm = this.FULL[mm + 1], short = nm.slice(0, 3);
+      let dl, ff, fw, fs, ls, col, bg = 'transparent', label;
+      if (mat === 'dot') { dl = radius - 41; ff = "'Barlow Condensed',sans-serif"; fw = 500; fs = 15; ls = 1.6; col = '#111111'; label = mm === 0 ? 'DEC ’25' : short.toUpperCase(); }
+      else if (mat === 'paper') { dl = outerR - 36; ff = "'Shantell Sans',cursive"; fw = has ? 400 : 300; fs = 18; ls = 0; col = has ? '#111111' : '#6F695F'; label = mm === -1 ? 'nov ’25' : mm === 0 ? 'dec' : short; }
+      else if (mat === 'stamp') { dl = outerR - 27; ff = "'Barlow Condensed',sans-serif"; fw = 600; fs = 16; ls = 1.4; col = has ? '#FAF7F0' : '#111111'; label = (mm === -1 ? 'NOV' : short.toUpperCase()); }
+      else { dl = outerR - 22; ff = "'Shantell Sans',cursive"; fw = 400; fs = 16; ls = 0; col = '#111111'; label = mm === -1 ? 'nov ’25' : short; }
+      const pat = ['kraft', 'paper', 'air', 'kraft', 'red', 'paper', 'check', 'kraft', 'paper', 'air', 'red', 'paper'][i];
+      if (mat === 'tape' && (pat === 'air' || pat === 'check')) bg = '#FAF7F0';
+      const t0 = (a - 15) * Math.PI / 180, t1 = (a + 15) * Math.PI / 180;
+      const pt = (t, r) => (C + r * Math.sin(t)).toFixed(1) + ' ' + (C - r * Math.cos(t)).toFixed(1);
+      return {
+        a, label, ff, fw, fs, ls, col, bg,
+        lx: C - 45, ly: Math.round(C - dl - 14), lo: Math.round(dl + 14),
+        dx: (C + (radius - 52) * Math.sin(a * Math.PI / 180)).toFixed(1), dy: (C - (radius - 52) * Math.cos(a * Math.PI / 180)).toFixed(1), dotFill: has ? '#111111' : '#FFFFFF',
+        sector: `M${pt(t0, sOut)}A${sOut} ${sOut} 0 0 1 ${pt(t1, sOut)}L${pt(t1, sIn)}A${sIn} ${sIn} 0 0 0 ${pt(t0, sIn)}Z`,
+        secFill: has ? '#111111' : 'none',
+        penMark: mat === 'tape' && has, underline: mat === 'paper' && has,
+        ps: mat === 'stamp' && sel && press === 1 ? 1.04 : 1, pTr: press === 1 ? 'none' : 'transform 220ms ease-out',
+        bloom: mat === 'stamp' && sel && press === 1 ? .5 : 0,
+        pick: () => { if (this.moved) return; this.setState({ di: i }); this.stampPress(); if (mat !== 'stamp') this.buzz(4); }
+      };
+    });
+
+    // dot ticks
+    let tMinor = '', tMajor = '';
+    if (mat === 'dot') for (let a = -45; a <= 195; a += 3) { if (a % 15 === 0) tMajor += `M${P(a, radius)}L${P(a, radius - 14)}`; else tMinor += `M${P(a, radius)}L${P(a, radius - 6)}`; }
+    // stamp dividers + ticks
+    let sDiv = '', sTicks = '';
+    if (mat === 'stamp') for (let i = 0; i < 12; i++) { const a = i * 30; sDiv += `M${P(a + 15, sIn)}L${P(a + 15, sOut)}`; sTicks += `M${P(a - 8, sIn)}L${P(a - 8, sIn + 9)}M${P(a + 8, sIn)}L${P(a + 8, sIn + 9)}`; }
+    // tape strips
+    let strips = [];
+    if (mat === 'tape') {
+      const rm = outerR - 22, L = Math.round(2 * Math.PI * rm / 12 * 1.2);
+      strips = months.map((mo, i) => {
+        const r = this.rng(31 + i * 97), f = n => n.toFixed(1);
+        const end = (x0, dirn) => { if (i % 3 === 1) return [[x0 + dirn * 6, 1], [x0 - dirn * 2, 37]]; const pts = []; for (let y = 1; y <= 37; y += 4 + r() * 3) pts.push([x0 + dirn * (r() * 4 - 1), Math.min(37, y)]); pts.push([x0, 37]); return pts; };
+        const left = end(2, 1), right = end(L - 2, -1);
+        const d = 'M' + f(left[0][0]) + ' 1L' + right.slice().reverse().map(q => f(q[0]) + ' ' + f(q[1])).reverse().map((s, k) => s).join('L') + 'L' + left.slice().reverse().map(q => f(q[0]) + ' ' + f(q[1])).join('L') + 'Z';
+        const sel = i === eff;
+        return { L, left: Math.round(C - L / 2), top: Math.round(C - rm - 19), ox: Math.round(L / 2), oy: Math.round(rm + 19), d, pat: ['kraft', 'paper', 'air', 'kraft', 'red', 'paper', 'check', 'kraft', 'paper', 'air', 'red', 'paper'][i],
+          tf: `rotate(${mo.a}deg)` + (sel ? ' translateY(-6px) scale(1.04)' : ''), filt: sel ? 'drop-shadow(0 6px 5px rgba(60,40,20,.28))' : 'none', zi: sel ? 20 : i % 2 };
+      });
+    }
+
+    const yr = mm => (mm <= 0 ? '2025' : '2026');
+    return {
+      isDot: mat === 'dot', isPaper: mat === 'paper', isStamp: mat === 'stamp', isTape: mat === 'tape',
+      dMonth: this.FULL[m + 1], dYear: yr(m), dQuiet: !hasM(m), qTop, qH, qHi: qH - 6, items, months, strips,
+      wx: 195 - C, wy: cy - C, wd, C, radius, outerR,
+      dRot: (-(di * c.step) + S.ddx * c.k).toFixed(2), dTr: S.ddrag ? 'none' : 'transform 380ms cubic-bezier(.2,.8,.2,1)',
+      layerFilter: mat === 'stamp' ? 'url(#wp-rubber)' : 'none',
+      tMinor, tMajor, sOut, sIn, sIn2, sDiv, sTicks,
+      pUnder: mat === 'paper' ? this.torn(C, outerR - 2, 5, false) : '', pFibre: mat === 'paper' ? this.torn(C, outerR - 3, 13, true) : '', pTop: mat === 'paper' ? this.torn(C, outerR - 6, 9, false) : '',
+      tabTop: wt - 24,
+      nLine: `M195 ${wt - 12}L195 ${wt + 26}`, nTri: `M188 ${wt - 16}L202 ${wt - 16}L195 ${wt - 6}Z`,
+      nTick: `M188 ${wt + 8}L195 ${wt + 20}L203 ${wt + 3}`, nStamp: `M187 ${wt - 17}L203 ${wt - 17}L195 ${wt - 4}Z`, nCaret: `M187 ${wt - 20}L195 ${wt - 8}L203 ${wt - 20}`,
+      roTop: wt + 64, roText: (this.FULL[m + 1].slice(0, 3) + ' ' + yr(m)).toUpperCase(),
+      down: this.down, move: this.move, up: this.up,
+      hasFab: !!fab, fabPlacement: fab === 'br' ? 'br' : 'bc', fabX, fabY
+    };
+  }
+}
+</script>
+</body>
+</html>

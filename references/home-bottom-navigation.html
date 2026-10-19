@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home Bottom Navigation</title>
+<style>
+  /* ------------------------------------------------------------------
+     Home Bottom Navigation
+     Source: Figma "SVSD Competition" — node 118:1756 (Frame 13)
+     Values below are read directly from the Figma node via MCP.
+     ------------------------------------------------------------------ */
+
+  :root {
+    /* Track (Frame 13) */
+    --nav-track-bg: #e6e1d5;          /* rgb(230.5, 225.3, 213.1) */
+    --nav-track-border: #ddd;         /* 0.5px inside stroke */
+    --nav-track-border-w: 0.5px;
+    --nav-track-pad: 4.5px;           /* 4px padding + 0.5px stroke, as laid out in Figma */
+    --nav-gap: 4px;
+    --nav-radius: 360px;
+
+    /* Option / pill (Frame 12 & Frame 10) */
+    --nav-item-w: 95px;
+    --nav-item-h: 44px;
+    --nav-pill-bg: #ffffff;
+
+    /* Icons (28 x 28, stroke #494444 / 1.75) */
+    --nav-icon-size: 28px;
+
+    /* Pill shadow: 5 stacked drop shadows, color rgb(157,148,128).
+       Figma blur radius maps 1:1 to CSS box-shadow blur. */
+    --nav-shadow-rgb: 157, 148, 128;
+    --nav-pill-shadow:
+      0 3px 6px   rgba(var(--nav-shadow-rgb), 0.10),
+      0 10px 10px rgba(var(--nav-shadow-rgb), 0.09),
+      0 24px 14px rgba(var(--nav-shadow-rgb), 0.05),
+      0 42px 17px rgba(var(--nav-shadow-rgb), 0.01),
+      0 65px 18px rgba(var(--nav-shadow-rgb), 0);
+
+    /* Motion */
+    --nav-glide-ms: 520ms;
+    --nav-glide-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #ffffff;           /* white backdrop so the shadows can be judged */
+  }
+
+  body {
+    display: grid;
+    place-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .stage {
+    padding: 80px 120px 160px;      /* room for the long 65px shadow tail */
+  }
+
+  /* ---------------- Component ---------------- */
+
+  .home-bottom-navigation {
+    --index: 0;                      /* 0 = home, 1 = journal */
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--nav-gap);
+    padding: var(--nav-track-pad);
+    background: var(--nav-track-bg);
+    /* 0.5px INSIDE stroke — drawn as an inset ring so browsers can't round it up to 1px */
+    box-shadow: inset 0 0 0 var(--nav-track-border-w) var(--nav-track-border);
+    border-radius: var(--nav-radius);
+    /* No overflow clipping — the pill's shadow must spill outside the track */
+    overflow: visible;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .home-bottom-navigation[data-active="journal"] { --index: 1; }
+
+  /* The white pill that glides between options */
+  .home-bottom-navigation__pill {
+    position: absolute;
+    top: var(--nav-track-pad);
+    left: var(--nav-track-pad);
+    width: var(--nav-item-w);
+    height: var(--nav-item-h);
+    background: var(--nav-pill-bg);
+    border-radius: var(--nav-radius);
+    box-shadow: var(--nav-pill-shadow);
+    transform: translate3d(calc(var(--index) * (var(--nav-item-w) + var(--nav-gap))), 0, 0);
+    transition: transform var(--nav-glide-ms) var(--nav-glide-ease);
+    will-change: transform;
+    pointer-events: none;
+  }
+
+  /* Options */
+  .home-bottom-navigation__item {
+    position: relative;
+    z-index: 1;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--nav-item-w);
+    height: var(--nav-item-h);
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    border-radius: var(--nav-radius);
+    cursor: pointer;
+    outline: none;
+  }
+
+  .home-bottom-navigation__item:focus-visible {
+    box-shadow: 0 0 0 2px rgba(73, 68, 68, 0.55);
+  }
+
+  .home-bottom-navigation__icon {
+    display: block;
+    width: var(--nav-icon-size);
+    height: var(--nav-icon-size);
+    overflow: hidden;
+    transform-origin: center;
+    transition: transform 280ms var(--nav-glide-ease), opacity 280ms ease;
+  }
+
+  /* Active + press behaviour */
+  .home-bottom-navigation__item[aria-selected="true"] .home-bottom-navigation__icon {
+    animation: nav-icon-settle 520ms var(--nav-glide-ease);
+  }
+
+  .home-bottom-navigation__item:active .home-bottom-navigation__icon {
+    transform: scale(0.9);
+  }
+
+  @keyframes nav-icon-settle {
+    0%   { transform: scale(0.88); }
+    60%  { transform: scale(1.06); }
+    100% { transform: scale(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-bottom-navigation__pill { transition-duration: 1ms; }
+    .home-bottom-navigation__item[aria-selected="true"] .home-bottom-navigation__icon { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <nav class="home-bottom-navigation" data-active="home" role="tablist" aria-label="Home bottom navigation">
+    <span class="home-bottom-navigation__pill" aria-hidden="true"></span>
+
+    <!-- Home (co-home-q25) -->
+    <button class="home-bottom-navigation__item" role="tab" id="tab-home" data-tab="home" aria-selected="true" aria-label="Home" tabindex="0">
+      <span class="home-bottom-navigation__icon">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3.91992 12.9269C7.27992 10.1502 10.6516 7.38911 14.0349 4.64355M13.8366 4.65522C17.2433 7.50967 20.6694 10.3486 24.1149 13.1719M6.38159 10.7102C6.36603 15.1436 6.36214 19.573 6.36992 23.9986M6.10159 23.8352C11.2971 23.9052 16.4927 23.913 21.6883 23.8586M21.5249 24.2202C21.4394 19.8102 21.4238 15.4002 21.4783 10.9902M11.6316 24.3136C11.6083 21.7624 11.6083 19.2152 11.6316 16.6719M11.4916 16.8119C13.226 16.7886 14.9605 16.7886 16.6949 16.8119M16.4149 16.3802C16.3449 18.908 16.3021 21.4319 16.2866 23.9519" stroke="#494444" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </button>
+
+    <!-- Journal (co-book-q25) -->
+    <button class="home-bottom-navigation__item" role="tab" id="tab-journal" data-tab="journal" aria-selected="false" aria-label="Journal" tabindex="-1">
+      <span class="home-bottom-navigation__icon">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7.97999 4.02522C12.9422 4.11078 17.9083 4.13022 22.8783 4.08355M22.645 3.76855C22.6839 10.5741 22.7228 17.3797 22.7617 24.1852M22.9133 23.9752C17.9433 23.913 12.9772 23.9247 8.01499 24.0102M8.13165 24.3719C8.23276 17.5119 8.26388 10.6519 8.22499 3.79189M12.0633 9.31022C14.5989 9.39578 17.1305 9.43855 19.6583 9.43855M11.9233 12.7169C13.6967 12.7636 15.47 12.8297 17.2433 12.9152M9.25165 5.85689C6.26499 5.82189 5.10999 6.67355 5.20332 7.52522C5.13332 8.22522 6.32332 9.14689 9.26332 9.12355M9.27499 10.4419C6.27665 10.4536 5.07499 11.3519 5.17999 12.0402C5.16832 12.9969 6.27665 13.7086 9.29832 13.6619M9.28665 15.2136C6.32332 15.1552 5.19165 16.0419 5.16832 16.7652C5.15665 17.6169 6.35832 18.4219 9.40332 18.5036M9.25165 19.8802C6.33499 19.8919 5.07499 20.7086 5.02832 21.5369C5.10999 22.2369 6.29999 23.1119 9.33332 23.1819" stroke="#494444" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </button>
+  </nav>
+</div>
+
+<script>
+  (function () {
+    var nav  = document.querySelector('.home-bottom-navigation');
+    var tabs = Array.prototype.slice.call(nav.querySelectorAll('[role="tab"]'));
+
+    function select(name, focus) {
+      nav.setAttribute('data-active', name);
+      tabs.forEach(function (tab) {
+        var on = tab.getAttribute('data-tab') === name;
+        tab.setAttribute('aria-selected', on ? 'true' : 'false');
+        tab.setAttribute('tabindex', on ? '0' : '-1');
+        if (on && focus) tab.focus();
+      });
+      nav.dispatchEvent(new CustomEvent('change', { detail: { value: name } }));
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        if (tab.getAttribute('aria-selected') === 'true') return;
+        select(tab.getAttribute('data-tab'), false);
+      });
+      tab.addEventListener('keydown', function (e) {
+        var i = tabs.indexOf(tab);
+        if (e.key === 'ArrowRight') { e.preventDefault(); select(tabs[Math.min(i + 1, tabs.length - 1)].getAttribute('data-tab'), true); }
+        if (e.key === 'ArrowLeft')  { e.preventDefault(); select(tabs[Math.max(i - 1, 0)].getAttribute('data-tab'), true); }
+      });
+    });
+  })();
+</script>
+</body>
+</html>

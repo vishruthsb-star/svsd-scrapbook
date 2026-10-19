@@ -1,4 +1,5 @@
 import { useId, useRef, useState } from 'react';
+import rose from '../../assets/rose.svg?raw';
 import './InviteSection.css';
 
 export interface InviteSectionProps {
@@ -63,17 +64,7 @@ export default function InviteSection({ handle = 'vishruth', onInvite }: InviteS
         </defs>
       </svg>
 
-      <svg className="invite-flower" width={55} height={83} viewBox="0 0 55 83" fill="none" aria-hidden="true">
-        <g style={{ filter: `url(#${inkId})` }} stroke="#111111" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M27.5 80 C26 58 29 36 25 16" strokeWidth={1.6} />
-          <path d="M26 52 C18 48 12 50 7 44" strokeWidth={1.4} />
-          <path d="M27 62 C35 59 40 62 46 57" strokeWidth={1.4} />
-          <path
-            d="M25 16 C20 12 20 5 26 2 C32 5 32 12 27 16 C32 13 39 14 41 20 C38 25 31 25 26 21 C29 26 28 33 22 34 C17 30 18 23 23 19 C18 21 11 19 10 13 C13 8 20 8 25 13 Z"
-            strokeWidth={1.5}
-          />
-        </g>
-      </svg>
+      <div className="invite-flower" aria-hidden="true" dangerouslySetInnerHTML={{ __html: rose }} />
 
       <div className="invite-copy">
         <div className="invite-copy-strong">someone belongs in your scrapbook</div>
@@ -86,7 +77,7 @@ export default function InviteSection({ handle = 'vishruth', onInvite }: InviteS
             className="invite-copy-icon"
             role="button"
             tabIndex={0}
-            aria-label="copy link"
+            aria-label={copied ? 'link copied' : 'copy link'}
             onClick={handleCopy}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
@@ -108,7 +99,9 @@ export default function InviteSection({ handle = 'vishruth', onInvite }: InviteS
             <path d="M-2 4 C84 2 192 6 302 3" fill="none" stroke="#111111" strokeWidth={1.6} strokeLinecap="round" vectorEffect="non-scaling-stroke" />
           </g>
         </svg>
-        {copied && <span className="invite-copied">copied!</span>}
+        <span className="sr-only" role="status" aria-live="polite">
+          {copied ? 'Link copied' : ''}
+        </span>
       </div>
 
       <button

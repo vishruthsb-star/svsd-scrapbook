@@ -1,0 +1,90 @@
+/* Frame 1a "torn strata" — references/Scrapbook Directions.dc.html. Styles copied exactly
+   (colors, offsets, shadow, font) per docs/scrapbook-canvas-spec.md. */
+
+.torn-strata-root {
+  position: absolute;
+  inset: 0;
+  background: #e9e2d3;
+  color: #111111;
+}
+
+.torn-strata-scroll {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+
+.torn-strata-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.torn-strata-content {
+  position: relative;
+}
+
+.torn-strata-strip {
+  position: absolute;
+  left: 0;
+  /* width set inline to the real frame width (full-bleed) — see TornStrata.tsx */
+}
+
+.torn-strata-svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  filter: drop-shadow(0 3px 3px rgba(70, 50, 20, 0.18));
+}
+
+.torn-strata-label {
+  position: absolute;
+  z-index: 5;
+  /* left set inline (20px + designX0) — see TornStrata.tsx */
+  background: #161616;
+  color: #faf7f0;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.24em;
+  padding: 5px 10px 4px 12px;
+  transform: rotate(-1.5deg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+}
+
+.torn-strata-quiet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 78px;
+  text-align: center;
+  font-size: 17px;
+  color: #5e594f;
+}
+
+.torn-strata-first-text {
+  position: absolute;
+  /* left set inline (22px + designX0) — see TornStrata.tsx */
+  top: 300px;
+  font-size: 17px;
+  line-height: 1.2;
+  width: 100px;
+}
+
+.torn-strata-first-arrow {
+  position: absolute;
+  /* left set inline (60px + designX0) — see TornStrata.tsx */
+  top: 250px;
+  overflow: visible;
+  fill: none;
+  stroke: #111111;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.torn-strata-item {
+  position: absolute;
+}

@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shantell+Sans:wght@300..500&family=Barlow+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#1a1a19}
+a{color:#111111;text-decoration:underline;text-underline-offset:3px}
+a:hover{color:#D8422C}
+</style>
+</helmet>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="ink" filterUnits="userSpaceOnUse" x="-300" y="-300" width="2400" height="2400"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="3"></feTurbulence><feDisplacementMap in="SourceGraphic" scale="2.4"></feDisplacementMap></filter>
+    <pattern id="sd-grid" width="18" height="18" patternUnits="userSpaceOnUse"><rect width="18" height="18" fill="#FAF7F0"></rect><path d="M18 0V18M0 18H18" stroke="#111111" stroke-opacity="0.1" stroke-width="1"></path></pattern>
+    <pattern id="sd-dot" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#F6F1E6"></rect><circle cx="8" cy="8" r="1.1" fill="#111111" fill-opacity="0.26"></circle></pattern>
+    <pattern id="sd-lined" width="12" height="28" patternUnits="userSpaceOnUse"><rect width="12" height="28" fill="#FFFDF7"></rect><path d="M0 27.5H12" stroke="#8FB0CC" stroke-opacity="0.6" stroke-width="1"></path></pattern>
+    <pattern id="sd-kraft" width="7" height="7" patternUnits="userSpaceOnUse"><rect width="7" height="7" fill="#D7BC8F"></rect><circle cx="1.5" cy="1.5" r="0.6" fill="#7A5A30" fill-opacity="0.25"></circle><circle cx="5" cy="4.5" r="0.5" fill="#FFFFFF" fill-opacity="0.3"></circle></pattern>
+  </defs>
+</svg>
+
+<section data-screen-label="turn 1 · scrapbook page directions" style="padding:80px 80px 160px;width:max-content;min-width:100%;box-sizing:border-box;font-family:'Shantell Sans',cursive;font-weight:300;color:#FAF7F0;display:flex;flex-direction:column;gap:72px">
+
+  <header style="display:flex;flex-direction:column;gap:12px;max-width:1100px">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:.2em">TURN 1 · SOMEONE ELSE'S SCRAPBOOK, AS A VISITOR SEES IT</div>
+    <div style="font-size:56px;line-height:1">seven ways to organise a page</div>
+    <div style="font-size:20px;line-height:1.4;max-width:820px;text-wrap:pretty">Same twelve moments from four friends in every frame. Items, flips and wobble are untouched; only arrangement, containers and surfaces change. Every frame is live: scroll, swipe, drag and tap.</div>
+  </header>
+
+  <div data-screen-label="step 1 findings" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;width:1800px">
+    <div style="background:#FAF7F0;color:#111111;border-radius:6px;padding:36px;display:flex;flex-direction:column;gap:18px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:.2em">STEP 1A · THE COLLAGE ALGORITHM (10 REFERENCES)</div>
+      <div style="display:flex;flex-direction:column;gap:12px;font-size:15px;line-height:1.45">
+        <div><b style="font-weight:500">Anchor + satellites.</b> One hero per spread at 1.6–2.2× the supporting pieces, set off-centre (upper-left third most often). 3–6 satellites cluster within one hero-width of it.</div>
+        <div><b style="font-weight:500">Overlap chains.</b> Pieces overlap 10–25% of the smaller one and every piece touches at least one other. Overlaps avoid faces and text.</div>
+        <div><b style="font-weight:500">Rotation budget.</b> Most pieces sit at ±2–6°. One loud piece per spread goes to 8–15°. Blocks of writing stay close to 0°.</div>
+        <div><b style="font-weight:500">Hidden columns.</b> Pieces snap to two invisible verticals, then get nudged 4–12px off them. It reads as order without a visible grid.</div>
+        <div><b style="font-weight:500">Whitespace.</b> One large empty region per spread, usually opposite the hero, plus ~8% margins. Gaps between clusters are wider than gaps inside them.</div>
+        <div><b style="font-weight:500">Hierarchy</b> comes from size first, then one high-contrast element (black or a single saturated colour), then an annotation pointing at it.</div>
+      </div>
+    </div>
+    <div style="background:#FAF7F0;color:#111111;border-radius:6px;padding:36px;display:flex;flex-direction:column;gap:18px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:.2em">STEP 1B · MATERIALS, TYPE, CONTAINERS</div>
+      <div style="display:flex;flex-direction:column;gap:12px;font-size:15px;line-height:1.45">
+        <div><b style="font-weight:500">Materials.</b> Torn paper with a white fibre edge (newsprint, lined, kraft, script), masking tape at 30–45°, bulldog and binder clips on top edges, dot, grid and lined grounds, kraft envelopes, stamps and circular postmarks, label tape, tickets and typed forms.</div>
+        <div><b style="font-weight:500">Type and annotation.</b> Block-caps handwriting for prompts (READ THIS), small-caps sans for form fields (DATE, ISSUED TO, ITEM / DESCRIPTION), loose script for marginalia, arrows and circles linking a note to an object, strike-throughs and a FOUND stamp as corrections.</div>
+        <div><b style="font-weight:500">Containers.</b> Library card pocket, inventory sheet, passport spread with fields and a stamp grid, magazine spreads, journal strata, a folder per collection, diary spreads with arrows.</div>
+        <div><b style="font-weight:500">What carries over.</b> Torn strata and the three paper grounds are the strongest match for your line work. Form fields solve the censored "from": a redacted field reads as deliberate rather than missing.</div>
+      </div>
+    </div>
+    <div style="background:#FAF7F0;color:#111111;border-radius:6px;padding:36px;display:flex;flex-direction:column;gap:18px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:.2em">STEP 1C · MOTION VOCABULARY → WHAT IT'S GOOD AT</div>
+      <div style="display:grid;grid-template-columns:150px minmax(0,1fr);column-gap:16px;row-gap:10px;font-size:15px;line-height:1.4">
+        <div style="font-weight:500">Half-dial scrub</div><div>Choosing a point on a continuum. Browsing by time.</div>
+        <div style="font-weight:500">Curved wheel list</div><div>Picking one of many while seeing its neighbours.</div>
+        <div style="font-weight:500">Scroll-driven cascade</div><div>Sequential story, revealing depth as you go.</div>
+        <div style="font-weight:500">Swipe deck + knob</div><div>One at a time, full attention. Savouring.</div>
+        <div style="font-weight:500">Fanned wallet</div><div>Picking one of many while the whole set stays visible.</div>
+        <div style="font-weight:500">Freeform canvas</div><div>Overview and spatial memory. Weak at time.</div>
+        <div style="font-weight:500">Album-crate flick</div><div>Fast browsing of many, identified by cover.</div>
+        <div style="font-weight:500">3D book of spreads</div><div>Chapters, a sense of volume, comparing spreads.</div>
+        <div style="font-weight:500">Pinch / rotate / tilt</div><div>Inspecting one object closely. Adds depth, not structure.</div>
+      </div>
+    </div>
+  </div>
+
+  <div data-screen-label="ranking and header check" style="display:grid;grid-template-columns:minmax(0,1fr) 760px;gap:28px;width:1800px">
+    <div style="background:#FAF7F0;color:#111111;border-radius:6px;padding:36px;display:flex;flex-direction:column;gap:16px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:.2em">RANKED BY FIT TO "A LIVING STORY OF HOW I SHOW UP IN OTHERS' LIVES"</div>
+      <div style="display:grid;grid-template-columns:40px 190px minmax(0,1fr);row-gap:8px;column-gap:12px;font-size:16px;line-height:1.4;align-items:baseline">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px">1</div><div><a href="#1c">1c</a> same hand</div><div>Each friendship gets its own page, so the page shows how you show up for each person. Bold.</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px">2</div><div><a href="#1a">1a</a> torn strata</div><div>Time builds up like sediment and the newest layer is always on top. Shippable tonight.</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px">3</div><div><a href="#1g">1g</a> theme spreads</div><div>Shows which sides of you people notice. Needs a theme picked at drop time.</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px">4</div><div><a href="#1e">1e</a> year dial</div><div>Good for time, makes quiet months visible. Bold.</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px">5</div><div><a href="#1f">1f</a> envelopes</div><div>Calm at 80 items, continues the drawer metaphor. Hides a lot.</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px">6</div><div><a href="#1d">1d</a> the pile</div><div>Lovely one at a time, but no sense of shape or story. Bold.</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px">7</div><div><a href="#1b">1b</a> inventory</div><div>Clear and scalable, reads as a record rather than a story. Shippable.</div>
+      </div>
+      <div style="font-size:17px;line-height:1.45;padding-top:8px;text-wrap:pretty"><b style="font-weight:500">My pick:</b> ship <a href="#1a">1a</a> tonight as the default view, then build <a href="#1c">1c</a> as a second lens on the same page ("by time / by hand", a small pill below the header). Together they answer when people thought of you and who keeps thinking of you.</div>
+    </div>
+    <div style="background:#FAF7F0;color:#111111;border-radius:6px;padding:36px;display:flex;flex-direction:column;gap:18px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:.2em">SCRAPBOOKHEADER · FIGMA 101:1601 VS COMPONENT, 1:1</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:14px">figma (your screenshot, scaled to 1×)</div>
+          <div style="height:150px;background:#F8F6F0;border-radius:4px;display:flex;align-items:flex-start;justify-content:center;padding-top:12px;box-sizing:border-box"><img src="ref/header-figma.png" alt="" style="width:342px;display:block"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:14px">ScrapbookHeader.dc.html</div>
+          <div style="height:150px;background:#F8F6F0;border-radius:4px;display:flex;align-items:flex-start;justify-content:center;padding-top:26px;box-sizing:border-box"><dc-import name="ScrapbookHeader" hint-size="315px,61px"></dc-import></div>
+        </div>
+      </div>
+      <div style="font-size:14px;line-height:1.45">315 × 61, padding 8/8/8/16, 0.5px #ECECEC border, five-layer shadow kept as box-shadow. Arrow at x 16.5, avatar at 262.5. The title box is pinned to its SF Pro width (149px), so it starts at x 77 even when a fallback font renders.</div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:48px;width:1800px;align-items:flex-start">
+
+    <!-- 1a -->
+    <div id="1a" data-screen-label="1a torn strata" style="width:876px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:36px;align-items:flex-start">
+      <div style="width:410px;height:864px;padding:10px;box-sizing:border-box;background:#0b0b0b;border-radius:58px;flex-shrink:0">
+        <div style="position:relative;width:390px;height:844px;border-radius:48px;background:#E9E2D3;color:#111111">
+          <div style="position:absolute;inset:0;border-radius:48px;overflow-y:auto;overflow-x:hidden;scrollbar-width:none">
+            <div style="position:relative;height:{{ sH }}px">
+              <sc-for list="{{ strata }}" as="s" hint-placeholder-count="3">
+                <div style="position:absolute;left:0;top:{{ s.top }}px;width:390px;height:{{ s.hh }}px">
+                  <svg width="390" height="{{ s.svgH }}" style="position:absolute;left:0;top:0;overflow:visible;filter:drop-shadow(0 3px 3px rgba(70,50,20,.18))"><path d="{{ s.fib }}" fill="#FFFFFF"></path><path d="{{ s.main }}" fill="url(#sd-{{ s.tex }})"></path></svg>
+                  <div style="position:absolute;z-index:5;left:20px;top:{{ s.labelTop }}px;background:#161616;color:#FAF7F0;font-family:'Barlow Condensed',sans-serif;font-weight:500;font-size:14px;letter-spacing:.24em;padding:5px 10px 4px 12px;transform:rotate(-1.5deg);box-shadow:0 1px 2px rgba(0,0,0,.25);white-space:nowrap">{{ s.label }}</div>
+                  <sc-if value="{{ s.isQuiet }}"><div style="position:absolute;left:0;right:0;top:78px;text-align:center;font-size:17px;color:#5E594F">a quiet stretch</div></sc-if>
+                  <sc-if value="{{ s.isFirst }}">
+                    <div style="position:absolute;left:22px;top:300px;font-size:17px;line-height:1.2;width:100px">where it starts</div>
+                    <svg width="80" height="60" style="position:absolute;left:60px;top:250px;overflow:visible;fill:none;stroke:#111111;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="M8 46 C16 24 34 12 58 8 M48 2 L59 8 L50 17"></path></g></svg>
+                  </sc-if>
+                  <sc-for list="{{ s.items }}" as="it" hint-placeholder-count="2">
+                    <div style="position:absolute;left:{{ it.x }}px;top:{{ it.y }}px"><dc-import name="Item" type="{{ it.type }}" text="{{ it.text }}" label="{{ it.label }}" city="{{ it.city }}" date="{{ it.date }}" year="{{ it.year }}" denom="{{ it.denom }}" dur="{{ it.dur }}" src="{{ it.src }}" from="{{ it.from }}" viewer="other" attach="{{ it.attach }}" rot="{{ it.rot }}" zoom="{{ it.z }}" hint-size="{{ it.hint }}"></dc-import></div>
+                  </sc-for>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="position:absolute;top:17px;left:38px;z-index:50;font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:15px">9:41</div>
+          <div style="position:absolute;top:52px;left:37.5px;z-index:50"><dc-import name="ScrapbookHeader" hint-size="315px,61px"></dc-import></div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px">1a</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#CFE8D8">CONSERVATIVE · SHIPPABLE TONIGHT · RANK 2</div></div>
+        <div style="font-size:32px;line-height:1">torn strata</div>
+        <div style="font-size:18px;line-height:1.35">Each month is a strip of torn paper laid over the one before.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · TIME</div>When it was dropped. One month per strip, newest on top, like sediment: the page grows as people keep thinking of you. Inside a strip, one hero and one or two satellites.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · SCROLL</div>Plain vertical scroll. A new drop tears in at the top: strip slides down 380ms cubic-bezier(.2,.8,.2,1), item lands 12px high and settles 4°.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>All four types. Hero at 1.0×, satellites 0.8–0.9×, ±2–6°. One taped or clipped piece per strip. Pieces may hang over the torn edge below.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>Grid, lined, dot and kraft rotate strip by strip. White fibre edge on every tear. Month headers on label-maker tape.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>4: two or three strips plus a thin "quiet stretch" for empty months. 80: about 25 strips. A month with more than 5 items splits into two strips; a newsprint strip marks each new year.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>Only the month shows on the page. The exact date and the censored "from" stay on the back of each item.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>The folder lifts out of the drawer, its tab becomes the header pill, and the newest strip is the first thing under it.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1b -->
+    <div id="1b" data-screen-label="1b inventory" style="width:876px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:36px;align-items:flex-start">
+      <div style="width:410px;height:864px;padding:10px;box-sizing:border-box;background:#0b0b0b;border-radius:58px;flex-shrink:0">
+        <div style="position:relative;width:390px;height:844px;border-radius:48px;background:#FFFDF7;color:#111111">
+          <div style="position:absolute;inset:0;border-radius:48px;overflow-y:auto;overflow-x:hidden;scrollbar-width:none">
+            <div style="padding:136px 24px 60px;display:flex;flex-direction:column">
+              <div style="font-size:12px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.18em;color:#5E594F">NOT FOR CIRCULATION</div>
+              <div style="font-size:36px;font-weight:500;letter-spacing:.2em;line-height:1.1;padding-top:6px">INVENTORY</div>
+              <div style="height:1.5px;background:#D8422C;margin-top:8px"></div>
+              <div style="height:1.5px;background:#D8422C;margin-top:3px"></div>
+              <div style="font-size:17px;letter-spacing:.18em;padding-top:10px">SCRAPBOOK / VISHRUTH</div>
+              <div style="display:grid;grid-template-columns:72px minmax(0,1fr) 60px;column-gap:10px;padding:22px 0 8px;font-family:'Barlow Condensed',sans-serif;font-weight:500;font-size:13px;letter-spacing:.16em;border-bottom:1.5px solid #111111"><div>ITEM</div><div>DESCRIPTION</div><div style="text-align:right">LEFT ON</div></div>
+              <sc-for list="{{ invSections }}" as="sec" hint-placeholder-count="2">
+                <div style="display:flex;flex-direction:column">
+                  <div style="font-size:19px;padding:18px 0 4px;display:flex;flex-direction:column;align-items:flex-start">{{ sec.title }}<svg width="90" height="6" style="overflow:visible;fill:none;stroke:#D8422C;stroke-width:1.6;stroke-linecap:round"><g style="filter:url(#ink)"><path d="M-2 3 C30 1 60 5 92 2"></path></g></svg></div>
+                  <sc-for list="{{ sec.rows }}" as="it" hint-placeholder-count="3">
+                    <div style="display:grid;grid-template-columns:72px minmax(0,1fr) 60px;column-gap:10px;align-items:center;min-height:82px;border-bottom:1px solid #DCD3C3;cursor:pointer" onClick="{{ it.pick }}">
+                      <div style="height:72px;display:flex;align-items:center;justify-content:center;pointer-events:none"><dc-import name="Item" type="{{ it.type }}" text="{{ it.text }}" label="{{ it.label }}" denom="{{ it.denom }}" dur="{{ it.dur }}" src="{{ it.src }}" from="{{ it.from }}" viewer="other" bare="{{ true }}" postmark="{{ false }}" attach="none" flippable="{{ false }}" rot="{{ it.rot }}" zoom="{{ it.z }}" hint-size="{{ it.hint }}"></dc-import></div>
+                      <div style="display:flex;flex-direction:column;gap:5px;min-width:0">
+                        <div style="font-size:15px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ it.desc }}</div>
+                        <div style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.14em"><span>FROM</span><span style="display:block;width:54px;height:10px;background:#111111;border-radius:2px;transform:rotate(-1deg)"></span></div>
+                      </div>
+                      <div style="text-align:right;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:.08em">{{ it.when }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <sc-if value="{{ invOpen }}">
+            <div style="position:absolute;inset:0;z-index:40;border-radius:48px;background:rgba(24,22,22,.34);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px;padding-top:60px;box-sizing:border-box" onClick="{{ invClose }}">
+              <sc-for list="{{ invSel }}" as="it"><dc-import name="Item" type="{{ it.type }}" text="{{ it.text }}" label="{{ it.label }}" city="{{ it.city }}" date="{{ it.date }}" year="{{ it.year }}" denom="{{ it.denom }}" dur="{{ it.dur }}" src="{{ it.src }}" from="{{ it.from }}" viewer="other" rot="{{ it.rot }}" zoom="{{ it.z }}" hint-size="{{ it.hint }}"></dc-import></sc-for>
+              <div style="padding:12px 22px;background:#FFFFFF;border-radius:360px;font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:15px;color:#181616;box-shadow:0 7px 7.5px rgba(143,143,143,.1), 0 27px 13.5px rgba(143,143,143,.09);cursor:pointer">put it back</div>
+            </div>
+          </sc-if>
+          <div style="position:absolute;top:17px;left:38px;z-index:50;font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:15px">9:41</div>
+          <div style="position:absolute;top:52px;left:37.5px;z-index:50"><dc-import name="ScrapbookHeader" hint-size="315px,61px"></dc-import></div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px">1b</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#CFE8D8">CONSERVATIVE · SHIPPABLE · RANK 7</div></div>
+        <div style="font-size:32px;line-height:1">inventory</div>
+        <div style="font-size:18px;line-height:1.35">A typed inventory sheet of everything people left. Tap a row to lift the item off the page.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · INDEX BY TYPE</div>Grouped by item type, newest first inside each group. Reads like a record of the ways people think of you: in photos, in words, out loud, in links.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · SCROLL + LIFT</div>Tap a row: the item lifts to full size, 300ms cubic-bezier(.3,1.3,.5,1), scrim fades in 200ms. Tap the item to flip; "put it back" returns it to its row.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>48–64px thumbnails in the ITEM column, full size only when lifted.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>Cream form paper, red double rule, form column heads, hand-underlined section names. No quantity column.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>4: a short sheet, empty sections left out. 80: each section shows its five newest plus an underlined "the rest of the stamps". The fastest of the seven to scan.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>Day and month in LEFT ON. Every row has FROM followed by a redaction bar, so the censoring reads as part of the form.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>The catalogue card for this person unfolds into the full sheet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1c -->
+    <div id="1c" data-screen-label="1c same hand" style="width:876px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:36px;align-items:flex-start">
+      <div style="width:410px;height:864px;padding:10px;box-sizing:border-box;background:#0b0b0b;border-radius:58px;flex-shrink:0">
+        <div style="position:relative;width:390px;height:844px;border-radius:48px;background:#FAF7F0;color:#111111">
+          <div style="position:absolute;inset:0;border-radius:48px;overflow:hidden">
+            <div onScroll="{{ handScroll }}" style="position:absolute;left:0;right:0;top:136px;height:600px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;display:flex;gap:14px;padding:0 32px;box-sizing:border-box;scrollbar-width:none">
+              <sc-for list="{{ hands }}" as="hd" hint-placeholder-count="2">
+                <div style="position:relative;width:326px;height:560px;flex-shrink:0;scroll-snap-align:center;background:#F4ECE2;border-radius:3px;box-shadow:0 1px 2px rgba(60,40,20,.12), 0 8px 18px rgba(143,143,143,.18);padding:20px 18px 0;box-sizing:border-box;display:flex;flex-direction:column;gap:14px">
+                  <div style="display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:10px;row-gap:8px;align-items:center;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.16em">
+                    <div>HOLDER</div><div style="height:15px;width:140px;background:#111111;border-radius:2px;transform:rotate(-1deg)"></div>
+                    <div>HAND NO.</div><div style="font-size:15px">{{ hd.no }}</div>
+                    <div>FIRST ENTRY</div><div style="font-size:15px">{{ hd.first }}</div>
+                    <div>LATEST</div><div style="font-size:15px">{{ hd.last }}</div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #C9BBA9;border-left:1px solid #C9BBA9">
+                    <sc-for list="{{ hd.slots }}" as="sl" hint-placeholder-count="4">
+                      <div style="height:172px;border-right:1px solid #C9BBA9;border-bottom:1px solid #C9BBA9;display:flex;align-items:center;justify-content:center;padding-top:12px;box-sizing:border-box">
+                        <sc-if value="{{ sl.has }}"><dc-import name="Item" type="{{ sl.type }}" text="{{ sl.text }}" label="{{ sl.label }}" city="{{ sl.city }}" date="{{ sl.date }}" year="{{ sl.year }}" denom="{{ sl.denom }}" dur="{{ sl.dur }}" src="{{ sl.src }}" from="{{ sl.from }}" viewer="other" field="#F4ECE2" rot="{{ sl.rot }}" zoom="{{ sl.z }}" hint-size="{{ sl.hint }}"></dc-import></sc-if>
+                        <sc-if value="{{ sl.empty }}"><div style="font-size:14px;color:#5E594F">room for more</div></sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="position:relative;height:56px;margin-top:4px">
+                    <svg width="290" height="40" style="position:absolute;left:0;top:0;overflow:visible;fill:none;stroke:#111111;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><g style="filter:url(#ink)"><path d="{{ scrib }}"></path><path d="M0 32 L290 31" style="stroke-width:1"></path></g></svg>
+                    <div style="position:absolute;left:0;top:38px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:.16em">SIGNATURE OF THE HOLDER</div>
+                  </div>
+                </div>
+              </sc-for>
+              <div style="width:18px;flex-shrink:0"></div>
+            </div>
+            <div style="position:absolute;left:0;right:0;top:752px;display:flex;flex-direction:column;align-items:center;gap:10px">
+              <div style="display:flex;gap:8px"><sc-for list="{{ handDots }}" as="d" hint-placeholder-count="4"><div style="width:8px;height:8px;border-radius:4px;border:1.2px solid #111111;background:{{ d.bg }}"></div></sc-for></div>
+              <div style="font-size:15px">swipe for another hand</div>
+            </div>
+          </div>
+          <div style="position:absolute;top:17px;left:38px;z-index:50;font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:15px">9:41</div>
+          <div style="position:absolute;top:52px;left:37.5px;z-index:50"><dc-import name="ScrapbookHeader" hint-size="315px,61px"></dc-import></div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px">1c</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#F2C230">BOLD · RANK 1</div></div>
+        <div style="font-size:32px;line-height:1">same hand</div>
+        <div style="font-size:18px;line-height:1.35">One passport page per friend, holder's name redacted.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · PERSON, ANONYMISED</div>Who left it. Each contributor gets a page, ordered by their latest entry. You see the shape of each friendship (one sends songs, one sends photos) without knowing who it is.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · SWIPE</div>Horizontal scroll-snap, next page peeks 30px. Optional page curl while dragging: rotateY up to −12° at the midpoint, release 340ms ease-out.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>Stamp-collection grid from the passport reference, 4 slots per page, items at 0.55–0.62×, one per slot, ±4°.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>Warm passport paper, ruled slots, Barlow form fields, a signature scribbled out.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>4: one or two hands, empty slots say "room for more". 80: about 14 hands, each running to several pages, with a thin strip of hand numbers along the top to jump between them.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>HOLDER is redacted; FIRST ENTRY and LATEST are dates, not tallies. Risk: grouping can give someone away when only one friend fits a pattern. The owner can switch the visitor view to "mix the hands".</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>The tab pulls a small booklet out of the folder, which opens on the most recent hand.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1d -->
+    <div id="1d" data-screen-label="1d the pile" style="width:876px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:36px;align-items:flex-start">
+      <div style="width:410px;height:864px;padding:10px;box-sizing:border-box;background:#0b0b0b;border-radius:58px;flex-shrink:0">
+        <div style="position:relative;width:390px;height:844px;border-radius:48px;background:#D7BC8F;color:#111111">
+          <div style="position:absolute;inset:0;border-radius:48px;overflow:hidden;user-select:none">
+            <svg width="390" height="844" style="position:absolute;inset:0"><rect width="390" height="844" fill="url(#sd-kraft)"></rect></svg>
+            <sc-for list="{{ pile }}" as="it" hint-placeholder-count="3">
+              <div style="position:absolute;left:{{ it.x }}px;top:{{ it.y }}px;z-index:{{ it.zi }};opacity:{{ it.op }};transform:{{ it.tf }};transition:{{ it.tr }};pointer-events:{{ it.pe }};cursor:{{ it.cur }};touch-action:none" onPointerDown="{{ it.down }}" onPointerMove="{{ pileMove }}" onPointerUp="{{ pileUp }}" onPointerCancel="{{ pileUp }}" onClickCapture="{{ pileCap }}"><dc-import name="Item" type="{{ it.type }}" text="{{ it.text }}" label="{{ it.label }}" city="{{ it.city }}" date="{{ it.date }}" year="{{ it.year }}" denom="{{ it.denom }}" dur="{{ it.dur }}" src="{{ it.src }}" from="{{ it.from }}" viewer="other" attach="{{ it.attach }}" field="#D7BC8F" flippable="{{ it.flip }}" rot="{{ 0 }}" zoom="{{ it.z }}" hint-size="{{ it.hint }}"></dc-import></div>
+            </sc-for>
+            <div style="position:absolute;left:0;right:0;top:668px;display:flex;justify-content:center;align-items:center;gap:14px;z-index:120">
+              <div style="background:#161616;color:#FAF7F0;font-family:'Barlow Condensed',sans-serif;font-weight:500;font-size:14px;letter-spacing:.22em;padding:5px 10px 4px 12px;transform:rotate(-1.5deg);box-shadow:0 1px 2px rgba(0,0,0,.25);white-space:nowrap">{{ pileWhen }}</div>
+              <div style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-weight:500;font-size:13px;letter-spacing:.16em"><span>FROM</span><span style="display:block;width:64px;height:12px;background:#111111;border-radius:2px;transform:rotate(1deg)"></span></div>
+            </div>
+            <div style="position:absolute;left:0;right:0;top:716px;text-align:center;font-size:16px;z-index:120">flick the top one away</div>
+            <sc-if value="{{ pileNotNewest }}">
+              <div style="position:absolute;left:0;right:0;bottom:36px;display:flex;justify-content:center;z-index:120"><div style="padding:12px 22px;background:#FFFFFF;border-radius:360px;font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:15px;color:#181616;box-shadow:0 7px 7.5px rgba(80,60,30,.12), 0 27px 13.5px rgba(80,60,30,.1);cursor:pointer" onClick="{{ pileReset }}">start from the newest</div></div>
+            </sc-if>
+          </div>
+          <div style="position:absolute;top:17px;left:38px;z-index:150;font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:15px">9:41</div>
+          <div style="position:absolute;top:52px;left:37.5px;z-index:150"><dc-import name="ScrapbookHeader" hint-size="315px,61px"></dc-import></div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px">1d</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#F2C230">BOLD · RANK 6</div></div>
+        <div style="font-size:32px;line-height:1">the pile</div>
+        <div style="font-size:18px;line-height:1.35">Everything in one messy heap on the desk. Flick the top one away to see the next.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · STACK, NEWEST ON TOP</div>Recency, one at a time. Each moment was given on its own, so you take each one on its own.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · DRAG / FLICK</div>The top item follows the finger 1:1 and tilts dx × 0.06°. Past 90px (or a flick over 0.5px/ms) it flies out, 260ms cubic-bezier(.2,.7,.3,1), then slides back in under the pile. Short of that it springs back, 420ms cubic-bezier(.3,1.3,.5,1). Tap still flips.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>All types at about 1.1×, centred, the top six visible, each up to ±8° and 12px off-centre.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>Kraft desk, label tape for the date, tape and clips on some items.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>4: a small pile you get through in seconds, then it starts over. 80: the pile looks the same (six visible); "start from the newest" brings you back.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>Label tape under the pile shows the top item's date, with a FROM redaction beside it. Only ever one date on screen.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>The folder tips over and the pile slides out onto the desk, 500ms.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1e -->
+    <div id="1e" data-screen-label="1e year dial" style="width:876px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:36px;align-items:flex-start">
+      <div style="width:410px;height:864px;padding:10px;box-sizing:border-box;background:#0b0b0b;border-radius:58px;flex-shrink:0">
+        <div style="position:relative;width:390px;height:844px;border-radius:48px;background:#F6F1E6;color:#111111">
+          <div style="position:absolute;inset:0;border-radius:48px;overflow:hidden;user-select:none">
+            <svg width="390" height="844" style="position:absolute;inset:0"><rect width="390" height="844" fill="url(#sd-dot)"></rect></svg>
+            <div style="position:absolute;left:28px;top:136px;display:flex;align-items:baseline;gap:12px">
+              <div style="font-size:40px;line-height:1">{{ dMonth }}</div>
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:.18em">{{ dYear }}</div>
+            </div>
+            <sc-if value="{{ dQuiet }}">
+              <div style="position:absolute;left:95px;top:290px;width:200px;height:200px;display:flex;align-items:center;justify-content:center">
+                <svg width="200" height="200" style="position:absolute;inset:0;overflow:visible;fill:none;stroke:#111111;stroke-width:1.4;stroke-dasharray:6 7"><g style="filter:url(#ink)"><path d="M4 6 L196 3 L197 196 L3 197 Z"></path></g></svg>
+                <div style="position:relative;font-size:17px;color:#5E594F">a quiet month</div>
+              </div>
+            </sc-if>
+            <sc-for list="{{ dialItems }}" as="it" hint-placeholder-count="2">
+              <div style="position:absolute;left:{{ it.x }}px;top:{{ it.y }}px;opacity:{{ it.op }};transform:{{ it.tf }};pointer-events:{{ it.pe }};transition:opacity 300ms ease, transform 300ms cubic-bezier(.2,.8,.2,1)"><dc-import name="Item" type="{{ it.type }}" text="{{ it.text }}" label="{{ it.label }}" city="{{ it.city }}" date="{{ it.date }}" year="{{ it.year }}" denom="{{ it.denom }}" dur="{{ it.dur }}" src="{{ it.src }}" from="{{ it.from }}" viewer="other" attach="{{ it.attach }}" field="#F6F1E6" rot="{{ it.rot }}" zoom="{{ it.z }}" hint-size="{{ it.hint }}"></dc-import></div>
+            </sc-for>
+            <div style="position:absolute;left:0;bottom:0;width:390px;height:260px;touch-action:none;cursor:grab" onPointerDown="{{ dialDown }}" onPointerMove="{{ dialMove }}" onPointerUp="{{ dialUp }}" onPointerLeave="{{ dialUp }}">
+            <svg width="390" height="260" style="position:absolute;left:0;top:0;overflow:visible">
+              <circle cx="195" cy="330" r="268" fill="#FFFFFF" style="filter:drop-shadow(0 -4px 10px rgba(143,143,143,.22))"></circle>
+              <g style="transform:rotate({{ dRot }}deg);transform-origin:195px 330px;transition:{{ dTr }}">
+                <g style="filter:url(#ink)" fill="none" stroke="#111111" stroke-linecap="round">
+                  <circle cx="195" cy="330" r="246" stroke-width="1.4"></circle>
+                  <path d="{{ dMinor }}" stroke-width="1"></path>
+                  <path d="{{ dMajor }}" stroke-width="1.8"></path>
+                </g>
+                <sc-for list="{{ months }}" as="mo" hint-placeholder-count="5">
+                  <g transform="rotate({{ mo.a }} 195 330)">
+                    <circle cx="195" cy="136" r="3.6" fill="{{ mo.fill }}" stroke="#111111" stroke-width="1.3"></circle>
+                  </g>
+                </sc-for>
+              </g>
+            </svg>
+            <div style="position:absolute;left:0;top:0;width:390px;height:260px;transform:rotate({{ dRot }}deg);transform-origin:195px 330px;transition:{{ dTr }}">
+              <sc-for list="{{ months }}" as="mo" hint-placeholder-count="5">
+                <div style="position:absolute;left:160px;top:100px;width:70px;height:28px;line-height:28px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:500;font-size:15px;letter-spacing:1.6px;color:#111111;white-space:nowrap;cursor:pointer;transform:rotate({{ mo.a }}deg);transform-origin:35px 230px" onClick="{{ mo.pick }}">{{ mo.label }}</div>
+              </sc-for>
+            </div>
+            <svg width="390" height="260" style="position:absolute;left:0;top:0;overflow:visible;pointer-events:none">
+              <path d="M195 50 L195 88" stroke="#D8422C" stroke-width="2.6" stroke-linecap="round"></path>
+              <path d="M188 46 L202 46 L195 56 Z" fill="#D8422C"></path>
+            </svg>
+            </div>
+          </div>
+          <div style="position:absolute;top:17px;left:38px;z-index:50;font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:15px">9:41</div>
+          <div style="position:absolute;top:52px;left:37.5px;z-index:50"><dc-import name="ScrapbookHeader" hint-size="315px,61px"></dc-import></div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px">1e</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#F2C230">BOLD · RANK 4</div></div>
+        <div style="font-size:32px;line-height:1">the year dial</div>
+        <div style="font-size:18px;line-height:1.35">Turn a dial through the year; each month's moments come up above it.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · TIME, SCRUBBED</div>The selected month decides what's on the page. Filled dots mark months with moments, hollow dots mark quiet ones, so the rhythm of the year shows without numbers.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · ROTARY DRAG</div>Drag across the dial: rotation follows dx × 0.3° (about 50px per month), snaps to the nearest month on release, 380ms cubic-bezier(.2,.8,.2,1). Items cross-fade 300ms with a 24px rise. Light haptic tick per month. Tapping a month label also works.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>1–3 per month, hand-placed and larger than in the other directions (0.85–1.0×).</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>Dot-grid paper. The dial body is a soft UI component; ticks and labels are drawn by hand; red needle.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>4: mostly hollow dots and "a quiet month", which reads as waiting rather than empty. 80: months with more than four items show a small pile; the dial gets one ring per year.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>The month is the headline. Exact date and censored "from" are on the backs.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>The notch of the folder tab slides down and becomes the dial's needle.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1f -->
+    <div id="1f" data-screen-label="1f envelopes" style="width:876px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:36px;align-items:flex-start">
+      <div style="width:410px;height:864px;padding:10px;box-sizing:border-box;background:#0b0b0b;border-radius:58px;flex-shrink:0">
+        <div style="position:relative;width:390px;height:844px;border-radius:48px;background:#FAF7F0;color:#111111">
+          <div ref="{{ f1Ref }}" style="position:absolute;inset:0;border-radius:48px;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;user-select:none">
+           <div style="position:relative;height:{{ f1H }}px;overflow:hidden">
+            <svg width="390" height="{{ f1H }}" style="position:absolute;left:0;top:0"><rect width="390" height="{{ f1H }}" fill="url(#sd-grid)"></rect></svg>
+            <sc-for list="{{ envs }}" as="ev" hint-placeholder-count="3">
+              <div style="position:absolute;left:30px;top:0;width:330px;height:196px;transform:translateY({{ ev.y }}px);opacity:{{ ev.op }};pointer-events:{{ ev.pe }};transition:transform 420ms cubic-bezier(.2,.8,.2,1), opacity 300ms ease;cursor:pointer" onClick="{{ ev.toggle }}">
+                <svg width="330" height="196" style="position:absolute;left:0;top:0;overflow:visible"><g style="filter:url(#ink)" stroke="#111111" stroke-width="1.8" stroke-linejoin="round"><path d="M2 4 L165 -54 L328 2" fill="#C9AC7D"></path><path d="M2 4 L328 2 L329 194 L3 195 Z" fill="url(#sd-kraft)"></path></g></svg>
+                <sc-for list="{{ ev.items }}" as="it" hint-placeholder-count="2">
+                  <div style="position:absolute;left:{{ it.x }}px;top:{{ it.y }}px;opacity:{{ it.op }};transition:left 420ms cubic-bezier(.2,.8,.2,1) {{ it.delay }}ms, top 420ms cubic-bezier(.2,.8,.2,1) {{ it.delay }}ms, opacity 200ms"><dc-import name="Item" type="{{ it.type }}" text="{{ it.text }}" label="{{ it.label }}" city="{{ it.city }}" date="{{ it.date }}" year="{{ it.year }}" denom="{{ it.denom }}" dur="{{ it.dur }}" src="{{ it.src }}" from="{{ it.from }}" viewer="other" attach="{{ it.attach }}" flippable="{{ it.flip }}" rot="{{ it.rot }}" zoom="{{ it.z }}" hint-size="{{ it.hint }}"></dc-import></div>
+                </sc-for>
+                <svg width="330" height="196" style="position:absolute;left:0;top:0;overflow:visible;pointer-events:none;filter:drop-shadow(0 4px 6px rgba(80,60,30,.18))"><g style="filter:url(#ink)" stroke="#111111" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M3 92 L165 148 L328 90 L329 194 L3 195 Z" fill="url(#sd-kraft)"></path><path d="M4 194 L128 132 M328 193 L204 132" fill="none" stroke-width="1.2"></path></g></svg>
+                <div style="position:absolute;left:22px;top:156px;background:#161616;color:#FAF7F0;font-family:'Barlow Condensed',sans-serif;font-weight:500;font-size:14px;letter-spacing:.22em;padding:5px 10px 4px 12px;transform:rotate(-1.5deg);box-shadow:0 1px 2px rgba(0,0,0,.25);white-space:nowrap;pointer-events:none">{{ ev.label }}</div>
+                <div style="position:absolute;right:20px;top:150px;width:24px;height:28px;background:#D8422C;transform:rotate(4deg);pointer-events:none"></div>
+              </div>
+            </sc-for>
+            </div>
+            <sc-if value="{{ envOpen }}">
+              <div style="position:absolute;left:0;right:0;bottom:30px;display:flex;justify-content:center;z-index:20"><div style="padding:12px 22px;background:#FFFFFF;border-radius:360px;font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:15px;color:#181616;box-shadow:0 7px 7.5px rgba(143,143,143,.1), 0 27px 13.5px rgba(143,143,143,.09);cursor:pointer" onClick="{{ envClose }}">put them back</div></div>
+            </sc-if>
+          </div>
+          <div style="position:absolute;top:17px;left:38px;z-index:50;font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:15px">9:41</div>
+          <div style="position:absolute;top:52px;left:37.5px;z-index:50"><dc-import name="ScrapbookHeader" hint-size="315px,61px"></dc-import></div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px">1f</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#CFE8D8">MIDDLE GROUND · RANK 5</div></div>
+        <div style="font-size:32px;line-height:1">seasons in envelopes</div>
+        <div style="font-size:18px;line-height:1.35">A kraft envelope per season with a few moments poking out. Tap one to spill it.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · CONTAINER BY SEASON</div>Season. Containers turn a long scrapbook into a few closed things you choose to open, which keeps the page calm and each opening a small event.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · TAP TO SPILL</div>Tap an envelope: it drops to the bottom, 420ms cubic-bezier(.2,.8,.2,1), and its items rise and fan out with a 30ms stagger while the other envelopes slide away. Tap the envelope or "put them back" to reverse.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>Closed: up to three peek out, tucked behind the pocket. Open: up to six fanned in a loose collage, each flippable.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>Kraft with an open flap, label tape, red postage mark (the Collections folder reference), grid desk.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>4: one or two envelopes with a single item each, which looks like a letter waiting. 80: about eight seasons; a full envelope fans into two rows and swipes to a second fan.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>Season on the tape; exact date and censored "from" on each item's back.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>Opening the folder reveals envelopes inside it: the drawer metaphor carries straight through.</div>
+        </div>
+        <div style="background:#1b1a18;border:1px solid #403d38;border-radius:8px;padding:14px 16px 16px;display:flex;flex-direction:column;gap:14px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.2em;color:#F2C230">HARNESS · NOT PART OF THE APP</div>
+          <sc-for list="{{ hF1 }}" as="c" hint-placeholder-count="1">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="font-size:15px">{{ c.label }}</span><span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:#CFE8D8">{{ c.readout }}</span></div>
+              <div style="display:flex;align-items:center;gap:10px"><input type="range" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ c.value }}" onChange="{{ c.set }}" style="flex:1;min-width:0;accent-color:#F2C230;cursor:pointer"><div style="padding:5px 10px;border:1px solid #5a564f;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.14em;color:#FAF7F0;cursor:pointer;white-space:nowrap" onClick="{{ c.reset }}">RESET TO DEFAULT</div></div>
+              <div style="font-size:12.5px;line-height:1.4;color:#B9B3A6">{{ c.hint }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1g -->
+    <div id="1g" data-screen-label="1g theme spreads" style="width:876px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:36px;align-items:flex-start">
+      <div style="width:410px;height:864px;padding:10px;box-sizing:border-box;background:#0b0b0b;border-radius:58px;flex-shrink:0">
+        <div style="position:relative;width:390px;height:844px;border-radius:48px;background:#FAF7F0;color:#111111">
+          <div style="position:absolute;inset:0;border-radius:48px;overflow:hidden">
+            <div ref="{{ gRef }}" onScroll="{{ gScroll }}" style="position:absolute;inset:0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;display:flex;scrollbar-width:none">
+
+              <div style="position:relative;width:390px;height:844px;flex-shrink:0;scroll-snap-align:start">
+                <svg width="390" height="844" style="position:absolute;inset:0;overflow:visible"><rect width="390" height="844" fill="url(#sd-grid)"></rect><g style="filter:url(#ink)" fill="none" stroke="#111111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 168 C16 142 80 130 150 132 C196 134 206 152 198 168 C184 188 70 192 36 182 C14 176 14 154 44 144"></path><path d="M120 640 C150 634 158 620 166 590 M154 598 L166 588 L172 602"></path></g></svg>
+                <div style="position:absolute;left:36px;top:142px;font-size:28px;line-height:1">late nights</div>
+                <sc-for list="{{ g0 }}" as="it" hint-placeholder-count="3"><div style="position:absolute;left:{{ it.x }}px;top:{{ it.y }}px"><dc-import name="Item" type="{{ it.type }}" text="{{ it.text }}" label="{{ it.label }}" city="{{ it.city }}" date="{{ it.date }}" year="{{ it.year }}" denom="{{ it.denom }}" dur="{{ it.dur }}" src="{{ it.src }}" from="{{ it.from }}" viewer="other" attach="{{ it.attach }}" rot="{{ it.rot }}" zoom="{{ it.z }}" hint-size="{{ it.hint }}"></dc-import></div></sc-for>
+                <div style="position:absolute;left:36px;top:632px;font-size:17px">press play</div>
+              </div>
+
+              <div style="position:relative;width:390px;height:844px;flex-shrink:0;scroll-snap-align:start">
+                <svg width="390" height="844" style="position:absolute;inset:0;overflow:visible"><rect width="390" height="844" fill="url(#sd-grid)"></rect><g style="filter:url(#ink)" fill="none" stroke="#111111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M24 168 C18 142 70 132 128 134 C168 136 176 152 168 168 C156 186 66 190 38 180 C18 174 18 154 46 146"></path><path d="M300 254 C304 262 302 268 298 276 M292 268 L298 278 L306 270"></path></g></svg>
+                <div style="position:absolute;left:38px;top:142px;font-size:28px;line-height:1">laughing</div>
+                <sc-for list="{{ g1 }}" as="it" hint-placeholder-count="3"><div style="position:absolute;left:{{ it.x }}px;top:{{ it.y }}px"><dc-import name="Item" type="{{ it.type }}" text="{{ it.text }}" label="{{ it.label }}" city="{{ it.city }}" date="{{ it.date }}" year="{{ it.year }}" denom="{{ it.denom }}" dur="{{ it.dur }}" src="{{ it.src }}" from="{{ it.from }}" viewer="other" attach="{{ it.attach }}" rot="{{ it.rot }}" zoom="{{ it.z }}" hint-size="{{ it.hint }}"></dc-import></div></sc-for>
+                <div style="position:absolute;left:238px;top:190px;width:112px;height:56px;background:#F2C230;transform:rotate(6deg);box-shadow:0 2px 4px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:500;letter-spacing:.06em">READ THIS<div style="position:absolute;left:30px;top:-9px;width:52px;height:17px;background:rgba(255,253,247,.7);border:1px solid rgba(17,17,17,.12);transform:rotate(-4deg)"></div></div>
+              </div>
+
+              <div style="position:relative;width:390px;height:844px;flex-shrink:0;scroll-snap-align:start">
+                <svg width="390" height="844" style="position:absolute;inset:0;overflow:visible"><rect width="390" height="844" fill="url(#sd-grid)"></rect><g style="filter:url(#ink)" fill="none" stroke="#111111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M26 168 C20 144 54 134 92 136 C122 138 130 152 124 166 C114 184 60 188 40 180 C22 174 22 156 48 148"></path><path d="M100 300 C200 280 320 330 286 392 C262 452 160 446 128 534" stroke-dasharray="7 8" stroke-width="1.6"></path></g></svg>
+                <div style="position:absolute;left:44px;top:142px;font-size:28px;line-height:1">trips</div>
+                <sc-for list="{{ g2 }}" as="it" hint-placeholder-count="3"><div style="position:absolute;left:{{ it.x }}px;top:{{ it.y }}px"><dc-import name="Item" type="{{ it.type }}" text="{{ it.text }}" label="{{ it.label }}" city="{{ it.city }}" date="{{ it.date }}" year="{{ it.year }}" denom="{{ it.denom }}" dur="{{ it.dur }}" src="{{ it.src }}" from="{{ it.from }}" viewer="other" attach="{{ it.attach }}" rot="{{ it.rot }}" zoom="{{ it.z }}" hint-size="{{ it.hint }}"></dc-import></div></sc-for>
+              </div>
+
+              <div style="position:relative;width:390px;height:844px;flex-shrink:0;scroll-snap-align:start">
+                <svg width="390" height="844" style="position:absolute;inset:0;overflow:visible"><rect width="390" height="844" fill="url(#sd-grid)"></rect><g style="filter:url(#ink)" fill="none" stroke="#111111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M26 168 C20 144 64 134 108 136 C142 138 150 152 144 166 C134 184 66 188 42 180 C22 174 22 156 50 148"></path><path d="M226 650 C250 648 262 634 268 612 M258 618 L268 608 L276 620"></path></g></svg>
+                <div style="position:absolute;left:44px;top:142px;font-size:28px;line-height:1">songs</div>
+                <sc-for list="{{ g3 }}" as="it" hint-placeholder-count="2"><div style="position:absolute;left:{{ it.x }}px;top:{{ it.y }}px"><dc-import name="Item" type="{{ it.type }}" text="{{ it.text }}" label="{{ it.label }}" city="{{ it.city }}" date="{{ it.date }}" year="{{ it.year }}" denom="{{ it.denom }}" dur="{{ it.dur }}" src="{{ it.src }}" from="{{ it.from }}" viewer="other" attach="{{ it.attach }}" rot="{{ it.rot }}" zoom="{{ it.z }}" hint-size="{{ it.hint }}"></dc-import></div></sc-for>
+                <div style="position:absolute;left:112px;top:640px;font-size:17px">put these on</div>
+              </div>
+
+            </div>
+            <div style="position:absolute;left:0;right:0;bottom:34px;display:flex;justify-content:center;z-index:20">
+              <div style="display:flex;gap:2px;padding:4px;background:#ECE7DC;border-radius:360px;box-shadow:0 7px 7.5px rgba(143,143,143,.1), 0 27px 13.5px rgba(143,143,143,.09)">
+                <sc-for list="{{ themes }}" as="t" hint-placeholder-count="4"><div style="padding:9px 13px;border-radius:360px;background:{{ t.bg }};box-shadow:{{ t.sh }};font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:14px;letter-spacing:-0.3px;color:#181616;white-space:nowrap;cursor:pointer;transition:background 200ms ease" onClick="{{ t.go }}">{{ t.label }}</div></sc-for>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;top:17px;left:38px;z-index:50;font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:15px">9:41</div>
+          <div style="position:absolute;top:52px;left:37.5px;z-index:50"><dc-import name="ScrapbookHeader" hint-size="315px,61px"></dc-import></div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px">1g</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#CFE8D8">MIDDLE GROUND · RANK 3</div></div>
+        <div style="font-size:32px;line-height:1">theme spreads</div>
+        <div style="font-size:18px;line-height:1.35">Annotated collage spreads, one per kind of moment.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · THEME</div>What the moment was about. The sender picks one of four to six chips when dropping (late nights, laughing, trips, songs…). The spreads show which sides of you people notice.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · SWIPE + PILL NAV</div>Horizontal swipe between spreads; the pill control below jumps straight to a theme (smooth scroll, ~360ms). Pinch out to see every spread as a contact sheet.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>2–4 per spread laid out by the collage rules: hero, satellites, one loud rotation.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>Grid paper, circled theme word, arrows, a taped READ THIS sticky, a dashed route between trip stamps.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>4: one or two spreads; themes with nothing in them don't appear. 80: a theme runs to several spreads, and annotations are placed from a small library of arrows and notes.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>No dates on the spread at all. Date and censored "from" are on the backs.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>The person's name on the tab writes itself into the first circled theme word.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section data-screen-label="turn 2 · envelopes, wheels, add" style="padding:40px 80px 200px;width:max-content;min-width:100%;box-sizing:border-box;font-family:'Shantell Sans',cursive;font-weight:300;color:#FAF7F0;display:flex;flex-direction:column;gap:64px">
+
+  <header style="display:flex;flex-direction:column;gap:12px;max-width:1100px;border-top:1px solid #3a3835;padding-top:72px">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:.2em">TURN 2 · ADDED BELOW TURN 1 SO NO EXISTING FRAME MOVES</div>
+    <div style="font-size:56px;line-height:1">envelopes, wheels, and the add button</div>
+  </header>
+
+  <div id="idx" data-screen-label="00 index changelog" style="width:1800px;box-sizing:border-box;background:#FAF7F0;color:#111111;border-radius:6px;padding:40px;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:center;gap:12px"><div style="min-width:40px;height:40px;padding:0 12px;box-sizing:border-box;border-radius:20px;background:#111111;color:#FAF7F0;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px">00</div><div style="font-size:32px;line-height:1">index / changelog</div></div>
+    <div style="display:grid;grid-template-columns:110px 230px minmax(0,1fr) 300px;column-gap:20px;font-size:15px;line-height:1.4">
+      <div style="display:contents;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em"><div style="padding:6px 0;border-bottom:1.5px solid #111111">NO.</div><div style="padding:6px 0;border-bottom:1.5px solid #111111">NAME</div><div style="padding:6px 0;border-bottom:1.5px solid #111111">WHAT IT IS</div><div style="padding:6px 0;border-bottom:1.5px solid #111111">STATUS</div></div>
+      <div style="grid-column:1 / -1;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;padding:14px 0 4px">EXISTING (TURN 1)</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3">—</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">title block</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">"seven ways to organise a page" intro.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">unchanged</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3">step 1</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">findings</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">Collage algorithm, materials, motion vocabulary.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">unchanged</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3">—</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">ranking + header check</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">Turn 1 ranking and ScrapbookHeader vs Figma 101:1601.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">unchanged</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3"><a href="#1a">1a</a></div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">torn strata</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">One torn-paper strip per month, newest on top.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">unchanged</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3"><a href="#1b">1b</a></div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">inventory</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">Typed inventory sheet by item type; tap to lift.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">unchanged</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3"><a href="#1c">1c</a></div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">same hand</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">Passport page per friend, holder redacted.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">unchanged</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3"><a href="#1d">1d</a></div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">the pile</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">One heap on kraft; flick the top one away.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">unchanged</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3"><a href="#1e">1e</a></div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">the year dial</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">Rotary dial scrubs months; items cross-fade above.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">unchanged</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3"><a href="#1f">1f</a></div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">seasons in envelopes</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">Kraft envelope per season; tap to spill.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3;font-weight:500">unchanged + spacing control added (default = today's look)</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3"><a href="#1g">1g</a></div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">theme spreads</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">Annotated collage spread per theme, pill nav.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">unchanged</div>
+      <div style="grid-column:1 / -1;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;padding:18px 0 4px">NEW (TURN 2)</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3"><a href="#idx">00</a></div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">index / changelog</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">This list, so every change is traceable.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">new</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3"><a href="#1f-2">1f-2</a></div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">outline envelope</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">Line-only envelopes on dot paper, same spill. Less visual weight than kraft.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">new · spacing harness</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3"><a href="#1f-3">1f-3</a></div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">vellum envelope</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">Translucent glassine; contents visible when closed.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">new · spacing harness</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3"><a href="#1f-4">1f-4</a></div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">pocket lip</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">Only the pocket edge when closed; envelope draws in on open. Echoes the catalogue drawer.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">new · spacing harness</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3"><a href="#1e-paper">1e-paper</a></div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">paper wheel</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">1e behaviour on a torn paper disc.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">new · radius + rise harness</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3"><a href="#1e-stamp">1e-stamp</a></div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">timestamp wheel</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">1e behaviour as a rubber date-stamp ring that stamps on snap.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">new · radius + rise harness</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3"><a href="#1e-tape">1e-tape</a></div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">washi wheel</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">1e behaviour as a ring of washi strips.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">new · radius + rise harness</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3"><a href="#2a">2a</a>–<a href="#2f">2f</a></div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">add placements</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">Six positions for the add button and its radial fan, each shown closed and expanded on the canvas page.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">new</div>
+      <div style="padding:7px 0;border-bottom:1px solid #DCD3C3"><a href="#2g">2g</a></div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">top two, in context</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">2b and 2a working over the 1e dial and the 1f envelopes, with the ranking.</div><div style="padding:7px 0;border-bottom:1px solid #DCD3C3">new</div>
+      <div style="grid-column:1 / -1;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;padding:18px 0 4px">NEW SUPPORTING FILES</div>
+      <div style="grid-column:1 / -1;padding:7px 0">AddFab.dc.html (button + fan), CanvasPhone.dc.html, WheelPhone.dc.html, EnvelopePhone.dc.html. Turn 1 frames don't import them, so they stay as they were.</div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:.2em">PART 1</div><div style="font-size:36px;line-height:1">quieter envelopes, same spill</div></div>
+  <div style="display:flex;flex-wrap:wrap;gap:48px;width:1800px;align-items:flex-start">
+
+    <div id="1f-2" data-screen-label="1f-2 outline envelope" style="width:876px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:36px;align-items:flex-start">
+      <div style="flex-shrink:0"><dc-import name="EnvelopePhone" look="outline" gap="{{ e2Gap }}" hint-size="410px,864px"></dc-import></div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="min-width:40px;height:40px;padding:0 12px;box-sizing:border-box;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px;white-space:nowrap">1f-2</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#CFE8D8">ENVELOPE VARIANT · RANK 2</div></div>
+        <div style="font-size:32px;line-height:1">outline envelope</div>
+        <div style="font-size:18px;line-height:1.35">A thin hand-drawn envelope on dot paper. The items carry the weight.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · SEASON</div>Same as 1f: one envelope per season, newest first.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · TAP TO SPILL</div>Unchanged from 1f. The envelope drops to the bottom, 420ms cubic-bezier(.2,.8,.2,1), its items rise and fan with a 30ms stagger, the others slide away. Tap again or "put them back" to reverse.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>Closed: up to three peek out above a blank pocket. Open: up to six in a loose fan, each flippable.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>1.4px ink line only. The pocket is filled with page colour so it still hides the items' lower halves. Red postage mark, kraft washi label written in pen.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>As 1f. 4: one or two outlines with a single item each. 80: about eight seasons in a scrolling page; a full envelope fans into two rows.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>Season on the washi label; exact date and censored "from" on the backs.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>The folder opens onto envelopes drawn in the same pen as the catalogue.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">HOW IT REDUCES CROWDING</div>Removes the kraft, the largest dark mass on 1f, so envelopes recede and the photos lead. The 20px default gap stops each flap touching the pocket above.</div>
+        </div>
+        <div style="background:#1b1a18;border:1px solid #403d38;border-radius:8px;padding:14px 16px 16px;display:flex;flex-direction:column;gap:14px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.2em;color:#F2C230">HARNESS · NOT PART OF THE APP</div>
+          <sc-for list="{{ hE2 }}" as="c" hint-placeholder-count="1">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="font-size:15px">{{ c.label }}</span><span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:#CFE8D8">{{ c.readout }}</span></div>
+              <div style="display:flex;align-items:center;gap:10px"><input type="range" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ c.value }}" onChange="{{ c.set }}" style="flex:1;min-width:0;accent-color:#F2C230;cursor:pointer"><div style="padding:5px 10px;border:1px solid #5a564f;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.14em;color:#FAF7F0;cursor:pointer;white-space:nowrap" onClick="{{ c.reset }}">RESET TO DEFAULT</div></div>
+              <div style="font-size:12.5px;line-height:1.4;color:#B9B3A6">{{ c.hint }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div id="1f-3" data-screen-label="1f-3 vellum envelope" style="width:876px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:36px;align-items:flex-start">
+      <div style="flex-shrink:0"><dc-import name="EnvelopePhone" look="vellum" gap="{{ e3Gap }}" hint-size="410px,864px"></dc-import></div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="min-width:40px;height:40px;padding:0 12px;box-sizing:border-box;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px;white-space:nowrap">1f-3</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#CFE8D8">ENVELOPE VARIANT · RANK 3</div></div>
+        <div style="font-size:32px;line-height:1">vellum envelope</div>
+        <div style="font-size:18px;line-height:1.35">Translucent glassine envelopes: you can see what's inside before you open one.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · SEASON</div>Same as 1f: one envelope per season, newest first.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · TAP TO SPILL</div>Unchanged from 1f. Items rise out through the open top while the vellum front stays in place.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>Closed: three peek out and up to two more show through the vellum, softened. Open: up to six fanned.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>Semi-opaque paper with a 2px backdrop blur, hairline edge at 20% ink, a printed Barlow season label, red postage mark at 85%.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>4: an envelope holding one item shows it almost whole. 80: up to five visible per envelope; the rest wait inside until you spill it.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>Season printed on the vellum; exact date and censored "from" on the backs.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>The folder holds glassine sleeves, like stamps in a dealer's stock book.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">HOW IT REDUCES CROWDING</div>The envelope stops being a solid block. Overlaps read as layered paper rather than clutter, and the items stay legible even when closed.</div>
+        </div>
+        <div style="background:#1b1a18;border:1px solid #403d38;border-radius:8px;padding:14px 16px 16px;display:flex;flex-direction:column;gap:14px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.2em;color:#F2C230">HARNESS · NOT PART OF THE APP</div>
+          <sc-for list="{{ hE3 }}" as="c" hint-placeholder-count="1">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="font-size:15px">{{ c.label }}</span><span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:#CFE8D8">{{ c.readout }}</span></div>
+              <div style="display:flex;align-items:center;gap:10px"><input type="range" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ c.value }}" onChange="{{ c.set }}" style="flex:1;min-width:0;accent-color:#F2C230;cursor:pointer"><div style="padding:5px 10px;border:1px solid #5a564f;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.14em;color:#FAF7F0;cursor:pointer;white-space:nowrap" onClick="{{ c.reset }}">RESET TO DEFAULT</div></div>
+              <div style="font-size:12.5px;line-height:1.4;color:#B9B3A6">{{ c.hint }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div id="1f-4" data-screen-label="1f-4 pocket lip" style="width:876px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:36px;align-items:flex-start">
+      <div style="flex-shrink:0"><dc-import name="EnvelopePhone" look="lip" gap="{{ e4Gap }}" hint-size="410px,864px"></dc-import></div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="min-width:40px;height:40px;padding:0 12px;box-sizing:border-box;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px;white-space:nowrap">1f-4</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#CFE8D8">ENVELOPE VARIANT · RANK 1</div></div>
+        <div style="font-size:32px;line-height:1">pocket lip</div>
+        <div style="font-size:18px;line-height:1.35">Closed, only the pocket's top edge shows, with items standing in it like cards in a drawer.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · SEASON</div>Same as 1f: one slot per season, newest first.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · TAP TO SPILL</div>Same spill timing as 1f. As it opens, the envelope body draws itself in (520ms stroke) and the flap follows 180ms later; putting back erases them.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>Closed: up to four stand upright in the slot at ±2°. Open: up to six fanned.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>One ink line with a thumb notch and a small label holder, like the catalogue drawer, on dot paper.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>4: a slot with one card standing in it. 80: rows of slots read like the drawers of a card catalogue.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>Season in the label holder; exact date and censored "from" on the backs.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>The strongest echo of the six envelopes: the library's drawer front becomes each season's slot.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">HOW IT REDUCES CROWDING</div>The closed footprint drops from 250 to 190px tall and loses the whole envelope body: one line per season.</div>
+        </div>
+        <div style="background:#1b1a18;border:1px solid #403d38;border-radius:8px;padding:14px 16px 16px;display:flex;flex-direction:column;gap:14px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.2em;color:#F2C230">HARNESS · NOT PART OF THE APP</div>
+          <sc-for list="{{ hE4 }}" as="c" hint-placeholder-count="1">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="font-size:15px">{{ c.label }}</span><span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:#CFE8D8">{{ c.readout }}</span></div>
+              <div style="display:flex;align-items:center;gap:10px"><input type="range" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ c.value }}" onChange="{{ c.set }}" style="flex:1;min-width:0;accent-color:#F2C230;cursor:pointer"><div style="padding:5px 10px;border:1px solid #5a564f;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.14em;color:#FAF7F0;cursor:pointer;white-space:nowrap" onClick="{{ c.reset }}">RESET TO DEFAULT</div></div>
+              <div style="font-size:12.5px;line-height:1.4;color:#B9B3A6">{{ c.hint }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:.2em">PART 2</div><div style="font-size:36px;line-height:1">three wheels, same behaviour as 1e</div></div>
+  <div style="display:flex;flex-wrap:wrap;gap:48px;width:1800px;align-items:flex-start">
+
+    <div id="1e-paper" data-screen-label="1e-paper paper wheel" style="width:876px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:36px;align-items:flex-start">
+      <div style="flex-shrink:0"><dc-import name="WheelPhone" material="paper" radius="{{ pR }}" rise="{{ pRise }}" hint-size="410px,864px"></dc-import></div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="min-width:40px;height:40px;padding:0 12px;box-sizing:border-box;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px;white-space:nowrap">1e-paper</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#CFE8D8">WHEEL MATERIAL · RANK 2</div></div>
+        <div style="font-size:32px;line-height:1">paper wheel</div>
+        <div style="font-size:18px;line-height:1.35">A torn paper disc you turn by hand, with the months lettered around its rim.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · TIME, SCRUBBED</div>Same as 1e. Months with moments are written in ink and underlined; quiet months are in faint pencil.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · ROTARY DRAG</div>As 1e: about 50px of drag per month, snap 380ms cubic-bezier(.2,.8,.2,1), items cross-fade 300ms with a 24px rise, tap a month to jump, tick haptic. The disc holds a full year (12 × 30°), so rotation is dx × 0.6° to keep 50px per month. The top disc turns; the one beneath stays put.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>1e's per-month layouts, scaled to fit whatever space is left above the wheel.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>Two torn discs offset 6/8px, a white fibre rim, fine grain, soft shadow. A kraft tab and red pencil tick act as the needle.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>4: mostly pencil months, which reads as waiting. 80: the same disc; a second year adds another disc that peeks out underneath.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>Month is the headline; exact date and censored "from" on the backs.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>A corner of the catalogue card tears off and becomes the disc.</div>
+        </div>
+        <div style="background:#1b1a18;border:1px solid #403d38;border-radius:8px;padding:14px 16px 16px;display:flex;flex-direction:column;gap:14px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.2em;color:#F2C230">HARNESS · NOT PART OF THE APP</div>
+          <sc-for list="{{ hP }}" as="c" hint-placeholder-count="2">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="font-size:15px">{{ c.label }}</span><span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:#CFE8D8">{{ c.readout }}</span></div>
+              <div style="display:flex;align-items:center;gap:10px"><input type="range" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ c.value }}" onChange="{{ c.set }}" style="flex:1;min-width:0;accent-color:#F2C230;cursor:pointer"><div style="padding:5px 10px;border:1px solid #5a564f;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.14em;color:#FAF7F0;cursor:pointer;white-space:nowrap" onClick="{{ c.reset }}">RESET TO DEFAULT</div></div>
+              <div style="font-size:12.5px;line-height:1.4;color:#B9B3A6">{{ c.hint }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div id="1e-stamp" data-screen-label="1e-stamp timestamp wheel" style="width:876px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:36px;align-items:flex-start">
+      <div style="flex-shrink:0"><dc-import name="WheelPhone" material="stamp" radius="{{ sR }}" rise="{{ sRise }}" hint-size="410px,864px"></dc-import></div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="min-width:40px;height:40px;padding:0 12px;box-sizing:border-box;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px;white-space:nowrap">1e-stamp</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#CFE8D8">WHEEL MATERIAL · RANK 1</div></div>
+        <div style="font-size:32px;line-height:1">timestamp wheel</div>
+        <div style="font-size:18px;line-height:1.35">A round date stamp: twelve cells around a ring, with the chosen month read inside it.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · TIME, SCRUBBED</div>Same as 1e. Months with moments are inked solid; quiet months are only outlined.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · ROTARY DRAG + PRESS</div>Same drag, snap and cross-fade as 1e (12 × 30°, so dx × 0.6° for 50px per month). On snap the selected cell stamps: scale 1.04 → 1 in 220ms with an ink bloom, and a stamp-thunk haptic (14ms, pause, 6ms) replaces the tick.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>1e's per-month layouts, scaled to fit above the ring.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>Rubber-stamp ink: speckled gaps in coverage, a slight wobble, and a second impression misregistered by 1px at 22%. RECEIVED readout inside the ring.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>Always 12 cells. A second year swaps the ring and the readout shows the year; busy months show a small pile above.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>Month and year in the readout; exact date and censored "from" on the backs.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>The postmark on the folder grows into the ring.</div>
+        </div>
+        <div style="background:#1b1a18;border:1px solid #403d38;border-radius:8px;padding:14px 16px 16px;display:flex;flex-direction:column;gap:14px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.2em;color:#F2C230">HARNESS · NOT PART OF THE APP</div>
+          <sc-for list="{{ hS }}" as="c" hint-placeholder-count="2">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="font-size:15px">{{ c.label }}</span><span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:#CFE8D8">{{ c.readout }}</span></div>
+              <div style="display:flex;align-items:center;gap:10px"><input type="range" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ c.value }}" onChange="{{ c.set }}" style="flex:1;min-width:0;accent-color:#F2C230;cursor:pointer"><div style="padding:5px 10px;border:1px solid #5a564f;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.14em;color:#FAF7F0;cursor:pointer;white-space:nowrap" onClick="{{ c.reset }}">RESET TO DEFAULT</div></div>
+              <div style="font-size:12.5px;line-height:1.4;color:#B9B3A6">{{ c.hint }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div id="1e-tape" data-screen-label="1e-tape washi wheel" style="width:876px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:36px;align-items:flex-start">
+      <div style="flex-shrink:0"><dc-import name="WheelPhone" material="tape" radius="{{ tR }}" rise="{{ tRise }}" hint-size="410px,864px"></dc-import></div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="min-width:40px;height:40px;padding:0 12px;box-sizing:border-box;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px;white-space:nowrap">1e-tape</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#CFE8D8">WHEEL MATERIAL · RANK 3</div></div>
+        <div style="font-size:32px;line-height:1">washi wheel</div>
+        <div style="font-size:18px;line-height:1.35">A ring of washi tape strips, one strip per month, lettered in pen.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · TIME, SCRUBBED</div>Same as 1e. Strips with moments get a pen asterisk; quiet strips are left plain.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · ROTARY DRAG</div>Same as 1e (dx × 0.6°, 50px per month). The strip under the needle lifts 6px and gains a shadow in 200ms.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>1e's per-month layouts, scaled to fit above the ring.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>Twelve overlapping strips in kraft, off-white, red, airmail stripe and blue check, multiplied over the page so the dots show through, with torn and cut ends.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>4: mostly plain strips. 80: a second year becomes a second ring of tape inside the first.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>Month is the headline; exact date and censored "from" on the backs.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>The label tape on the folder unrolls into the ring.</div>
+        </div>
+        <div style="background:#1b1a18;border:1px solid #403d38;border-radius:8px;padding:14px 16px 16px;display:flex;flex-direction:column;gap:14px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.2em;color:#F2C230">HARNESS · NOT PART OF THE APP</div>
+          <sc-for list="{{ hT }}" as="c" hint-placeholder-count="2">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="font-size:15px">{{ c.label }}</span><span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:#CFE8D8">{{ c.readout }}</span></div>
+              <div style="display:flex;align-items:center;gap:10px"><input type="range" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ c.value }}" onChange="{{ c.set }}" style="flex:1;min-width:0;accent-color:#F2C230;cursor:pointer"><div style="padding:5px 10px;border:1px solid #5a564f;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.14em;color:#FAF7F0;cursor:pointer;white-space:nowrap" onClick="{{ c.reset }}">RESET TO DEFAULT</div></div>
+              <div style="font-size:12.5px;line-height:1.4;color:#B9B3A6">{{ c.hint }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:.2em">PART 3</div><div style="font-size:36px;line-height:1">the add button: six placements</div><div style="font-size:17px;line-height:1.4;max-width:900px">Every right-hand phone starts expanded and stays live. Tap to close and reopen, or press, hold and slide onto a circle.</div></div>
+  <div style="display:flex;flex-direction:column;gap:48px;width:1800px">
+
+    <div id="2a" data-screen-label="2a bottom-right pill" style="width:1340px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:28px;align-items:flex-start">
+      <div style="flex-shrink:0;display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em">CLOSED</div><dc-import name="CanvasPhone" placement="br" hint-size="410px,864px"></dc-import></div>
+      <div style="flex-shrink:0;display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em">EXPANDED · LIVE</div><dc-import name="CanvasPhone" placement="br" start-open="{{ true }}" hint-size="410px,864px"></dc-import></div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="min-width:40px;height:40px;padding:0 12px;box-sizing:border-box;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px">2a</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#CFE8D8">ADD PLACEMENT · RANK 2</div></div>
+        <div style="font-size:32px;line-height:1">floating pill, bottom-right</div>
+        <div style="font-size:18px;line-height:1.35">A black "add" pill in the corner, fanning up and to the left.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · PLACEMENT</div>The standard floating-action spot, fixed to the screen so it's one tap away however far you scroll.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · RADIAL FAN</div>Tap: four discs spring out along an arc, 420ms cubic-bezier(.34,1.56,.64,1) with 40ms stagger. A warm ink scrim with 3px blur fades in over 220ms and the plus turns 45° into a close mark. Press-hold (260ms), slide onto a disc and release to choose: it pulses and the rest collapse. Tap the button or scrim to close.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>Stamp (image), note (pen), tag (link), voice (mic), in that order along the arc. The arc re-aims and shrinks so no disc or label leaves the screen.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>Black pill, off-white plus from the icon set at line quality 35, a darker version of the header's shadow. Discs: 56px white, hairline border, layered shadow, hand-drawn icons, small paper labels.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>Same at any size; it floats over the page.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>The button adds nothing to read: no counts or badges.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>No link to the library; a generic app pattern.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">THUMB REACH</div>Right hand: natural. Left hand: a stretch across the screen.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">COLLIDES WITH</div>The bottom-right item (the marina stamp here), the right side of the 1e dial, the bottom envelope's postage mark.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">FIT</div>Clear and familiar, but reads as app chrome more than scrapbook.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="2b" data-screen-label="2b bottom-centre pill" style="width:1340px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:28px;align-items:flex-start">
+      <div style="flex-shrink:0;display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em">CLOSED</div><dc-import name="CanvasPhone" placement="bc" hint-size="410px,864px"></dc-import></div>
+      <div style="flex-shrink:0;display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em">EXPANDED · LIVE</div><dc-import name="CanvasPhone" placement="bc" start-open="{{ true }}" hint-size="410px,864px"></dc-import></div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="min-width:40px;height:40px;padding:0 12px;box-sizing:border-box;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px">2b</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#F2C230">ADD PLACEMENT · RANK 1 · RECOMMENDED</div></div>
+        <div style="font-size:32px;line-height:1">floating pill, bottom-centre</div>
+        <div style="font-size:18px;line-height:1.35">The same pill centred above the home indicator, fanning in an upward semicircle.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · PLACEMENT</div>Bottom centre is the most neutral spot on a 390px phone, and the same position as the library's pill bar.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · RADIAL FAN</div>As 2a; the discs open in a 160° arc over the button.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>Stamp, note, tag, voice, left to right.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>As 2a.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>Same at any size; the page gets bottom padding so the last item can scroll clear of it.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>Adds nothing to read.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>Sits where the library's tab bar sat, so the main control stays in the same place as you move from library to scrapbook.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">THUMB REACH</div>Comfortable for both hands.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">COLLIDES WITH</div>The 1e needle and 1f's "put them back" pill want the same spot; content behind the bottom centre.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">FIT</div>Good: one clear object, mirroring the header pill above it.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="2c" data-screen-label="2c top-right under avatar" style="width:1340px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:28px;align-items:flex-start">
+      <div style="flex-shrink:0;display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em">CLOSED</div><dc-import name="CanvasPhone" placement="tr" hint-size="410px,864px"></dc-import></div>
+      <div style="flex-shrink:0;display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em">EXPANDED · LIVE</div><dc-import name="CanvasPhone" placement="tr" start-open="{{ true }}" hint-size="410px,864px"></dc-import></div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="min-width:40px;height:40px;padding:0 12px;box-sizing:border-box;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px">2c</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#CFE8D8">ADD PLACEMENT · RANK 6</div></div>
+        <div style="font-size:32px;line-height:1">top-right, under the avatar</div>
+        <div style="font-size:18px;line-height:1.35">The pill tucked beneath the header's avatar, fanning down and to the left.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · PLACEMENT</div>Ties adding to the person: "add" sits directly under their face. The header itself is untouched.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · RADIAL FAN</div>As 2a; the arc opens downward over the top of the page.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>Same four discs, top to bottom-left.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>As 2a.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>Fixed in place at any size.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>Adds nothing to read.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>No link to the library's bottom bar.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">THUMB REACH</div>The hardest of the six: the top of the screen is out of one-thumb reach for either hand.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">COLLIDES WITH</div>Clear of the dial and envelopes; covers the top of the first item.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">FIT</div>The meaning is clear, but it crowds the header and is awkward to reach.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="2d" data-screen-label="2d slip on the page" style="width:1340px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:28px;align-items:flex-start">
+      <div style="flex-shrink:0;display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em">CLOSED</div><dc-import name="CanvasPhone" placement="slip" hint-size="410px,864px"></dc-import></div>
+      <div style="flex-shrink:0;display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em">EXPANDED · LIVE</div><dc-import name="CanvasPhone" placement="slip" start-open="{{ true }}" hint-size="410px,864px"></dc-import></div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="min-width:40px;height:40px;padding:0 12px;box-sizing:border-box;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px">2d</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#CFE8D8">ADD PLACEMENT · RANK 3</div></div>
+        <div style="font-size:32px;line-height:1">pasted on the page</div>
+        <div style="font-size:18px;line-height:1.35">A taped, dashed slip in the next empty spot, with "add" on label tape.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · PLACEMENT</div>The invitation is part of the book: the next empty place a moment could go.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · RADIAL FAN</div>As 2a, fanning from the slip toward the open page.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>The slip takes the next free slot in the layout, after the newest item.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>Dashed ink outline on cream, two pieces of kraft washi, black label tape reading "add".</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>4: near the top of the page (low-left here). 80: at the very end, so it needs 2b as a fallback when you've scrolled away from it.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>Adds nothing to read.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>Same label-tape language as the catalogue drawers.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">THUMB REACH</div>Depends on the content. Here it's low-left: easy for the left thumb, fine for the right.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">COLLIDES WITH</div>Nothing: it occupies real empty space on the page.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">FIT</div>The most scrapbook-like of the six. Best used alongside 2b, not on its own.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="2e" data-screen-label="2e dog-eared corner" style="width:1340px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:28px;align-items:flex-start">
+      <div style="flex-shrink:0;display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em">CLOSED</div><dc-import name="CanvasPhone" placement="corner" hint-size="410px,864px"></dc-import></div>
+      <div style="flex-shrink:0;display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em">EXPANDED · LIVE</div><dc-import name="CanvasPhone" placement="corner" start-open="{{ true }}" hint-size="410px,864px"></dc-import></div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="min-width:40px;height:40px;padding:0 12px;box-sizing:border-box;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px">2e</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#CFE8D8">ADD PLACEMENT · RANK 5</div></div>
+        <div style="font-size:32px;line-height:1">dog-eared corner</div>
+        <div style="font-size:18px;line-height:1.35">The page's bottom-right corner is folded back, and the curl says "add".</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · PLACEMENT</div>Folding a corner to add to the page: paper-native, with no floating chrome.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · RADIAL FAN</div>As 2a, fanning up and to the left from the curl.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>Same four discs.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>Black underside to the fold (the highest contrast on the page), off-white plus and "add", soft shadow, a slightly darker page underneath.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>Fixed in place at any size.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>Adds nothing to read.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>Same paper language; no direct link.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">THUMB REACH</div>Right hand: excellent. Left hand: poor.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">COLLIDES WITH</div>The bottom-right item, the dial's right side, and the system gesture area in the corner.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">FIT</div>Charming but less discoverable: a folded corner usually means "turn the page".</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="2f" data-screen-label="2f docked toolbar" style="width:1340px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;gap:28px;align-items:flex-start">
+      <div style="flex-shrink:0;display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em">CLOSED</div><dc-import name="CanvasPhone" placement="dock" hint-size="410px,864px"></dc-import></div>
+      <div style="flex-shrink:0;display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em">EXPANDED · LIVE</div><dc-import name="CanvasPhone" placement="dock" start-open="{{ true }}" hint-size="410px,864px"></dc-import></div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px"><div style="min-width:40px;height:40px;padding:0 12px;box-sizing:border-box;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px">2f</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#CFE8D8">ADD PLACEMENT · RANK 4</div></div>
+        <div style="font-size:32px;line-height:1">docked in a pill toolbar</div>
+        <div style="font-size:18px;line-height:1.35">A bottom bar matching the library's tab bar, with a black "add" segment.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.45">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · PLACEMENT</div>Navigation and adding in one docked bar: home, your scrapbook, add.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION · RADIAL FAN</div>As 2a; fans upward from the add segment and re-aims to stay on screen.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>Same four discs.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE</div>The library's warm-grey pill bar, hand-drawn home and book icons, a black add segment.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 ITEMS</div>A fixed band at any size.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">DATE + FROM</div>Adds nothing to read.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>The closest visual match to the library's bar.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">THUMB REACH</div>Both hands; the add segment sits just right of centre.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">COLLIDES WITH</div>Permanently takes a band of about 76px, and competes head-on with the dial and the envelopes for the bottom of the screen.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">FIT</div>Consistent, but brings app navigation onto a page meant to feel like a folder you opened.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="2g" data-screen-label="2g top two in context" style="width:1800px;box-sizing:border-box;background:#2a2927;border-radius:8px;padding:36px;display:flex;flex-direction:column;gap:28px">
+      <div style="display:flex;align-items:center;gap:12px"><div style="min-width:40px;height:40px;padding:0 12px;box-sizing:border-box;border-radius:20px;background:#FAF7F0;color:#111111;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px">2g</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em;color:#F2C230">ADD PLACEMENT · TOP TWO IN CONTEXT</div></div>
+      <div style="display:flex;flex-direction:column;gap:8px"><div style="font-size:32px;line-height:1">2b and 2a over the dial and the envelopes</div><div style="font-size:18px;line-height:1.35">Both screens use the bottom of the phone, so the button has to work around them.</div></div>
+      <div style="display:flex;gap:24px">
+        <div style="display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em">2B OVER 1E</div><dc-import name="WheelPhone" material="dot" fab="bc" hint-size="410px,864px"></dc-import></div>
+        <div style="display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em">2B OVER 1F</div><dc-import name="EnvelopePhone" look="kraft" fab="bc" hint-size="410px,864px"></dc-import></div>
+        <div style="display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em">2A OVER 1E</div><dc-import name="WheelPhone" material="dot" fab="br" hint-size="410px,864px"></dc-import></div>
+        <div style="display:flex;flex-direction:column;gap:10px"><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.18em">2A OVER 1F</div><dc-import name="EnvelopePhone" look="kraft" fab="br" hint-size="410px,864px"></dc-import></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px;font-size:14.5px;line-height:1.45">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">RANKING</div>1. <a href="#2b" style="color:#FAF7F0">2b</a> bottom-centre: both thumbs reach it, it sits where the library's bar was, and it's one object.<br>2. <a href="#2a" style="color:#FAF7F0">2a</a> bottom-right: smallest footprint, suits right-handed use.<br>3. <a href="#2d" style="color:#FAF7F0">2d</a> slip: best fit with the page. Use it as well as 2b, at the end of the page.<br>4. <a href="#2f" style="color:#FAF7F0">2f</a> toolbar. 5. <a href="#2e" style="color:#FAF7F0">2e</a> corner. 6. <a href="#2c" style="color:#FAF7F0">2c</a> top-right.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#F2C230">RECOMMENDATION</div>Ship 2b. Add the 2d slip at the end of the page later as a second, contextual way in.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">PRINCIPLE · OVER THE DIAL</div>The button rides on top of the wheel. 2b sits 26px above the wheel's highest point, just over the needle; 2a sits 38px above the dial's surface at its right-hand side. Both follow the wheel when it rises, and the items above reflow to stay clear of the button.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">MOTION</div>Fan as 2a and 2b; the arc re-aims upward so no disc lands on the wheel.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">ITEMS</div>Same four discs. Dragging the wheel and pressing the button never share a touch area.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">TEXTURE · OVER THE ENVELOPES</div>The page gets 110px of bottom padding so the last envelope can scroll above the button. When an envelope spills, the button fades out and "put them back" takes its place, then it returns when you close.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">4 → 80 · DATE + FROM</div>Unchanged from 1e and 1f; the button adds nothing to read.</div>
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.18em;color:#CFE8D8">FROM THE LIBRARY</div>2b keeps the library's bottom-centre control spot on both screens.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section></x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { order: null, dx: 0, drag: false, fly: 0, di: 10, ddx: 0, ddrag: false, env: -1, inv: null, hand: 0, theme: 0,
+    f1Gap: -28, e2: 20, e3: 20, e4: 18, pR: 246, pRise: 198, sR: 246, sRise: 198, tR: 246, tRise: 198 };
+  gRef = React.createRef();
+  f1Ref = React.createRef();
+  hc(key, label, min, max, step, def, fmt, hint) {
+    const v = this.state[key];
+    return { label, min, max, step, value: v, hint, readout: fmt(v) + (v === def ? ' · default' : ''),
+      set: e => this.setState({ [key]: +e.target.value }), reset: () => this.setState({ [key]: def }) };
+  }
+  IDS = ['beer', 'quiet', 'leh', 'film', 'v1', 'beach', 'dog', 'buses', 'soup', 'v2', 'anyway', 'snow'];
+  IT = {
+    beer: { type: 'stamp', text: 'cranberry beer @ vault', label: 'vault', city: 'bengaluru', date: '12 oct', year: '2026', denom: '2', src: 'assets/photo-beer.png', from: 'priya', hand: 0, m: 10 },
+    quiet: { type: 'tag', text: 'the quiet hour', src: 'assets/thumb-quiet.png', date: '4 oct', year: '2026', from: 'maya', hand: 1, m: 10 },
+    leh: { type: 'stamp', text: 'juley', label: 'leh', city: 'leh', date: '28 sep', year: '2026', denom: '5', src: 'assets/photo-leh.png', from: 'jun', hand: 2, m: 9 },
+    film: { type: 'note', text: 'you laughed at the exact same part of the film i did, a full second before everyone else.', date: '19 sep', year: '2026', from: 'priya', hand: 0, m: 9 },
+    v1: { type: 'voice', dur: '0:42', date: '3 sep', year: '2026', from: 'theo', hand: 3, m: 9 },
+    beach: { type: 'stamp', text: 'low tide, all four of us', label: 'marina', city: 'chennai', date: '2 aug', year: '2026', denom: '3', src: 'assets/photo-beach.png', from: 'maya', hand: 1, m: 8 },
+    dog: { type: 'note', text: "saw a dog in a raincoat and it was so obviously your dog. you don't have a dog.", date: '11 aug', year: '2026', from: 'jun', hand: 2, m: 8 },
+    buses: { type: 'tag', text: 'songs for buses', date: '20 jul', year: '2026', from: 'theo', hand: 3, m: 7 },
+    soup: { type: 'stamp', text: 'tuesday soup', label: 'kitchen', city: 'pune', date: '8 jul', year: '2026', denom: '1', from: 'priya', hand: 0, m: 7 },
+    v2: { type: 'voice', dur: '1:07', date: '21 jun', year: '2026', from: 'maya', hand: 1, m: 6 },
+    anyway: { type: 'note', text: "the way you say 'anyway' like a door closing", date: '2 jun', year: '2026', from: 'jun', hand: 2, m: 6 },
+    snow: { type: 'stamp', text: 'first snow', label: 'snow', city: 'manali', date: '14 dec', year: '2025', denom: '5', from: 'theo', hand: 3, m: 0 }
+  };
+  mk(id, o = {}) {
+    const b = this.IT[id], z = o.z ?? 1, s = { stamp: [150, 196], note: [200, 170], voice: [230, 146], tag: [124, 200] }[b.type];
+    return { ...b, id, rot: 0, ...o, z, w: s[0] * z, h: s[1] * z, hint: Math.round(s[0] * z) + 'px,' + Math.round(s[1] * z) + 'px' };
+  }
+  rng(seed) { let x = (Math.abs(seed) % 2147483646) + 1; return () => (x = x * 16807 % 2147483647) / 2147483647; }
+  hash(s) { return [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) | 0, 7); }
+  tear(w, h, seed) {
+    const r = this.rng(seed), pts = [], f = n => n.toFixed(1);
+    for (let x = w + 8; x > -8; x -= 4 + r() * 9) pts.push([x, h + 4 + r() * 8 + (r() < .12 ? 6 + r() * 8 : 0)]);
+    pts.push([-8, h + 6]);
+    const top = `M-8 0L${w + 8} 0`;
+    return {
+      main: top + pts.map(p => `L${f(p[0])} ${f(p[1])}`).join('') + 'Z',
+      fib: top + pts.map(p => `L${f(p[0])} ${f(p[1] + 2 + r() * 2.5)}`).join('') + 'Z'
+    };
+  }
+  fmt(it) { return (it.date + ' ' + it.year).toUpperCase(); }
+
+  pileDown = e => { this.sx = e.clientX; this.moved = false; try { e.currentTarget.setPointerCapture(e.pointerId); } catch (_) {} this.setState({ drag: true, dx: 0 }); };
+  pileMove = e => { if (!this.state.drag) return; const dx = e.clientX - this.sx; if (Math.abs(dx) > 5) this.moved = true; this.setState({ dx }); };
+  pileUp = () => {
+    if (!this.state.drag) return;
+    const dx = this.state.dx;
+    if (Math.abs(dx) > 90) {
+      this.setState({ drag: false, fly: Math.sign(dx) });
+      setTimeout(() => { const o = [...(this.state.order ?? this.IDS)]; o.push(o.shift()); this.setState({ order: o, fly: 0, dx: 0 }); }, 260);
+    } else this.setState({ drag: false, dx: 0 });
+  };
+  pileCap = e => { if (this.moved) { e.stopPropagation(); e.preventDefault(); this.moved = false; } };
+
+  dialDown = e => { this.dsx = e.clientX; this.dmoved = false; this.setState({ ddrag: true, ddx: 0 }); };
+  dialMove = e => { if (!this.state.ddrag) return; const ddx = e.clientX - this.dsx; if (Math.abs(ddx) > 4) this.dmoved = true; this.setState({ ddx }); };
+  dialUp = () => { if (!this.state.ddrag) return; this.setState({ ddrag: false, ddx: 0, di: this.effMonth() }); };
+  effMonth() { const { di, ddx } = this.state; return Math.max(0, Math.min(10, Math.round(di - ddx * 0.3 / 15))); }
+
+  renderVals() {
+    const S = this.state, IT = this.IT, IDS = this.IDS;
+    const gapFmt = v => v < 0 ? (-v) + 'px overlap' : v === 0 ? 'touching' : v + 'px gap', pxFmt = v => v + 'px';
+
+    // 1a torn strata
+    const ST = [
+      { label: 'OCT 2026', h: 420, tex: 'grid', pad: 118, its: [['beer', { x: 30, y: 84, rot: -4, z: 1, attach: 'tape' }], ['quiet', { x: 222, y: 124, rot: 6, z: .85 }]] },
+      { label: 'SEP 2026', h: 470, tex: 'lined', its: [['film', { x: 18, y: 76, rot: -3, z: .85, attach: 'clip' }], ['leh', { x: 216, y: 60, rot: 4, z: .9 }], ['v1', { x: 74, y: 294, rot: 2, z: .82, attach: 'tape' }]] },
+      { label: 'AUG 2026', h: 420, tex: 'dot', its: [['beach', { x: 204, y: 64, rot: 3, z: 1 }], ['dog', { x: 16, y: 156, rot: -2, z: .85, attach: 'tape' }]] },
+      { label: 'JUL 2026', h: 380, tex: 'kraft', its: [['buses', { x: 50, y: 120, rot: -5, z: .85 }], ['soup', { x: 200, y: 78, rot: 4, z: .9, attach: 'corners' }]] },
+      { label: 'JUN 2026', h: 370, tex: 'grid', its: [['v2', { x: 18, y: 80, rot: -3, z: .85, attach: 'tape' }], ['anyway', { x: 184, y: 184, rot: 3, z: .85 }]] },
+      { label: 'JAN – MAY 2026', h: 140, tex: 'lined', quiet: true, its: [] },
+      { label: 'DEC 2025', h: 400, tex: 'dot', first: true, its: [['snow', { x: 126, y: 80, rot: -2, z: .95, attach: 'tape' }]] }
+    ];
+    let acc = 0;
+    const strata = ST.map((s, i) => {
+      const pad = s.pad || 0, hh = s.h + pad, t = this.tear(390, hh, 11 + i * 7919);
+      const o = { label: s.label, tex: s.tex, top: acc, hh, svgH: hh + 30, main: t.main, fib: t.fib, labelTop: pad + 36, isQuiet: !!s.quiet, isFirst: !!s.first,
+        items: s.its.map(([id, p]) => ({ ...this.mk(id, p), y: p.y + pad })) };
+      acc += hh;
+      return o;
+    }).reverse();
+
+    // 1b inventory
+    const TZ = { stamp: .34, note: .3, voice: .27, tag: .3 };
+    const desc = it => it.type === 'voice' ? 'a voice postcard, ' + it.dur : it.type === 'tag' ? 'a link: ' + it.text : it.text;
+    const invSections = [['stamps', ['beer', 'leh', 'beach', 'soup', 'snow']], ['notes', ['film', 'dog', 'anyway']], ['voice postcards', ['v1', 'v2']], ['parcel tags', ['quiet', 'buses']]]
+      .map(([title, ids]) => ({ title, rows: ids.map((id, k) => { const it = this.mk(id, { z: TZ[IT[id].type], rot: k % 2 ? 3 : -3 }); return { ...it, desc: desc(it), when: (it.date + (it.year !== '2026' ? ' ’25' : '')).toUpperCase(), pick: () => this.setState({ inv: id }) }; }) }));
+    const LZ = { stamp: 1.5, note: 1.4, voice: 1.35, tag: 1.4 };
+    const invSel = S.inv ? [this.mk(S.inv, { z: LZ[IT[S.inv].type], rot: -2 })] : [];
+
+    // 1c same hand
+    const SZ = { stamp: .62, note: .6, voice: .54, tag: .6 };
+    const hands = [0, 1, 2, 3].map(h => {
+      const ids = IDS.filter(id => IT[id].hand === h);
+      return { no: String(h + 1).padStart(2, '0'), first: this.fmt(IT[ids[ids.length - 1]]), last: this.fmt(IT[ids[0]]),
+        slots: [0, 1, 2, 3].map(k => ids[k] ? { ...this.mk(ids[k], { z: SZ[IT[ids[k]].type], rot: [-3, 4, 2, -4][k] }), has: true, empty: false } : { has: false, empty: true }) };
+    });
+    const sr = this.rng(99); let scrib = '', sx = 6;
+    for (let i = 0; i < 30; i++) { sx += 5 + sr() * 4; scrib += (i ? 'L' : 'M') + sx.toFixed(1) + ' ' + (i % 2 ? 4 + sr() * 6 : 22 + sr() * 6).toFixed(1); }
+
+    // 1d pile
+    const order = S.order ?? IDS;
+    const PZ = { stamp: 1.2, note: 1.1, voice: 1.05, tag: 1.05 };
+    const pile = IDS.map(id => {
+      const rank = order.indexOf(id), it = this.mk(id, { z: PZ[IT[id].type], attach: ['film', 'v1', 'soup'].includes(id) ? 'tape' : 'none' });
+      const r = this.rng(this.hash(id)), br = (r() - .5) * 16, jx = (r() - .5) * 22, jy = (r() - .5) * 22, top = rank === 0;
+      let tx = 0, rr = br;
+      if (top && S.fly) { tx = S.fly * 460; rr = br + S.fly * 24; } else if (top) { tx = S.dx; rr = br + S.dx * .06; }
+      return { ...it, x: Math.round(195 - it.w / 2 + jx), y: Math.round(390 - it.h / 2 + jy), zi: 100 - rank, op: rank < 6 ? 1 : 0,
+        tf: `translateX(${tx}px) rotate(${rr.toFixed(2)}deg)`,
+        tr: top && S.drag ? 'none' : top && S.fly ? 'transform 260ms cubic-bezier(.2,.7,.3,1)' : 'transform 420ms cubic-bezier(.3,1.3,.5,1), opacity 300ms ease',
+        pe: rank < 6 ? 'auto' : 'none', cur: top ? 'grab' : 'default', flip: top, down: top ? this.pileDown : undefined };
+    });
+    const pt = IT[order[0]];
+
+    // 1e year dial
+    const FULL = ['december', 'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october'];
+    const has = m => IDS.some(id => IT[id].m === m);
+    const eff = this.effMonth();
+    const P = (a, r) => { const t = a * Math.PI / 180; return (195 + r * Math.sin(t)).toFixed(1) + ' ' + (330 - r * Math.cos(t)).toFixed(1); };
+    let dMinor = '', dMajor = '';
+    for (let a = -45; a <= 195; a += 3) { if (a % 15 === 0) dMajor += `M${P(a, 246)}L${P(a, 232)}`; else dMinor += `M${P(a, 246)}L${P(a, 240)}`; }
+    const months = FULL.map((n, k) => ({ a: k * 15, label: k === 0 ? 'DEC ’25' : n.slice(0, 3).toUpperCase(), fill: has(k) ? '#111111' : '#FFFFFF', pick: () => { if (!this.dmoved) this.setState({ di: k }); } }));
+    const DP = {
+      beer: { x: 30, y: 236, z: 1, rot: -4, attach: 'tape' }, quiet: { x: 222, y: 296, z: .9, rot: 6 },
+      film: { x: 16, y: 236, z: .85, rot: -3, attach: 'clip' }, leh: { x: 216, y: 222, z: .9, rot: 4 }, v1: { x: 90, y: 436, z: .82, rot: 2 },
+      beach: { x: 30, y: 236, z: 1, rot: -3 }, dog: { x: 184, y: 340, z: .85, rot: 3, attach: 'tape' },
+      buses: { x: 64, y: 290, z: .9, rot: -5 }, soup: { x: 204, y: 250, z: .95, rot: 4, attach: 'corners' },
+      v2: { x: 22, y: 250, z: .85, rot: -3, attach: 'tape' }, anyway: { x: 180, y: 390, z: .85, rot: 3 },
+      snow: { x: 118, y: 250, z: 1, rot: -2, attach: 'tape' }
+    };
+    const dialItems = IDS.map(id => { const p = DP[id], vis = IT[id].m === eff; return { ...this.mk(id, p), x: p.x, y: p.y, op: vis ? 1 : 0, tf: vis ? 'translateY(0px)' : 'translateY(24px)', pe: vis ? 'auto' : 'none' }; });
+
+    // 1f envelopes
+    const SE = [['AUTUMN ’26', ['beer', 'quiet', 'leh', 'film', 'v1']], ['SUMMER ’26', ['beach', 'dog', 'buses', 'soup', 'v2', 'anyway']], ['WINTER ’25', ['snow']]];
+    const f1Step = 250 + S.f1Gap, CY = [150, 150 + f1Step, 150 + 2 * f1Step], OY = 616;
+    const FAN = [{ x: 18, y: 138, rot: -6 }, { x: 214, y: 128, rot: 5 }, { x: 116, y: 268, rot: -2 }, { x: 8, y: 404, rot: 4 }, { x: 222, y: 392, rot: -5 }, { x: 120, y: 452, rot: 7 }];
+    const PEEK = [{ x: 14, rot: -7 }, { x: 102, rot: 3 }, { x: 188, rot: 8 }];
+    const envs = SE.map(([label, ids], i) => {
+      const open = S.env === i, any = S.env >= 0;
+      return { label, y: !any ? CY[i] : open ? OY : 920, op: !any || open ? 1 : 0, pe: !any || open ? 'auto' : 'none',
+        toggle: () => { if (!open) { const el = this.f1Ref.current; if (el) el.scrollTo({ top: 0, behavior: 'smooth' }); } this.setState({ env: open ? -1 : i }); },
+        items: ids.map((id, k) => {
+          const it = this.mk(id, { z: .7, attach: k === 0 ? 'tape' : 'none' });
+          let x, y, rot;
+          if (open) { const f = FAN[k % 6]; x = f.x - 30; y = f.y - OY; rot = f.rot; }
+          else if (k < 3) { x = PEEK[k].x; y = Math.round(124 - it.h); rot = PEEK[k].rot; }
+          else { x = 100; y = 100; rot = 0; }
+          return { ...it, x, y, rot, op: open || k < 3 ? 1 : 0, flip: open, delay: k * 30 };
+        }) };
+    });
+
+    // 1g theme spreads
+    const G = [
+      [['beer', { x: 22, y: 210, z: 1.05, rot: -5, attach: 'tape' }], ['soup', { x: 240, y: 206, z: .8, rot: 7, attach: 'corners' }], ['v1', { x: 150, y: 442, z: .9, rot: 3 }]],
+      [['film', { x: 18, y: 210, z: .85, rot: -3, attach: 'clip' }], ['dog', { x: 196, y: 282, z: .85, rot: 4 }], ['anyway', { x: 30, y: 424, z: .8, rot: 2, attach: 'tape' }], ['v2', { x: 186, y: 494, z: .8, rot: -4, attach: 'tape' }]],
+      [['leh', { x: 24, y: 210, z: .9, rot: -4, attach: 'tape' }], ['beach', { x: 214, y: 300, z: .9, rot: 5 }], ['snow', { x: 62, y: 452, z: .85, rot: -2, attach: 'corners' }]],
+      [['quiet', { x: 50, y: 270, z: 1.1, rot: -6 }], ['buses', { x: 214, y: 318, z: 1, rot: 7 }]]
+    ].map(list => list.map(([id, p]) => this.mk(id, p)));
+    const TL = ['late nights', 'laughing', 'trips', 'songs'];
+    const themes = TL.map((label, i) => ({ label, bg: i === S.theme ? '#FFFFFF' : 'transparent', sh: i === S.theme ? '0 2px 6px rgba(143,143,143,.28)' : 'none',
+      go: () => { const el = this.gRef.current; if (el) el.scrollTo({ left: i * 390, behavior: 'smooth' }); this.setState({ theme: i }); } }));
+
+    return {
+      strata, sH: acc + 40,
+      invSections, invSel, invOpen: !!S.inv, invClose: () => this.setState({ inv: null }),
+      hands, scrib, handDots: hands.map((_, i) => ({ bg: i === S.hand ? '#111111' : 'transparent' })),
+      handScroll: e => { const i = Math.round(e.currentTarget.scrollLeft / 340); if (i !== this.state.hand) this.setState({ hand: i }); },
+      pile, pileMove: this.pileMove, pileUp: this.pileUp, pileCap: this.pileCap,
+      pileWhen: 'LEFT ' + this.fmt(pt), pileNotNewest: order[0] !== IDS[0], pileReset: () => this.setState({ order: null }),
+      dMonth: FULL[eff], dYear: eff === 0 ? '2025' : '2026', dQuiet: !has(eff), dialItems, months, dMinor, dMajor,
+      dRot: (-(S.di * 15) + S.ddx * 0.3).toFixed(2), dTr: S.ddrag ? 'none' : 'transform 380ms cubic-bezier(.2,.8,.2,1)',
+      dialDown: this.dialDown, dialMove: this.dialMove, dialUp: this.dialUp,
+      envs, envOpen: S.env >= 0, envClose: () => this.setState({ env: -1 }),
+      f1Ref: this.f1Ref, f1H: S.env >= 0 ? 844 : Math.max(844, CY[2] + 236),
+      hF1: [this.hc('f1Gap', 'Envelope spacing', -28, 24, 1, -28, gapFmt, '−28 is today’s overlap, 0 is touching, 24 is a clear gap. The page grows and scrolls once it’s taller than the phone.')],
+      hE2: [this.hc('e2', 'Envelope spacing', -28, 24, 1, 20, gapFmt, 'Default 20px clear gap. Same scale as 1f.')],
+      hE3: [this.hc('e3', 'Envelope spacing', -28, 24, 1, 20, gapFmt, 'Default 20px clear gap. Same scale as 1f.')],
+      hE4: [this.hc('e4', 'Envelope spacing', -28, 24, 1, 18, gapFmt, 'Default 18px clear gap. A closed lip is only 190px tall, so the same gap reads roomier.')],
+      e2Gap: S.e2, e3Gap: S.e3, e4Gap: S.e4,
+      hP: [this.hc('pR', 'Radius', 140, 320, 1, 246, pxFmt, '1e = 246. Smaller shows more months at once.'), this.hc('pRise', 'Rise from bottom edge', 40, 300, 1, 198, pxFmt, 'Phone bottom to the top of the wheel. 1e = 198. Items above reflow to fit.')],
+      hS: [this.hc('sR', 'Radius', 140, 320, 1, 246, pxFmt, '1e = 246. Smaller shows more months at once.'), this.hc('sRise', 'Rise from bottom edge', 40, 300, 1, 198, pxFmt, 'Phone bottom to the top of the wheel. 1e = 198. Items above reflow to fit.')],
+      hT: [this.hc('tR', 'Radius', 140, 320, 1, 246, pxFmt, '1e = 246. Smaller shows more months at once.'), this.hc('tRise', 'Rise from bottom edge', 40, 300, 1, 198, pxFmt, 'Phone bottom to the top of the wheel. 1e = 198. Items above reflow to fit.')],
+      pR: S.pR, pRise: S.pRise, sR: S.sR, sRise: S.sRise, tR: S.tR, tRise: S.tRise,
+      g0: G[0], g1: G[1], g2: G[2], g3: G[3], themes, gRef: this.gRef,
+      gScroll: e => { const i = Math.round(e.currentTarget.scrollLeft / 390); if (i !== this.state.theme) this.setState({ theme: i }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

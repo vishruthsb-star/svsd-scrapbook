@@ -1,13 +1,20 @@
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import Note from '@/components/Note';
 import ParcelTag from '@/components/ParcelTag';
 import Stamp from '@/components/Stamp';
 import VoicePostcard from '@/components/VoicePostcard';
+import { AddFab } from '@/components/AddFab';
 import { Header } from '@/components/Header';
+import { HomeBottomNavigation } from '@/components/HomeBottomNavigation';
 import { InviteSection } from '@/components/InviteSection';
 import { Library } from '@/components/Library';
+import { ScrapbookHeader } from '@/components/ScrapbookHeader';
+import { ScreenShell } from '@/components/ScreenShell';
+import { ThemeNavigation } from '@/components/ThemeNavigation';
+import { ScrapbookCanvasPage } from '@/scrapbook/canvas';
 import HomeScreen from '@/screens/HomeScreen/HomeScreen';
 import { LIBRARY_ACTIVE_INDEX, LIBRARY_PEOPLE, OWNER_HANDLE, OWNER_NAME } from '@/data/mock';
+import ScrapbookStylePreview from './ScrapbookStylePreview';
 
 export type GalleryKind = 'screen' | 'component';
 
@@ -43,6 +50,23 @@ export const COMPONENTS: GalleryEntry[] = [
     title: 'Library',
     description: 'The card-catalog drawer of friends\' scrapbooks.',
     render: () => <Library people={LIBRARY_PEOPLE} defaultSelected={LIBRARY_ACTIVE_INDEX} />,
+  },
+  {
+    kind: 'component',
+    id: 'screen-shell',
+    title: 'ScreenShell',
+    description: 'The reusable top/bottom safe-area bands and frame-width centering every screen wraps itself in.',
+    render: () => (
+      <div style={{ height: 420, width: 260, ['--screen-height' as string]: '420px' } as CSSProperties}>
+        <ScreenShell>
+          {Array.from({ length: 14 }, (_, i) => (
+            <p key={i} style={{ margin: '0 0 16px', fontFamily: 'var(--font-condensed)' }}>
+              scroll line {i + 1}
+            </p>
+          ))}
+        </ScreenShell>
+      </div>
+    ),
   },
   {
     kind: 'component',
@@ -105,6 +129,104 @@ export const COMPONENTS: GalleryEntry[] = [
         seed={21}
       />
     ),
+  },
+  {
+    kind: 'component',
+    id: 'scrapbook-header',
+    title: 'ScrapbookHeader',
+    description: 'The back-arrow / title / avatar pill ported from references/scrapbook-header.html.',
+    render: () => <ScrapbookHeader />,
+  },
+  {
+    kind: 'component',
+    id: 'home-bottom-navigation',
+    title: 'HomeBottomNavigation',
+    description: 'The sliding home/journal tab bar ported from references/home-bottom-navigation.html.',
+    render: () => <HomeBottomNavigation />,
+  },
+  {
+    kind: 'component',
+    id: 'theme-navigation',
+    title: 'ThemeNavigation',
+    description: 'The text-hugging theme tab bar ported from references/theme-navigation.html.',
+    render: () => <ThemeNavigation />,
+  },
+  {
+    kind: 'component',
+    id: 'add-fab',
+    title: 'AddFab',
+    description:
+      'The four-circle fan "add" button ported from references/Scrapbook Add Button.html. Dev-only preview — assumes a 390x844 host (see addFabEngine.ts).',
+    render: () => (
+      <div style={{ position: 'relative', width: 390, height: 844, background: '#f4f4f3', borderRadius: 48, overflow: 'hidden' }}>
+        <AddFab placement="br" />
+      </div>
+    ),
+  },
+  {
+    kind: 'component',
+    id: 'scrapbook-canvas-page-torn-strata-visitor',
+    title: 'ScrapbookCanvasPage — torn strata (visitor)',
+    description:
+      'Frame 1a ported into the shared canvas-page shell — torn-paper month strips, bottom-center add button, view="visitor".',
+    render: () => <ScrapbookCanvasPage style="torn-strata" view="visitor" />,
+  },
+  {
+    kind: 'component',
+    id: 'scrapbook-canvas-page-torn-strata-own',
+    title: 'ScrapbookCanvasPage — torn strata (own)',
+    description: 'Same frame with view="own" — confirms the add button does not render at all in your own scrapbook.',
+    render: () => <ScrapbookCanvasPage style="torn-strata" view="own" />,
+  },
+  {
+    kind: 'component',
+    id: 'scrapbook-canvas-page-theme-spreads-visitor',
+    title: 'ScrapbookCanvasPage — theme spreads (visitor)',
+    description: 'Frame 1g — four swipeable theme panels driven by the repo ThemeNavigation, top-right add button, view="visitor".',
+    render: () => <ScrapbookCanvasPage style="theme-spreads" view="visitor" />,
+  },
+  {
+    kind: 'component',
+    id: 'scrapbook-canvas-page-theme-spreads-own',
+    title: 'ScrapbookCanvasPage — theme spreads (own)',
+    description: 'Same frame with view="own" — confirms the add button does not render at all in your own scrapbook.',
+    render: () => <ScrapbookCanvasPage style="theme-spreads" view="own" />,
+  },
+  {
+    kind: 'component',
+    id: 'scrapbook-canvas-page-envelopes-lip-visitor',
+    title: 'ScrapbookCanvasPage — envelopes lip (visitor)',
+    description:
+      'Frame 1f-4 "pocket lip" — tap an envelope to spill its items into a fan, top-right add button stays visible while open, view="visitor".',
+    render: () => <ScrapbookCanvasPage style="envelopes-lip" view="visitor" />,
+  },
+  {
+    kind: 'component',
+    id: 'scrapbook-canvas-page-envelopes-lip-own',
+    title: 'ScrapbookCanvasPage — envelopes lip (own)',
+    description: 'Same frame with view="own" — confirms the add button does not render, but "Put them back" still does once an envelope is open.',
+    render: () => <ScrapbookCanvasPage style="envelopes-lip" view="own" />,
+  },
+  {
+    kind: 'component',
+    id: 'scrapbook-canvas-page-paper-wheel-visitor',
+    title: 'ScrapbookCanvasPage — paper wheel (visitor)',
+    description: 'Frame 1e-paper — drag or tap a month on the torn-paper disc to cross-fade its items, top-right add button, view="visitor".',
+    render: () => <ScrapbookCanvasPage style="paper-wheel" view="visitor" />,
+  },
+  {
+    kind: 'component',
+    id: 'scrapbook-canvas-page-paper-wheel-own',
+    title: 'ScrapbookCanvasPage — paper wheel (own)',
+    description: 'Same frame with view="own" — confirms the add button does not render at all in your own scrapbook.',
+    render: () => <ScrapbookCanvasPage style="paper-wheel" view="own" />,
+  },
+  {
+    kind: 'component',
+    id: 'scrapbook-style-preview',
+    title: 'Scrapbook style preview (dev-only)',
+    description: 'Verification harness — pick any of the four canvas styles and flip the viewer, at a fixed 390x844 frame.',
+    render: () => <ScrapbookStylePreview />,
   },
   // Future components get a single new entry here — nothing else to wire up.
 ];

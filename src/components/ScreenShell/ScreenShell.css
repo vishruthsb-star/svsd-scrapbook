@@ -1,0 +1,61 @@
+/* The single place every mobile screen gets its safe-area bands + Figma-frame centering.
+   Override --screen-height on an ancestor (e.g. a gallery card) to size this to a container
+   instead of the real viewport — never assume 100dvh means the browser window. */
+.screenshell-root {
+  position: relative;
+  overflow: hidden;
+  height: var(--screen-height, 100dvh);
+  width: 100%;
+  max-width: var(--screen-frame-width, 402px);
+  margin: 0 auto;
+  background: var(--screen-bg);
+}
+
+.screenshell-scroll {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+  padding-left: var(--safe-side);
+  padding-right: var(--safe-side);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.screenshell-scroll::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* variant="canvas": no safe-area padding (the canvas content places itself using the
+   --safe-* tokens directly) and no scrolling of its own — the child owns its own scroll
+   container(s), since different canvas styles need different scroll shapes (vertical
+   strips, horizontal snap panels, a vertical envelope stack). */
+.screenshell-scroll--canvas {
+  padding: 0;
+  overflow: hidden;
+}
+
+.screenshell-band-top,
+.screenshell-band-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: var(--screen-bg);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.screenshell-band-top {
+  top: 0;
+  height: var(--safe-top);
+}
+
+.screenshell-band-bottom {
+  bottom: 0;
+  height: var(--safe-bottom);
+}

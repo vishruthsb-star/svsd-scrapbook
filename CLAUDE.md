@@ -92,6 +92,13 @@ Shared infrastructure every item is built on:
 - **`ScrapDefs`** (`components/ScrapDefs.tsx`) — the shared `#ink` filter / `#h-d` hatch
   pattern, mounted once near the app root; every item and every `Decor` piece references
   these by id.
+- **`ScreenShell`** (`components/ScreenShell/ScreenShell.tsx` + `.css`) — the safe-area
+  layout every screen wraps itself in: a fixed-height root (centered at
+  `--screen-frame-width` with the page's dark letterbox visible beside it on wide
+  viewports) holding an absolutely-positioned scroll container padded by
+  `--safe-top`/`--safe-bottom`/`--safe-side`, plus opaque top/bottom bands so scrolled
+  content disappears under them instead of overlapping. `maskBottom={false}` turns the
+  bottom band off and leaves its padding as plain spacing.
 - **`Item.css`** (`components/Item.css`) — the cross-item CSS classes every kind's
   front/back layer draws on: `.item-lay` (the base stroke/line-art layer), `.media-slot`
   (+ its `img`/`video` rules, shared by Stamp's photo slot and ParcelTag's preview slot),
@@ -125,6 +132,7 @@ src/
     removeAction.ts         shouldShowRemoveAction — the one place the remove-visibility rule lives
   components/
     ScrapDefs.tsx           shared SVG <defs> (ink filter, hatch pattern)
+    ScreenShell/            safe-area layout shell every screen wraps itself in
     FlipCard.tsx/.css       shared flip mechanics
     ItemBack.tsx/.css       shared back face
     Decor.tsx/.css          shared seeded decor wrapper
@@ -170,6 +178,12 @@ filenames exactly as given):
 - Screens live in `src/screens/<ScreenName>/`, components in `src/components/`. A screen
   composes components; it never copies a component's markup, CSS, or SVG into itself —
   import the real component so editing it propagates everywhere via HMR.
+- Every screen must be wrapped in `ScreenShell` (`components/ScreenShell/`) — the single
+  reusable layout that provides the top/bottom safe-area bands, side margins, and
+  Figma-frame-width centering. Never implement safe-area padding separately inside a
+  screen; reference the `--safe-top` / `--safe-bottom` / `--safe-side` tokens only
+  (`ScreenShell` already applies them for you), and change the safe-area values only in
+  `src/index.css`, never per-screen.
 - Every new screen or component must be registered in `src/gallery/registry.ts` (the single
   list the gallery renders from) — that's the only file a new addition needs to touch.
 - The Home screen's exact spacing values (44px header→Library, 64px Library→InviteSection)

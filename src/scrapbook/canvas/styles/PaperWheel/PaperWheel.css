@@ -1,0 +1,165 @@
+/* Frame 1e-paper "paper wheel" — references/WheelPhone.dc.html (material === 'paper').
+   Styles copied exactly (colors, offsets, shadow, stroke, timings). */
+
+.paper-wheel-root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #f6f1e6;
+  user-select: none;
+}
+
+/* CHANGE 2: dot paper + headline/items scroll together, behind the fixed wheel/tab/needle
+   (DOM order below handles the stacking — no z-index needed). Hidden scrollbar, native
+   touch/overscroll (momentum, rubber-band — no overscroll-behavior override). */
+.paper-wheel-scroll {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+
+.paper-wheel-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.paper-wheel-scroll-inner {
+  position: relative;
+  /* height set inline (max(frameH, selected month's lowest item bottom + RISE + safe-bottom + 24)) */
+}
+
+.paper-wheel-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.paper-wheel-content {
+  position: absolute;
+  inset: 0;
+}
+
+.paper-wheel-headline {
+  position: absolute;
+  top: 136px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.paper-wheel-month {
+  font-size: 40px;
+  line-height: 1;
+}
+
+.paper-wheel-year {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px;
+  letter-spacing: 0.18em;
+}
+
+.paper-wheel-quiet {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paper-wheel-quiet-box {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  fill: none;
+  stroke: #111111;
+  stroke-width: 1.4;
+  stroke-dasharray: 6 7;
+}
+
+.paper-wheel-quiet-text {
+  position: relative;
+  font-size: 17px;
+  color: #5e594f;
+}
+
+.paper-wheel-item {
+  position: absolute;
+  transition:
+    opacity 300ms ease,
+    transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.paper-wheel-tab {
+  position: absolute;
+  width: 22px;
+  height: 34px;
+  background: #d7bc8f;
+  transform: rotate(-3deg);
+  box-shadow: 0 1px 2px rgba(60, 40, 20, 0.2);
+}
+
+.paper-wheel-touch {
+  position: absolute;
+  border-radius: 50%;
+  touch-action: none;
+  cursor: grab;
+}
+
+.paper-wheel-under {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  filter: drop-shadow(0 -3px 8px rgba(70, 50, 20, 0.16));
+}
+
+.paper-wheel-spin {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 50%;
+}
+
+.paper-wheel-disc {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+
+.paper-wheel-label {
+  position: absolute;
+  width: 90px;
+  height: 28px;
+  z-index: 30;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paper-wheel-label-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 4px;
+  border-radius: 2px;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.paper-wheel-underline {
+  position: absolute;
+  left: 4px;
+  bottom: -5px;
+  overflow: visible;
+  fill: none;
+  stroke: #111111;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+
+.paper-wheel-needle-layer {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}

@@ -1,0 +1,131 @@
+/* Faithful port of references/home-bottom-navigation.html (Figma node 118:1756). */
+
+.home-bottom-navigation {
+  /* Track (Frame 13) */
+  --nav-track-bg: #e6e1d5;
+  --nav-track-border: #ddd;
+  --nav-track-border-w: 0.5px;
+  --nav-track-pad: 4.5px;
+  --nav-gap: 4px;
+  --nav-radius: 360px;
+
+  /* Option / pill (Frame 12 & Frame 10) */
+  --nav-item-w: 95px;
+  --nav-item-h: 44px;
+  --nav-pill-bg: #ffffff;
+
+  /* Icons (28 x 28, stroke #494444 / 1.75) */
+  --nav-icon-size: 28px;
+
+  /* Pill shadow: 5 stacked drop shadows, color rgb(157,148,128). */
+  --nav-shadow-rgb: 157, 148, 128;
+  --nav-pill-shadow:
+    0 3px 6px rgba(var(--nav-shadow-rgb), 0.1),
+    0 10px 10px rgba(var(--nav-shadow-rgb), 0.09),
+    0 24px 14px rgba(var(--nav-shadow-rgb), 0.05),
+    0 42px 17px rgba(var(--nav-shadow-rgb), 0.01),
+    0 65px 18px rgba(var(--nav-shadow-rgb), 0);
+
+  /* Motion */
+  --nav-glide-ms: 520ms;
+  --nav-glide-ease: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --index: 0; /* 0 = home, 1 = journal */
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--nav-gap);
+  padding: var(--nav-track-pad);
+  background: var(--nav-track-bg);
+  /* 0.5px INSIDE stroke — drawn as an inset ring so browsers can't round it up to 1px */
+  box-shadow: inset 0 0 0 var(--nav-track-border-w) var(--nav-track-border);
+  border-radius: var(--nav-radius);
+  /* No overflow clipping — the pill's shadow must spill outside the track */
+  overflow: visible;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.home-bottom-navigation[data-active='journal'] {
+  --index: 1;
+}
+
+/* The white pill that glides between options */
+.home-bottom-navigation__pill {
+  position: absolute;
+  top: var(--nav-track-pad);
+  left: var(--nav-track-pad);
+  width: var(--nav-item-w);
+  height: var(--nav-item-h);
+  background: var(--nav-pill-bg);
+  border-radius: var(--nav-radius);
+  box-shadow: var(--nav-pill-shadow);
+  transform: translate3d(calc(var(--index) * (var(--nav-item-w) + var(--nav-gap))), 0, 0);
+  transition: transform var(--nav-glide-ms) var(--nav-glide-ease);
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* Options */
+.home-bottom-navigation__item {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--nav-item-w);
+  height: var(--nav-item-h);
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  border-radius: var(--nav-radius);
+  cursor: pointer;
+  outline: none;
+}
+
+.home-bottom-navigation__item:focus-visible {
+  box-shadow: 0 0 0 2px rgba(73, 68, 68, 0.55);
+}
+
+.home-bottom-navigation__icon {
+  display: block;
+  width: var(--nav-icon-size);
+  height: var(--nav-icon-size);
+  overflow: hidden;
+  transform-origin: center;
+  transition:
+    transform 280ms var(--nav-glide-ease),
+    opacity 280ms ease;
+}
+
+/* Active + press behaviour */
+.home-bottom-navigation__item[aria-selected='true'] .home-bottom-navigation__icon {
+  animation: nav-icon-settle 520ms var(--nav-glide-ease);
+}
+
+.home-bottom-navigation__item:active .home-bottom-navigation__icon {
+  transform: scale(0.9);
+}
+
+@keyframes nav-icon-settle {
+  0% {
+    transform: scale(0.88);
+  }
+  60% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-bottom-navigation__pill {
+    transition-duration: 1ms;
+  }
+  .home-bottom-navigation__item[aria-selected='true'] .home-bottom-navigation__icon {
+    animation: none;
+  }
+}

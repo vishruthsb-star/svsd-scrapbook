@@ -1,0 +1,110 @@
+/* Frame 1f-4 "pocket lip" — references/EnvelopePhone.dc.html (look === 'lip'). Styles
+   copied exactly (colors, offsets, shadow, stroke, timings). */
+
+.envelopes-lip-root {
+  position: absolute;
+  inset: 0;
+  background: #f6f1e6;
+}
+
+.envelopes-lip-scroll {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  user-select: none;
+}
+
+.envelopes-lip-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.envelopes-lip-content {
+  position: relative;
+  overflow: hidden;
+}
+
+.envelopes-lip-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.envelopes-lip-envelope {
+  position: absolute;
+  top: 0;
+  width: 330px;
+  height: 196px;
+  cursor: pointer;
+  transition:
+    transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 300ms ease;
+}
+
+.envelopes-lip-body {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  transition: opacity 260ms ease;
+}
+
+.envelopes-lip-body-path {
+  transition: stroke-dashoffset 520ms cubic-bezier(0.2, 0.8, 0.2, 1) 80ms;
+}
+
+.envelopes-lip-flap-path {
+  transition: stroke-dashoffset 420ms cubic-bezier(0.2, 0.8, 0.2, 1) 260ms;
+}
+
+.envelopes-lip-item {
+  position: absolute;
+  /* transition (including the per-item 30ms stagger delay) set inline — see EnvelopesLip.tsx */
+}
+
+/* Always-visible pocket band: one ink line + thumb-notch cutout. */
+.envelopes-lip-pocket {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.envelopes-lip-label-holder {
+  position: absolute;
+  left: 115px;
+  top: 122px;
+  width: 100px;
+  height: 26px;
+  pointer-events: none;
+}
+
+.envelopes-lip-label-holder svg {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+
+.envelopes-lip-label-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+}
+
+.envelopes-lip-putback-wrap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--safe-bottom);
+  display: flex;
+  justify-content: center;
+  z-index: 20;
+}

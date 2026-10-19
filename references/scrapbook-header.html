@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scrapbook header</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; }
+
+  html, body { background: #ffffff; }
+
+  /* White stage, with plenty of room below so the long 168px shadow is visible */
+  body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 96px 24px 360px;
+  }
+
+  /* Frame 13 (118:1744) — 354 x 61 */
+  .pill {
+    width: 354px;
+    height: 61px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 8px 8px 16px;
+
+    background: #ffffff;
+    border: 0.5px solid #ececec;
+    border-radius: 360px;
+
+    /* 5 stacked Figma drop shadows, all rgb(143,143,143), spread 0.
+       Listed top layer first. Format: x y blur color */
+    box-shadow:
+      0px   7px   7.5px  rgba(143, 143, 143, 0.10),
+      0px  27px  13.5px  rgba(143, 143, 143, 0.09),
+      0px  60px    18px  rgba(143, 143, 143, 0.05),
+      0px 107px  21.5px  rgba(143, 143, 143, 0.01),
+      0px 168px  23.5px  rgba(143, 143, 143, 0.00);
+  }
+
+  /* co-arrow-left-q49 — 24 x 24 */
+  .icon {
+    width: 24px;
+    height: 24px;
+    flex: none;
+    display: block;
+    overflow: visible;
+  }
+
+  /* "vishruth’s scrapbook" — Inter Regular 16 / 150%, tracking -3% */
+  .title {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: -0.48px;
+    color: #464646;
+    white-space: nowrap;
+    flex: none;
+  }
+
+  /* Rectangle 4 — 44 x 44, fully rounded.
+     Placeholder fill; swap for <img src="avatar.jpg"> with object-fit: cover */
+  .avatar {
+    width: 44px;
+    height: 44px;
+    flex: none;
+    border-radius: 360px;
+    object-fit: cover;
+    background:
+      radial-gradient(60% 50% at 62% 30%, #b9a58f 0%, rgba(185,165,143,0) 70%),
+      linear-gradient(165deg, #46556e 0%, #7a5f50 55%, #1e1b20 100%);
+  }
+</style>
+</head>
+<body>
+  <header class="pill">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M19.59 12.06H4.71M10.94 5.83L4.71 12.06L10.94 18.29"
+            stroke="#464646" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <p class="title">vishruth’s scrapbook</p>
+    <div class="avatar" role="img" aria-label="Profile photo"></div>
+  </header>
+</body>
+</html>

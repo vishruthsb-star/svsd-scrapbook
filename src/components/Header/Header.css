@@ -14,7 +14,7 @@
 .header-eyebrow,
 .header-title {
   margin: 0;
-  font-family: var(--font-ui);
+  font-family: var(--font-inter);
   font-weight: 400;
   font-size: 22px;
   line-height: 1.5;

@@ -1,0 +1,139 @@
+/* Frame 1g "theme spreads" — references/Scrapbook Directions.dc.html. Styles copied
+   exactly (colors, offsets, shadow, font) per docs/scrapbook-canvas-spec.md / this task. */
+
+.theme-spreads-root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #faf7f0;
+}
+
+.theme-spreads-scroller {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.theme-spreads-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.theme-spreads-panel {
+  position: relative;
+  /* width/height set inline to the real frame size (full-bleed) — see ThemeSpreads.tsx */
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  overflow: hidden;
+}
+
+/* CHANGE 2: each panel's own vertical scroll container — independent scroll position per
+   panel, hidden scrollbar, native touch/overscroll (momentum, rubber-band — no
+   overscroll-behavior override). touch-action: pan-x pan-y (set inline) lets vertical
+   drags scroll this panel without fighting the outer horizontal snap-scroller. */
+.theme-spreads-panel-scroll {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+
+.theme-spreads-panel-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.theme-spreads-panel-inner {
+  position: relative;
+  /* height set inline (max(frameH, lowest content bottom + safe-bottom + nav + 24)) */
+}
+
+/* Full-bleed background — deliberately NOT inside .theme-spreads-panel-content, so the
+   HEADER GAP translateY below never moves the grid texture (it stays anchored edge to
+   edge; only the ink/word/items shift down to clear the header). Both are inside the same
+   scrollable .theme-spreads-panel-inner, so they still scroll together. */
+.theme-spreads-panel-grid {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+}
+
+.theme-spreads-panel-content {
+  position: absolute;
+  inset: 0;
+}
+
+.theme-spreads-panel-ink {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+}
+
+.theme-spreads-word {
+  position: absolute;
+  top: 142px;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.theme-spreads-press-play,
+.theme-spreads-put-on {
+  position: absolute;
+  font-size: 17px;
+  /* left set inline (+ designX0) — see ThemeSpreads.tsx */
+}
+
+.theme-spreads-press-play {
+  top: 632px;
+}
+
+.theme-spreads-put-on {
+  top: 640px;
+}
+
+.theme-spreads-sticky {
+  position: absolute;
+  /* left set inline (238px + designX0) — see ThemeSpreads.tsx */
+  top: 190px;
+  width: 112px;
+  height: 56px;
+  background: #f2c230;
+  transform: rotate(6deg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.theme-spreads-sticky-tape {
+  position: absolute;
+  left: 30px;
+  top: -9px;
+  width: 52px;
+  height: 17px;
+  background: rgba(255, 253, 247, 0.7);
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  transform: rotate(-4deg);
+}
+
+.theme-spreads-item {
+  position: absolute;
+}
+
+.theme-spreads-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--safe-bottom);
+  display: flex;
+  justify-content: center;
+  z-index: 20;
+}

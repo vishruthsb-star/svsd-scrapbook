@@ -1,0 +1,57 @@
+/* Shared shell for scrapbook canvas pages. Fills ScreenShell's variant="canvas" box
+   (frame sizing/centering + no safe-area bands come from ScreenShell/index.css's
+   --screen-frame-width/--screen-height tokens, not a hardcoded 390x844 here). */
+.scrapbook-canvas-page {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+
+  /* Reference: every screen in Scrapbook Directions.dc.html inherits this from its section
+     wrapper (font-family:'Shantell Sans',cursive;font-weight:300;color:#111111). */
+  font-family: 'Shantell Sans', cursive;
+  font-weight: 300;
+  color: #111111;
+}
+
+/* The style registry's content fills the frame and owns its own scrolling/safe-area
+   texture bleed — the shell itself never masks top/bottom with an opaque band. */
+.scrapbook-canvas-page-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+/* top: var(--safe-top), horizontally centered — matches the reference's header placement
+   (top:52px;left:37.5px for a 315-wide hint box) adapted to the repo's actual 354x61
+   ScrapbookHeader. z-index 50 matches the reference's header z-index. */
+.scrapbook-canvas-page-header {
+  position: absolute;
+  top: var(--safe-top);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+}
+
+/* Invisible probe mount for FabPillWidthProbe — AddFab's own `hidden` prop already zeroes
+   its opacity; this just also takes it out of flow/interaction while it measures. */
+.scrapbook-canvas-page-fab-probe {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.canvas-style-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e9e2d3;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: #6b6252;
+  text-align: center;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
