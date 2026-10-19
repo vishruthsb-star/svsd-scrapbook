@@ -54,6 +54,36 @@ export function makeRng(seed: number): SeededRng {
   const box = (x: number, y: number, w: number, h: number, o = 3) =>
     ln(x, y, x + w, y, o) + ln(x + w, y, x + w, y + h, o) + ln(x + w, y + h, x, y + h, o) + ln(x, y + h, x, y, o);
 
+  // Each edge of `box` jitters its own endpoints independently, so adjacent edges can land
+  // a pixel or two apart at a corner — fine for a card's outer edge, but on a small media
+  // frame it reads as a broken outline with stray tick marks. `frameBox` jitters each
+  // corner once and draws four bowed edges between those exact shared points, so the path
+  // is always a single closed loop with no gap.
+  const frameBox = (x: number, y: number, w: number, h: number) => {
+    const amt = 0.8,
+      bow = 1;
+    const pts: Array<[number, number]> = [
+      [x, y],
+      [x + w, y],
+      [x + w, y + h],
+      [x, y + h],
+    ].map(([px, py]): [number, number] => [px + J(amt), py + J(amt)]);
+    let d = `M${f(pts[0][0])} ${f(pts[0][1])}`;
+    for (let i = 0; i < 4; i++) {
+      const [x1, y1] = pts[i],
+        [x2, y2] = pts[(i + 1) % 4];
+      const dx = x2 - x1,
+        dy = y2 - y1,
+        L = Math.hypot(dx, dy) || 1,
+        ux = dx / L,
+        uy = dy / L;
+      const mx = (x1 + x2) / 2 - uy * J(bow),
+        my = (y1 + y2) / 2 + ux * J(bow);
+      d += `Q${f(mx)} ${f(my)} ${f(x2)} ${f(y2)}`;
+    }
+    return d + 'Z';
+  };
+
   const poly = (pts: Array<[number, number]>) =>
     'M' + pts.map(([x, y]) => `${f(x + J(0.7))} ${f(y + J(0.7))}`).join('L') + 'Z';
 
@@ -79,13 +109,13 @@ export function makeRng(seed: number): SeededRng {
     return d + 'Z';
   };
 
-  return { R, J, ln, box, poly, scal };
+  return { R, J, ln, box, frameBox, poly, scal };
 }
 
 export function stampGeometry(L: StampLayout, seed: number): StampGeometry {
   const g = makeRng(seed);
   const outline = g.scal(4, 4, L.W - 8, L.H - 8, 4.2);
-  const frame = g.box(L.winX, L.winY, L.winW, L.winH, 2);
+  const frame = g.frameBox(L.winX, L.winY, L.winW, L.winH);
   const bt = 24,
     px = 18;
   let backLines = '';
@@ -284,7 +314,7 @@ export function tagGeometry(L: TagLayout, seed: number): TagGeometry {
   const cx = W / 2;
   const holes = `M${cx - 7} 30a7 7 0 1 0 14 0a7 7 0 1 0 -14 0M${cx - 12} 30a12 12 0 1 0 24 0a12 12 0 1 0 -24 0`;
   const string = `M${cx} 30C${cx - 20} 8 ${cx + 10} -16 ${cx - 8} -46M${cx} 30C${cx + 18} 6 ${cx - 4} -18 ${cx + 10} -48`;
-  const slotFrame = g.box(L.slotX, L.slotY, L.slotW, L.slotH, 2);
+  const slotFrame = g.frameBox(L.slotX, L.slotY, L.slotW, L.slotH);
   const underline = g.ln(16, L.underlineY, W - 16, L.underlineY, 3);
 
   const bt = 54,

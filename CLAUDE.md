@@ -46,6 +46,18 @@ All four item kinds are implemented: **Stamp** (photo/video), **Note** (text),
   always draws the same "wobble". A few primitives are deliberately *not* wobbled — the
   ParcelTag's punched hole/string and the Note's torn-edge notches are static/fixed
   geometry (they represent hardware, not ink), matching Item.dc.html exactly.
+- Media frames (Stamp's photo window, ParcelTag's preview square) use `g.frameBox(x, y,
+  w, h)`, not `g.box(...)`. `box` draws each edge as an independent overshot segment —
+  fine for a card's outer edge, but on a small frame adjacent edges can land a pixel or
+  two apart at a corner, reading as a broken outline with stray tick marks. `frameBox`
+  jitters each corner once and draws four bowed edges between those exact shared points,
+  so it's always one closed loop. `box` is still correct for Note/VoicePostcard's outer
+  card outline, where that independent-overshoot look is the intended texture — don't
+  swap those to `frameBox`.
+- A media frame is always drawn in its own `<svg className="item-lay">` pass *after* (on
+  top of) the `.media-slot` div it frames, exactly like Stamp's second pass — never in the
+  same pass as the fill/background, or the photo paints over the border and only its
+  jittered extremities peek out.
 
 ## Component map
 

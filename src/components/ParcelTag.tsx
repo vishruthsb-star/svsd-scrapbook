@@ -10,6 +10,56 @@ import Decor from './Decor';
 import './Item.css';
 import './ParcelTag.css';
 
+interface TagPreviewMediaProps {
+  preview: StampMedia;
+  url: string;
+  host: string;
+  faviconUrl: string;
+}
+
+/**
+ * Owns the "did this image/video actually load" state, keyed by (kind, src) by the
+ * caller — so swapping the preview resets this for free via a normal remount, instead of
+ * an effect resetting state for a prop that changed (the same pattern VoicePostcard uses
+ * for its playback state). A broken image/video falls back to the same placeholder as an
+ * empty slot (favicon+hostname if there's a url, else the hatched chip), never a raw
+ * broken-image glyph.
+ */
+function TagPreviewMedia({ preview, url, host, faviconUrl }: TagPreviewMediaProps) {
+  const [broken, setBroken] = useState(false);
+  const showEmptyState = preview.kind === 'empty' || broken;
+
+  return (
+    <>
+      {preview.kind === 'image' && !broken && <img src={preview.src} alt="" onError={() => setBroken(true)} />}
+      {preview.kind === 'video' && !broken && (
+        <video src={preview.src} muted loop autoPlay playsInline onError={() => setBroken(true)} />
+      )}
+      {showEmptyState &&
+        (url ? (
+          <div className="tag-favicon-fallback">
+            <img
+              className="tag-favicon"
+              src={faviconUrl}
+              alt=""
+              onError={(e) => {
+                e.currentTarget.style.visibility = 'hidden';
+              }}
+            />
+            <div className="tag-hostname">{host}</div>
+          </div>
+        ) : (
+          <>
+            <svg width="100%" height="100%" style={{ display: 'block' }}>
+              <rect width="100%" height="100%" fill={`url(#${HATCH_PATTERN_ID})`} />
+            </svg>
+            <div className="media-chip">{preview.label || 'link'}</div>
+          </>
+        ))}
+    </>
+  );
+}
+
 export interface ParcelTagProps {
   url: string;
   linkLabel: string;
@@ -72,35 +122,19 @@ export default function ParcelTag({
           <path d={G.outline} />
           <path d={G.holes} />
           <path d={G.string} />
-          <path d={G.slotFrame} />
           <path d={G.underline} />
         </g>
       </svg>
       <div className="media-slot" style={{ left: L.slotX, top: L.slotY, width: L.slotW, height: L.slotH }}>
-        {preview.kind === 'image' && <img src={preview.src} alt="" />}
-        {preview.kind === 'video' && <video src={preview.src} muted loop autoPlay playsInline />}
-        {preview.kind === 'empty' &&
-          (url ? (
-            <div className="tag-favicon-fallback">
-              <img
-                className="tag-favicon"
-                src={faviconUrl}
-                alt=""
-                onError={(e) => {
-                  e.currentTarget.style.visibility = 'hidden';
-                }}
-              />
-              <div className="tag-hostname">{host}</div>
-            </div>
-          ) : (
-            <>
-              <svg width="100%" height="100%" style={{ display: 'block' }}>
-                <rect width="100%" height="100%" fill={`url(#${HATCH_PATTERN_ID})`} />
-              </svg>
-              <div className="media-chip">{preview.label || 'link'}</div>
-            </>
-          ))}
+        <TagPreviewMedia key={preview.kind + '|' + (preview.src ?? '')} preview={preview} url={url} host={host} faviconUrl={faviconUrl} />
       </div>
+      {/* frame drawn after (on top of) the media, same as Stamp's second item-lay pass — keeps the
+          border crisp and fully visible instead of being covered by the photo underneath it */}
+      <svg className="item-lay" width={L.W} height={L.H} style={{ strokeWidth: sw.thick }}>
+        <g style={INK_FILTER_STYLE}>
+          <path d={G.slotFrame} />
+        </g>
+      </svg>
       <a
         className="tag-link-row"
         style={{ left: L.linkX, top: L.linkY, width: L.linkW }}

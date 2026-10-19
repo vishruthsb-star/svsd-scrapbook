@@ -90,6 +90,9 @@ export interface SeededRng {
   J: (amplitude: number) => number;
   ln: (x1: number, y1: number, x2: number, y2: number, o?: number, bow?: number) => string;
   box: (x: number, y: number, w: number, h: number, o?: number) => string;
+  /** a single continuous wobbled rectangle — unlike `box`, adjacent edges share their exact
+   * jittered corner point, so there's never a corner gap or stray tick. For media frames. */
+  frameBox: (x: number, y: number, w: number, h: number) => string;
   poly: (pts: Array<[number, number]>) => string;
   scal: (x: number, y: number, w: number, h: number, r: number) => string;
 }

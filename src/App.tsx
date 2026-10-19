@@ -342,7 +342,12 @@ function App() {
     try {
       const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(tagUrl)}&screenshot=true`);
       const json = await res.json();
-      const src: string | undefined = json?.data?.image?.url ?? json?.data?.screenshot?.url;
+      // Microlink's "image" field is often just a small logo/og-image, while "screenshot" is a
+      // full-page capture — pick whichever is actually larger instead of always preferring
+      // "image", so the preview isn't blurrily upscaled when a bigger source is available.
+      const candidates = [json?.data?.image, json?.data?.screenshot].filter(Boolean) as Array<{ url?: string; width?: number; height?: number }>;
+      candidates.sort((a, b) => (b.width ?? 0) * (b.height ?? 0) - (a.width ?? 0) * (a.height ?? 0));
+      const src: string | undefined = candidates[0]?.url;
       if (!src) {
         setTagFetchError("couldn't get a preview for that link");
         return;
