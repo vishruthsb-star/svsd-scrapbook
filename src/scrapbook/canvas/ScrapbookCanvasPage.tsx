@@ -7,6 +7,7 @@ import { SketchDefs } from '@/components/SketchDefs';
 import { OWNER_HANDLE } from '@/data/mock';
 import './ScrapbookCanvasPage.css';
 import { DESIGN_W, FAB_PILL_HEIGHT, HEADER_REF_BOTTOM, SAFE } from './constants';
+import type { FabPlacement } from './fabAnchor';
 import { fabAnchor } from './fabAnchor';
 import type { CanvasStyle } from './styleRegistry';
 import { CANVAS_STYLE_FAB_PLACEMENT, CANVAS_STYLES } from './styleRegistry';
@@ -19,6 +20,14 @@ export interface ScrapbookCanvasPageProps {
   items?: unknown[];
   headerProps?: ScrapbookHeaderProps;
   ownerName?: string;
+  /**
+   * Overrides `CANVAS_STYLE_FAB_PLACEMENT[style]` for this mount only — the registry default
+   * stays the reference-sourced placement (e.g. torn-strata's bottom-center), so standalone
+   * previews of a style are unaffected. Used by CanvasScreen to move torn-strata's add
+   * button to 'tr' so it clears the app-shell-level HomeBottomNavigation, which the gallery's
+   * standalone torn-strata preview doesn't have to contend with.
+   */
+  fabPlacement?: FabPlacement;
 }
 
 /**
@@ -88,7 +97,13 @@ function FabPillWidthProbe({ onMeasured }: { onMeasured: (width: number) => void
  * `FabPillWidthProbe` first. The style content is gated on the same measurements, since
  * every style's layout depends on `frameW`/`frameH`/`headerDelta`.
  */
-export default function ScrapbookCanvasPage({ style, view, headerProps, ownerName = OWNER_HANDLE }: ScrapbookCanvasPageProps) {
+export default function ScrapbookCanvasPage({
+  style,
+  view,
+  headerProps,
+  ownerName = OWNER_HANDLE,
+  fabPlacement: fabPlacementOverride,
+}: ScrapbookCanvasPageProps) {
   const frameRef = useRef<HTMLDivElement>(null);
   const [frame, setFrame] = useState<{ w: number; h: number } | null>(null);
 
@@ -116,7 +131,7 @@ export default function ScrapbookCanvasPage({ style, view, headerProps, ownerNam
 
   const headerDelta = headerHeight === null ? null : SAFE.top + headerHeight - HEADER_REF_BOTTOM;
   const designX0 = frame === null ? null : (frame.w - DESIGN_W) / 2;
-  const fabPlacement = CANVAS_STYLE_FAB_PLACEMENT[style];
+  const fabPlacement = fabPlacementOverride ?? CANVAS_STYLE_FAB_PLACEMENT[style];
   const needsPillWidth = fabPlacement !== 'bc';
   const fabReady = frame !== null && headerHeight !== null && (!needsPillWidth || pillWidth !== null);
 

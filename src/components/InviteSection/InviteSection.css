@@ -15,9 +15,13 @@
 }
 
 .invite-copy {
-  --invite-gap-text: 5px;
+  --invite-gap-text: 2px;
 
-  margin-top: 28px;
+  /* Reduced from Figma's 28px — on the Home screen (not the standalone gallery preview)
+     this is one of two trims (with --invite-gap-text above) that, combined with
+     HomeScreen.css's --home-gap-library-invite, keep this caption block clear of the
+     app-shell-level HomeBottomNavigation overlay. See that file for the full accounting. */
+  margin-top: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -4,6 +4,13 @@
   height: var(--screen-height, 100dvh);
   max-width: var(--screen-frame-width, 402px);
   margin: 0 auto;
+  overflow: hidden;
+  /* The two screens crossfade fully stacked (position:absolute, inset:0) over this one
+     container. Without an opaque background here, the moment the outgoing screen's opacity
+     drops below the incoming one's, index.css's dark body letterbox color shows through the
+     gap — that was the "near-black flash" bug. Painting the same cream paper color the
+     screens themselves use means there is never anything but paper behind them. */
+  background: var(--screen-bg);
 }
 
 .app-shell-screen {
@@ -11,26 +18,30 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  opacity: 1;
-  transform: translateY(0);
-  transition:
-    opacity 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
-    visibility 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
-    transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
-  visibility: visible;
-}
-
-.app-shell-screen[hidden] {
   opacity: 0;
-  visibility: hidden;
+  transform: translateY(0);
   pointer-events: none;
+  transition: opacity 280ms ease-out;
 }
 
-.app-shell-screen:not([hidden]) {
-  animation: slideInUp 300ms cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+.app-shell-screen.is-active {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-@keyframes slideInUp {
+/* will-change only while actually transitioning: during the one-shot enter animation, or
+   during the window between losing .is-active and the exit transition finishing (flagged by
+   .is-idle-hidden not yet being applied — see AppShell.tsx's transitionend handler). */
+.app-shell-screen.is-entering,
+.app-shell-screen:not(.is-active):not(.is-idle-hidden) {
+  will-change: opacity, transform;
+}
+
+.app-shell-screen.is-entering {
+  animation: app-shell-screen-enter 280ms ease-out forwards;
+}
+
+@keyframes app-shell-screen-enter {
   from {
     opacity: 0;
     transform: translateY(8px);
@@ -41,9 +52,19 @@
   }
 }
 
+/* Applied only after the exit transition's transitionend fires (never synchronously with
+   the tab switch) — see AppShell.tsx. Removes the outgoing screen from paint/hit-testing
+   once it has actually finished fading, instead of the instant it stops being the active tab. */
+.app-shell-screen.is-idle-hidden {
+  visibility: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .app-shell-screen {
-    transition: opacity 0ms, visibility 0ms, transform 0ms;
+    transition: none;
+  }
+
+  .app-shell-screen.is-entering {
     animation: none;
   }
 }

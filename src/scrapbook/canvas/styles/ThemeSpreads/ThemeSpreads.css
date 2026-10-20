@@ -132,7 +132,13 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: var(--safe-bottom);
+  /* The app-shell-level HomeBottomNavigation (AppShell.css) floats at bottom:40px and is
+     53px tall itself, occupying the bottom 93px of the frame; this nav is the same 53px
+     tall. var(--safe-bottom) (32px) alone put the two directly on top of each other —
+     moved above that 93px footprint plus a 16px gap instead (--theme-nav-bottom, set
+     inline by ThemeSpreads.tsx so the panel-height scroll formula can't drift from this).
+     Kept visible (not hidden) because it's this style's only way to switch theme panels. */
+  bottom: var(--theme-nav-bottom, 109px);
   display: flex;
   justify-content: center;
   z-index: 20;

@@ -175,6 +175,11 @@ export function mk(id: SampleItemId, o: SampleItemPlacement = {}): MkResult {
   return { ...b, id, rot: 0, ...o, z, w: s[0] * z, h: s[1] * z, hint: `${Math.round(s[0] * z)}px,${Math.round(s[1] * z)}px` };
 }
 
+/** Every real image URL referenced by the fixture — used to pre-decode canvas photos before first paint (see utils/decodeImages.ts). */
+export const SAMPLE_IMAGE_SRCS: readonly string[] = Object.values(IT)
+  .map((item) => item.src)
+  .filter((src): src is string => typeof src === 'string');
+
 /** Verbatim port of the reference's `fmt(it)` — "{date} {year}" uppercased, e.g. "12 OCT 2026". */
 export function fmtDate(it: Pick<SampleItemBase, 'date' | 'year'>): string {
   return (it.date + ' ' + it.year).toUpperCase();

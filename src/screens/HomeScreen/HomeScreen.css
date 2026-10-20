@@ -1,6 +1,12 @@
 .home-root {
   --home-gap-header-library: 44px;
-  --home-gap-library-invite: 32px;
+  /* Reduced from the Figma-matched 32px to 16px — still a clear, deliberate gap off the
+     folder drawer, but frees 16px that's needed lower in the stack: the HomeBottomNavigation
+     overlay (mounted at the app-shell level, see AppShell.css) sits in the bottom 93px of
+     the frame (40px offset + its own 53px height), and without this the invite caption's
+     second line ran 19px behind it. See InviteSection.css's margin-top/--invite-gap-text for
+     the rest of the 35px this reclaims. */
+  --home-gap-library-invite: 16px;
 
   display: flex;
   flex-direction: column;
@@ -28,6 +34,7 @@
 .home-invite-wrap {
   width: 100%;
   /* InviteSection has 56px of its own top padding before its first visible pixel (the
-     flower doodle); subtract it here so the visible gap from Library's bottom edge is 32px. */
+     flower doodle); subtract it here so the visible gap from Library's bottom edge is
+     16px (--home-gap-library-invite). */
   margin-top: calc(var(--home-gap-library-invite) - 56px);
 }

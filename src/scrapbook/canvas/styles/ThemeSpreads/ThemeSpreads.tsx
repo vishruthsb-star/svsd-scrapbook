@@ -4,7 +4,6 @@ import { ScrapbookItem } from '@/components/ScrapbookItem';
 import { ThemeNavigation } from '@/components/ThemeNavigation';
 import type { ThemeNavigationValue } from '@/components/ThemeNavigation';
 import { mk } from '@/scrapbook/fixtures/sampleItems';
-import { SAFE } from '../../constants';
 import { hash } from '../../itemSeed';
 import './ThemeSpreads.css';
 import { THEME_PANELS } from './themeSpreadsData';
@@ -17,6 +16,16 @@ export interface ThemeSpreadsProps {
   frameH: number;
   designX0: number;
 }
+
+/**
+ * Distance from the frame bottom to this style's own ThemeNavigation (ThemeSpreads.css's
+ * `.theme-spreads-nav`). Was `var(--safe-bottom)` (32px) until the app-shell-level
+ * HomeBottomNavigation (AppShell.css, mounted above every screen incl. this one at
+ * bottom:40px, 53px tall) landed directly on top of it — moved above that 93px footprint
+ * plus a 16px gap. Shared with the CSS file via the `--theme-nav-bottom` custom property set
+ * below, and with the panel-height formula below, so the two can't drift apart.
+ */
+const THEME_NAV_BOTTOM = 109;
 
 /**
  * Wraps one piece of a panel's hand-placed content (an item, or a static extra like
@@ -78,8 +87,8 @@ function MeasuredBlock({
  *
  * VERTICAL SCROLL (this task's CHANGE 2): each panel owns its own vertical scroll
  * container (independent scroll position per panel, not reset when swiping between
- * themes), sized to `max(frameH, lowestContentBottom + SAFE.bottom + navHeight + 24)` so
- * the lowest item can scroll fully clear of the bottom-anchored ThemeNavigation. The grid
+ * themes), sized to `max(frameH, lowestContentBottom + THEME_NAV_BOTTOM + navHeight + 24)`
+ * so the lowest item can scroll fully clear of the bottom-anchored ThemeNavigation. The grid
  * rect and the hand-placed content div are both inside that same scrollable element (as
  * siblings) so they scroll together, while the grid itself still isn't shifted by
  * `headerDelta` — at `scrollTop: 0` everything lands exactly where it did before this
@@ -122,11 +131,11 @@ export default function ThemeSpreads({ view, headerDelta, ownerName, frameW, fra
   };
 
   return (
-    <div className="theme-spreads-root">
+    <div className="theme-spreads-root" style={{ '--theme-nav-bottom': `${THEME_NAV_BOTTOM}px` } as CSSProperties}>
       <div ref={scrollerRef} className="theme-spreads-scroller" onScroll={handleScroll}>
         {THEME_PANELS.map((panel) => {
           const lowestBottom = Math.max(0, ...Object.values(panelBottoms[panel.id] ?? {}));
-          const panelContentH = Math.max(frameH, lowestBottom + headerDelta + SAFE.bottom + navHeight + 24);
+          const panelContentH = Math.max(frameH, lowestBottom + headerDelta + THEME_NAV_BOTTOM + navHeight + 24);
 
           return (
             <div key={panel.id} className="theme-spreads-panel" style={{ width: frameW, height: frameH }}>
