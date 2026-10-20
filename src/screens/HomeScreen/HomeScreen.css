@@ -31,11 +31,3 @@
      flower doodle); subtract it here so the visible gap from Library's bottom edge is 32px. */
   margin-top: calc(var(--home-gap-library-invite) - 56px);
 }
-
-.home-nav-overlay {
-  position: absolute;
-  left: 50%;
-  bottom: 40px;
-  transform: translateX(-50%);
-  z-index: 20;
-}

@@ -12,7 +12,7 @@ import { ScrapbookHeader } from '@/components/ScrapbookHeader';
 import { ScreenShell } from '@/components/ScreenShell';
 import { ThemeNavigation } from '@/components/ThemeNavigation';
 import { ScrapbookCanvasPage } from '@/scrapbook/canvas';
-import HomeScreen from '@/screens/HomeScreen/HomeScreen';
+import AppShell from '@/screens/AppShell/AppShell';
 import { LIBRARY_ACTIVE_INDEX, LIBRARY_PEOPLE, OWNER_HANDLE, OWNER_NAME } from '@/data/mock';
 import ScrapbookStylePreview from './ScrapbookStylePreview';
 
@@ -29,10 +29,10 @@ export interface GalleryEntry {
 export const SCREENS: GalleryEntry[] = [
   {
     kind: 'screen',
-    id: 'home',
-    title: 'Home',
-    description: 'Header, Library, and the invite section, stacked as the app’s landing screen.',
-    render: () => <HomeScreen />,
+    id: 'app',
+    title: 'App (Home + Canvas with Nav)',
+    description: 'The full app shell with nav switching between Home and Canvas/Journal screens.',
+    render: () => <AppShell />,
   },
 ];
 
