@@ -12,6 +12,7 @@ import ScrapDefs from './components/ScrapDefs';
 import ComponentStage from './gallery/ComponentStage';
 import GalleryIndex from './gallery/GalleryIndex';
 import ScreenStage from './gallery/ScreenStage';
+import IphoneShowcase from './showcase/IphoneShowcase';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -20,6 +21,7 @@ createRoot(document.getElementById('root')!).render(
     <HashRouter>
       <Routes>
         <Route path="/" element={<GalleryIndex />} />
+        <Route path="/showcase" element={<IphoneShowcase />} />
         <Route path="/screens/:id" element={<ScreenStage />} />
         <Route path="/components/:id" element={<ComponentStage />} />
       </Routes>

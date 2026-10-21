@@ -1,0 +1,90 @@
+.iphone-showcase {
+  display: grid;
+  width: max(100%, calc(var(--showcase-device-width) + var(--showcase-horizontal-space)));
+  min-height: 100vh;
+  min-height: max(100svh, 100dvh, calc(var(--showcase-device-height) + var(--showcase-vertical-space)));
+  place-items: center;
+  box-sizing: border-box;
+  background: #ffffff;
+}
+
+.iphone-showcase__title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.iphone-showcase__device-slot {
+  display: grid;
+  position: relative;
+  width: var(--showcase-device-width);
+  height: var(--showcase-device-height);
+  place-items: center;
+}
+
+/* This box is the physical device, not the 740 px transparent source canvas. */
+.iphone-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 360px;
+  aspect-ratio: 322 / 656;
+  flex: none;
+  transform: translate(-50%, -50%) scale(var(--iphone-device-scale));
+  transform-origin: center;
+  transition: transform 180ms ease-out;
+}
+
+.iphone-frame__aperture {
+  position: absolute;
+  left: var(--iphone-aperture-left);
+  top: var(--iphone-aperture-top);
+  width: var(--iphone-aperture-width);
+  height: var(--iphone-aperture-height);
+  overflow: hidden;
+  border-radius: var(--iphone-aperture-radius-x) / var(--iphone-aperture-radius-y);
+  background: #faf7f0;
+}
+
+/* AppShell stays at its approved 402 × 844 logical viewport and is uniformly fitted. */
+.iphone-frame__product-viewport {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 402px;
+  height: 844px;
+  transform: translate(-50%, -50%) scale(var(--iphone-product-scale));
+  transform-origin: center;
+}
+
+.iphone-frame__product {
+  display: block;
+  width: 402px;
+  height: 844px;
+  border: 0;
+  background: #faf7f0;
+}
+
+.iphone-frame__hardware {
+  position: absolute;
+  z-index: 1;
+  left: var(--iphone-frame-image-left);
+  top: var(--iphone-frame-image-top);
+  width: var(--iphone-frame-image-width);
+  height: var(--iphone-frame-image-height);
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iphone-frame {
+    transition: none;
+  }
+}
