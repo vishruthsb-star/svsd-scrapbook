@@ -93,6 +93,9 @@
   animation: torn-strata-arrive 420ms ease-out both;
 }
 
+.torn-strata-boop { position: absolute; z-index: 12; }
+.torn-strata-boop svg { display: block; width: 100%; height: auto; }
+
 @keyframes torn-strata-arrive {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }

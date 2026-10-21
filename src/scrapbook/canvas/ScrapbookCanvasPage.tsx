@@ -1,5 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AddFab } from '@/components/AddFab';
+import type { AddFabHandle } from '@/components/AddFab';
+import { BoopFab } from '@/components/BoopFab';
+import type { BoopStampKey } from '@/components/BoopFab';
+import type { PlacedBoopStamp } from '@/scrapbook/boopStamps';
 import type { AddFabKind } from '@/components/AddFab';
 import { ScrapbookHeader } from '@/components/ScrapbookHeader';
 import type { ScrapbookHeaderProps } from '@/components/ScrapbookHeader';
@@ -11,6 +15,7 @@ import './ScrapbookCanvasPage.css';
 import { DESIGN_W, FAB_PILL_HEIGHT, HEADER_REF_BOTTOM, SAFE } from './constants';
 import type { FabPlacement } from './fabAnchor';
 import { fabAnchor } from './fabAnchor';
+import { PRODUCTION_FAB_LAYOUT } from './fabLayoutConfig';
 import type { CanvasStyle } from './styleRegistry';
 import { CANVAS_STYLE_FAB_PLACEMENT, CANVAS_STYLES } from './styleRegistry';
 
@@ -31,6 +36,10 @@ export interface ScrapbookCanvasPageProps {
    */
   fabPlacement?: FabPlacement;
   onAddSelect?: (kind: AddFabKind) => void;
+  boopStamps?: PlacedBoopStamp[];
+  onBoopSelect?: (key: BoopStampKey, position: { x: number; y: number }) => void;
+  scrollTargetId?: string | null;
+  onBoopOpenChange?: (open: boolean) => void;
 }
 
 /**
@@ -107,6 +116,10 @@ export default function ScrapbookCanvasPage({
   ownerName = OWNER_HANDLE,
   fabPlacement: fabPlacementOverride,
   onAddSelect,
+  boopStamps = [],
+  onBoopSelect,
+  scrollTargetId,
+  onBoopOpenChange,
   items = [],
 }: ScrapbookCanvasPageProps) {
   const frameRef = useRef<HTMLDivElement>(null);
@@ -133,12 +146,29 @@ export default function ScrapbookCanvasPage({
   }, []);
 
   const [pillWidth, setPillWidth] = useState<number | null>(null);
+  const [boopOpen, setBoopOpen] = useState(false);
+  const [addFabOpen, setAddFabOpen] = useState(false);
+  const addFabRef = useRef<AddFabHandle>(null);
 
   const headerDelta = headerHeight === null ? null : SAFE.top + headerHeight - HEADER_REF_BOTTOM;
   const designX0 = frame === null ? null : (frame.w - DESIGN_W) / 2;
   const fabPlacement = fabPlacementOverride ?? CANVAS_STYLE_FAB_PLACEMENT[style];
   const needsPillWidth = fabPlacement !== 'bc';
   const fabReady = frame !== null && headerHeight !== null && (!needsPillWidth || pillWidth !== null);
+  const fabPoint = fabReady
+    ? fabAnchor(fabPlacement, pillWidth ?? 0, FAB_PILL_HEIGHT, headerHeight!, frame!.w, frame!.h)
+    : null;
+  const addFabOffset = fabPlacement === 'tr' ? PRODUCTION_FAB_LAYOUT.addFab : { offsetX: 0, offsetY: 0 };
+  const addFabPoint = fabPoint && {
+    x: fabPoint.x + addFabOffset.offsetX,
+    y: fabPoint.y + addFabOffset.offsetY,
+  };
+  // Keep BOOP's visible edge gap equal to the real header-to-AddFab gap. Both header
+  // height and AddFab's anchor are measured/runtime values, so this survives responsive
+  // header sizing without a viewport-specific constant.
+  const boopVerticalGap = addFabPoint
+    ? addFabPoint.y - FAB_PILL_HEIGHT / 2 - (SAFE.top + headerHeight!)
+    : PRODUCTION_FAB_LAYOUT.boopButton.verticalGap;
 
   return (
     <ScreenShell variant="canvas">
@@ -148,7 +178,7 @@ export default function ScrapbookCanvasPage({
           {headerDelta !== null &&
             designX0 !== null &&
             frame !== null &&
-            CANVAS_STYLES[style]({ view, headerDelta, ownerName, frameW: frame.w, frameH: frame.h, designX0, items })}
+            CANVAS_STYLES[style]({ view, headerDelta, ownerName, frameW: frame.w, frameH: frame.h, designX0, items, boopStamps, scrollTargetId })}
         </div>
         <div ref={headerWrapRef} className="scrapbook-canvas-page-header">
           <ScrapbookHeader {...headerProps} />
@@ -156,13 +186,31 @@ export default function ScrapbookCanvasPage({
         {view === 'visitor' && needsPillWidth && pillWidth === null && <FabPillWidthProbe onMeasured={setPillWidth} />}
         {view === 'visitor' && fabReady && (
           <AddFab
+            ref={addFabRef}
             placement={fabPlacement}
             frameW={frame!.w}
             frameH={frame!.h}
             cornerRadius={0}
             zIndex={200}
             onSelect={onAddSelect}
-            {...fabAnchor(fabPlacement, pillWidth ?? 0, FAB_PILL_HEIGHT, headerHeight as number, frame!.w, frame!.h)}
+            onOpen={() => { setBoopOpen(false); onBoopOpenChange?.(false); }}
+            onOpenChange={setAddFabOpen}
+            x={addFabPoint!.x}
+            y={addFabPoint!.y}
+          />
+        )}
+        {view === 'visitor' && fabReady && fabPlacement === 'tr' && (
+          <BoopFab
+            recipientName={ownerName}
+            x={addFabPoint!.x + PRODUCTION_FAB_LAYOUT.boopButton.horizontalOffset}
+            y={addFabPoint!.y + FAB_PILL_HEIGHT / 2 + boopVerticalGap + PRODUCTION_FAB_LAYOUT.boopButton.height / 2}
+            open={boopOpen}
+            onOpen={() => { addFabRef.current?.close(); setBoopOpen(true); onBoopOpenChange?.(true); }}
+            onClose={() => { setBoopOpen(false); onBoopOpenChange?.(false); }}
+            onSelect={(key) => onBoopSelect?.(key, { x: 0, y: 0 })}
+            disabled={addFabOpen}
+            buttonStyle={{ width: PRODUCTION_FAB_LAYOUT.boopButton.width, height: PRODUCTION_FAB_LAYOUT.boopButton.height }}
+            markStyle={{ transform: `translate(${PRODUCTION_FAB_LAYOUT.boopButton.logoOffsetX}px, ${PRODUCTION_FAB_LAYOUT.boopButton.logoOffsetY}px) rotate(${PRODUCTION_FAB_LAYOUT.boopButton.logoRotation}deg) scale(${PRODUCTION_FAB_LAYOUT.boopButton.logoScale})` }}
           />
         )}
       </div>

@@ -1,9 +1,11 @@
 import type { CSSProperties, ReactNode } from 'react';
+import { useState } from 'react';
 import Note from '@/components/Note';
 import ParcelTag from '@/components/ParcelTag';
 import Stamp from '@/components/Stamp';
 import VoicePostcard from '@/components/VoicePostcard';
 import { AddFab } from '@/components/AddFab';
+import { BoopFab } from '@/components/BoopFab';
 import { Header } from '@/components/Header';
 import { HomeBottomNavigation } from '@/components/HomeBottomNavigation';
 import { InviteSection } from '@/components/InviteSection';
@@ -16,6 +18,7 @@ import { ScrapbookCanvasPage } from '@/scrapbook/canvas';
 import AppShell from '@/screens/AppShell/AppShell';
 import { LIBRARY_ACTIVE_INDEX, LIBRARY_PEOPLE, OWNER_HANDLE, OWNER_NAME } from '@/data/mock';
 import ScrapbookStylePreview from './ScrapbookStylePreview';
+import ScrapbookFabLayoutLab from './harnesses/ScrapbookFabLayoutLab';
 import ComposeMemoryScreen from '@/screens/ComposeMemoryScreen/ComposeMemoryScreen';
 import { DecorPreview, FlipCardPreview, ItemBackPreview, PillButtonPreview, RemoveButtonPreview, ScrapbookItemPreview } from './ComponentGalleryPreviews';
 
@@ -38,6 +41,12 @@ export const SCREENS: GalleryEntry[] = [
     render: () => <AppShell />,
   },
 ];
+
+// eslint-disable-next-line react-refresh/only-export-components
+function BoopGalleryPreview() {
+  const [open, setOpen] = useState(false);
+  return <div style={{ position: 'relative', width: 390, height: 844, background: '#e9e2d3', overflow: 'hidden' }}><BoopFab recipientName="Vishruth" x={316} y={190} open={open} onOpen={() => setOpen(true)} onClose={() => setOpen(false)} onSelect={() => undefined} /></div>;
+}
 
 export const COMPONENTS: GalleryEntry[] = [
   {
@@ -221,6 +230,20 @@ export const COMPONENTS: GalleryEntry[] = [
         <AddFab placement="br" />
       </div>
     ),
+  },
+  {
+    kind: 'component',
+    id: 'boop-fab',
+    title: 'BOOP stamp picker',
+    description: 'The approved BOOP pill and all ten vector stamps. Open the picker and choose a stamp to inspect its selection transition.',
+    render: () => <BoopGalleryPreview />,
+  },
+  {
+    kind: 'component',
+    id: 'scrapbook-fab-layout-lab',
+    title: 'Scrapbook FAB Layout Lab',
+    description: 'Interactive, isolated tuning harness for the real AddFab and BOOP controls. Copy the current configuration when ready for approval.',
+    render: () => <ScrapbookFabLayoutLab />,
   },
   {
     kind: 'component',

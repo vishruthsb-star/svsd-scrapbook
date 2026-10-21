@@ -5,6 +5,7 @@ import ThemeSpreads from './styles/ThemeSpreads/ThemeSpreads';
 import TornStrata from './styles/TornStrata/TornStrata';
 import type { FabPlacement } from './fabAnchor';
 import type { PlacedMemory } from '@/scrapbook/placement';
+import type { PlacedBoopStamp } from '@/scrapbook/boopStamps';
 
 export type CanvasStyle = 'torn-strata' | 'theme-spreads' | 'envelopes-lip' | 'paper-wheel';
 
@@ -21,6 +22,9 @@ export interface CanvasStyleProps {
   designX0: number;
   /** Created memories are consumed by the style that owns their grouping/navigation. */
   items?: PlacedMemory[];
+  boopStamps?: PlacedBoopStamp[];
+  /** Set only after a successful user insertion; styles may reveal this item in their own scroller. */
+  scrollTargetId?: string | null;
 }
 
 /**

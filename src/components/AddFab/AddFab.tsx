@@ -10,6 +10,9 @@ export interface AddFabProps {
   startOpen?: boolean;
   hidden?: boolean;
   onSelect?: (kind: AddFabKind) => void;
+  onOpen?: () => void;
+  /** Fires for every actual menu transition, including direct pointer activation. */
+  onOpenChange?: (open: boolean) => void;
   /** Fan-center/arc overrides — see addFabEngine.ts's host-geometry caveat before touching these. */
   x?: number;
   y?: number;
@@ -43,7 +46,7 @@ export interface AddFabHandle {
  * (timers cleared, DOM node removed) before the next mount runs.
  */
 const AddFab = forwardRef<AddFabHandle, AddFabProps>(function AddFab(
-  { placement, startOpen, hidden, onSelect, x, y, dir, spread, radius, frameW = 390, frameH = 844, cornerRadius, zIndex, className },
+  { placement, startOpen, hidden, onSelect, onOpen, onOpenChange, x, y, dir, spread, radius, frameW = 390, frameH = 844, cornerRadius, zIndex, className },
   ref,
 ) {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -52,7 +55,7 @@ const AddFab = forwardRef<AddFabHandle, AddFabProps>(function AddFab(
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
-    const opts: AddFabOptions = { placement, startOpen, hidden, onSelect, x, y, dir, spread, radius, frameW, frameH, cornerRadius, zIndex };
+    const opts: AddFabOptions = { placement, startOpen, hidden, onSelect, onOpen, onOpenChange, x, y, dir, spread, radius, frameW, frameH, cornerRadius, zIndex };
     const engine = new AddFabEngine(host, opts);
     engineRef.current = engine;
     return () => {

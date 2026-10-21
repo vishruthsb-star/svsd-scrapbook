@@ -1,0 +1,4 @@
+/* AddFab's existing root is the scrim's stacking context (z-index: 200). During its
+   expanded state BOOP drops below that root, so the real backdrop-filter samples it. */
+.boopfab--under-addfab { z-index: 199; }
+.boopfab--under-addfab .boopfab__pill { pointer-events: none; }

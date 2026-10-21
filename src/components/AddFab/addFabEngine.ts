@@ -30,6 +30,9 @@ export interface AddFabOptions {
   startOpen?: boolean;
   hidden?: boolean;
   onSelect?: ((kind: AddFabKind) => void) | null;
+  onOpen?: (() => void) | null;
+  /** Reports real menu state transitions, including pointer and keyboard activation. */
+  onOpenChange?: ((open: boolean) => void) | null;
   x?: number;
   y?: number;
   dir?: number;
@@ -348,7 +351,7 @@ export class AddFab {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     this.opts = Object.assign(
-      { placement: 'br' as AddFabPlacement, startOpen: false, hidden: false, onSelect: null, frameW: 390, frameH: 844, cornerRadius: 48 },
+      { placement: 'br' as AddFabPlacement, startOpen: false, hidden: false, onSelect: null, onOpen: null, onOpenChange: null, frameW: 390, frameH: 844, cornerRadius: 48 },
       opts || {},
     );
     this.state = { open: null, hover: -1, picked: -1, stage: 0 };
@@ -510,8 +513,14 @@ export class AddFab {
     this.timers.push(setTimeout(fn, ms));
   }
   setState(patch: Partial<AddFabState>) {
+    const wasOpen = this.isOpen();
     Object.assign(this.state, patch);
     this.render();
+    const isOpen = this.isOpen();
+    if (wasOpen !== isOpen) {
+      if (isOpen) this.opts.onOpen?.();
+      this.opts.onOpenChange?.(isOpen);
+    }
   }
   pick(i: number) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias

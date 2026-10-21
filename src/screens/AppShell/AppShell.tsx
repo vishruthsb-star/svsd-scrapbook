@@ -12,6 +12,8 @@ import type { PlacedMemory } from '@/scrapbook/placement';
 import { loadMemories, saveMemory } from '@/scrapbook/persistence/localScrapbookStore';
 import HomeScreenShell from '@/screens/HomeScreen/HomeScreenShell';
 import { decodeImages } from '@/utils/decodeImages';
+import { loadBoopStamps, saveBoopStamps } from '@/scrapbook/boopStamps';
+import type { PlacedBoopStamp, BoopStampKey } from '@/scrapbook/boopStamps';
 import './AppShell.css';
 
 function prefersReducedMotion(): boolean {
@@ -113,6 +115,9 @@ export default function AppShell() {
   const [selectedPerson, setSelectedPerson] = useState(LIBRARY_ACTIVE_INDEX);
   const [composeKind, setComposeKind] = useState<ComposeKind | null>(null);
   const [createdItems, setCreatedItems] = useState<PlacedMemory[]>([]);
+  const [boopStamps, setBoopStamps] = useState<PlacedBoopStamp[]>(() => loadBoopStamps());
+  const [scrollTargetId, setScrollTargetId] = useState<string | null>(null);
+  const [boopPickerOpen, setBoopPickerOpen] = useState(false);
   const savingRef = useRef(false);
   const recipient = LIBRARY_PEOPLE[selectedPerson];
 
@@ -150,11 +155,18 @@ export default function AppShell() {
     try {
       await saveMemory(item, memory.kind === 'stamp' ? memory.file : memory.kind === 'voice' ? memory.blob : undefined);
       setCreatedItems((items) => [...items, item]);
+      setScrollTargetId(item.id);
       closeCompose();
     } catch (error) {
       console.error('Could not save scrapbook memory', error);
       window.alert("Couldn't save this memory. Please try again.");
     } finally { savingRef.current = false; }
+  };
+  const addBoopStamp = (stampKey: BoopStampKey, position: { x: number; y: number }) => {
+    const id = typeof crypto?.randomUUID === 'function' ? crypto.randomUUID() : `boop-${Date.now()}-${boopStamps.length}`;
+    const stamp: PlacedBoopStamp = { id, stampKey, scrapbookId: `library:${recipient.name}`, recipientName: recipient.name, x: position.x, y: position.y, width: 136, rotation: ((boopStamps.length * 5) % 11) - 5, createdAt: new Date().toISOString() };
+    setBoopStamps((current) => { const next = [...current, stamp]; saveBoopStamps(next); return next; });
+    setScrollTargetId(stamp.id);
   };
 
   // Pre-decode the canvas screen's photos while Home is still showing, so the first switch
@@ -171,9 +183,9 @@ export default function AppShell() {
         <HomeScreenShell selectedPerson={selectedPerson} onSelectPerson={setSelectedPerson} />
       </ScreenPanel>
       <ScreenPanel active={navValue === 'journal'} id="panel-journal" labelledBy="tab-journal" className="app-shell-canvas">
-        <CanvasScreen recipientName={recipient.name} onAddSelect={openCompose} items={createdItems.filter((item) => item.recipientId === recipient.name)} />
+        <CanvasScreen recipientName={recipient.name} onAddSelect={openCompose} items={createdItems.filter((item) => item.recipientId === recipient.name)} boopStamps={boopStamps.filter((stamp) => stamp.scrapbookId === `library:${recipient.name}`)} onBoopSelect={addBoopStamp} scrollTargetId={scrollTargetId} onBoopOpenChange={setBoopPickerOpen} />
       </ScreenPanel>
-      {!composeKind && <nav className="app-shell-nav-overlay">
+      {!composeKind && !boopPickerOpen && <nav className="app-shell-nav-overlay">
         <HomeBottomNavigation value={navValue} onChange={setNavValue} />
       </nav>}
       {composeKind && (

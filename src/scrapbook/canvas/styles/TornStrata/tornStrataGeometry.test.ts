@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { PlacedMemory } from '@/scrapbook/placement';
+import type { PlacedBoopStamp } from '@/scrapbook/boopStamps';
 import { buildStrata } from './tornStrataGeometry';
 
 const memory = (id: string, createdAt = '2026-10-20T12:00:00.000Z'): PlacedMemory => ({
@@ -36,5 +37,16 @@ describe('TornStrata created-memory placement', () => {
       const separated = one.x + 193 <= two.x || two.x + 193 <= one.x || one.y + 123 <= two.y || two.y + 123 <= one.y;
       expect(separated).toBe(true);
     }
+  });
+
+  it('uses side-by-side space for consecutive BOOP stamps before growing the month', () => {
+    const stamps: PlacedBoopStamp[] = [0, 1].map((index) => ({
+      id: `boop-${index}`, stampKey: index ? 'giddy' : 'nostalgic', scrapbookId: 'library:maya', recipientName: 'maya',
+      x: 0, y: 0, width: 136, rotation: index ? 4 : -3, createdAt: '2026-10-20T12:00:00.000Z',
+    }));
+    const placed = buildStrata(0, 390, [], stamps).strata.find((strip) => strip.label === 'OCT 2026')!.boopStamps;
+    expect(placed).toHaveLength(2);
+    expect(Math.abs(placed[0].x - placed[1].x)).toBeGreaterThan(120);
+    expect(placed[0].x + stamps[0].width <= placed[1].x || placed[1].x + stamps[1].width <= placed[0].x).toBe(true);
   });
 });

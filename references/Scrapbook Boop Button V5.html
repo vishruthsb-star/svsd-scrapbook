@@ -1,0 +1,697 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Scrapbook Boop Button V5</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Shantell+Sans:wght@500;600;800&family=Courier+Prime:wght@700&display=swap" rel="stylesheet">
+<style>
+  /* Layout: a two-column bench. Left holds the controls and the style spec; right is a 390x844 phone screen with the live button over a sample scrapbook screen. Single light look on purpose, since the button itself is white. */
+  :root {
+    --page: #E8E8E7;
+    --screen: #F4F4F3;
+    --ink: #222222;
+    --muted: #6A6A68;
+    --btn-ink: #464646;
+    --ui: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font: 400 15px/1.5 var(--ui);
+    padding-block: 32px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+
+  .bench {
+    max-width: 860px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+  }
+  @media (max-width: 760px) {
+    .bench { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  }
+
+  .side { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+
+  h1 { font-size: 22px; line-height: 1.25; font-weight: 600; letter-spacing: -0.02em; text-wrap: balance; }
+  .lead { color: var(--muted); margin-top: 6px; max-width: 38ch; }
+
+  .label { font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+
+  .seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; background: rgba(0,0,0,.06); border-radius: 12px; }
+  .seg button {
+    font: 500 13px/1 var(--ui);
+    color: var(--muted);
+    background: transparent;
+    border: 0;
+    border-radius: 9px;
+    padding: 9px 12px;
+    cursor: pointer;
+  }
+  .seg button[aria-pressed="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+  .seg button:focus-visible { outline: 2px solid var(--btn-ink); outline-offset: 2px; }
+
+  .field input {
+    width: 100%;
+    max-width: 220px;
+    font: 400 15px/1.2 var(--ui);
+    color: var(--ink);
+    background: #fff;
+    border: 0.5px solid #d6d6d4;
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .field input:focus-visible { outline: 2px solid var(--btn-ink); outline-offset: 2px; }
+
+  .spec { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 16px; font-size: 13px; }
+  .spec dt { color: var(--muted); }
+  .spec dd { font-family: var(--mono); font-size: 12px; line-height: 1.5; color: var(--ink); }
+
+  .hint { font-size: 13px; color: var(--muted); }
+  .readout { font-size: 13px; min-height: 20px; margin-top: 4px; }
+  .readout b { font-weight: 600; }
+
+  .stage-col { display: flex; justify-content: center; min-width: 0; }
+  .frame { position: relative; }
+
+  .phone {
+    position: absolute; left: 0; top: 0;
+    width: 390px; height: 844px;
+    border-radius: 48px;
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--screen);
+    transform-origin: 0 0;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 24px 60px rgba(0,0,0,.12);
+  }
+
+  /* Sample scrapbook header, from the code you shared */
+  .hdr {
+    position: absolute; left: 18px; top: 56px;
+    width: 354px; height: 61px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 8px 8px 16px;
+    background: #fff;
+    border: 0.5px solid #ececec;
+    border-radius: 360px;
+    box-shadow:
+      0px 7px 7.5px rgba(143,143,143,.10),
+      0px 27px 13.5px rgba(143,143,143,.09),
+      0px 60px 18px rgba(143,143,143,.05),
+      0px 107px 21.5px rgba(143,143,143,.01),
+      0px 168px 23.5px rgba(143,143,143,0);
+  }
+  .hdr svg { width: 24px; height: 24px; flex: none; overflow: visible; }
+  .hdr p { font: 400 16px/1.5 var(--ui); letter-spacing: -0.48px; color: #464646; white-space: nowrap; }
+  .hdr i {
+    width: 44px; height: 44px; flex: none; border-radius: 360px;
+    background: radial-gradient(60% 50% at 62% 30%, #b9a58f 0%, rgba(185,165,143,0) 70%), linear-gradient(165deg, #46556e 0%, #7a5f50 55%, #1e1b20 100%);
+  }
+
+  /* Placeholder paper pieces so the blur has something to blur */
+  .paper {
+    position: absolute; background: #fff; padding: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 8px 18px rgba(0,0,0,.06);
+  }
+  .paper > div { width: 100%; height: 100%; display: flex; align-items: flex-end; padding: 10px; }
+  .paper > div > span { display: block; height: 6px; width: 55%; border-radius: 3px; background: rgba(0,0,0,.14); }
+</style>
+
+<main class="bench">
+  <section class="side">
+    <div>
+      <h1>Boop button</h1>
+      <p class="lead">Same size, fill, stroke and shadow as the add button, with the BOOP mark inside. Tap it to open the stamps.</p>
+    </div>
+
+    <div>
+      <div class="label" id="pos-label">Position</div>
+      <div class="seg" role="group" aria-labelledby="pos-label">
+        <button type="button" id="p-br" data-p="br" aria-pressed="false">Bottom right</button>
+        <button type="button" id="p-bc" data-p="bc" aria-pressed="true">Bottom center</button>
+        <button type="button" id="p-tr" data-p="tr" aria-pressed="false">Top right</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label" for="name" style="display:block">Name on the stamps</label>
+      <input id="name" type="text" value="Vishruth" maxlength="14" autocomplete="off" spellcheck="false">
+    </div>
+
+    <div>
+      <div class="label">Style</div>
+      <dl class="spec">
+        <dt>Button</dt><dd>52 tall, 99 wide, white</dd>
+        <dt>Stroke</dt><dd>0.5px #ECECEC</dd>
+        <dt>Shadow</dt><dd>5 layers, rgb(143,143,143)</dd>
+        <dt>Mark</dt><dd>BOOP SVG, colors unchanged</dd>
+        <dt>Sheet</dt><dd>2 columns, 10 stamps, scrolls</dd>
+        <dt>Header</dt><dd>Floating title, round close</dd>
+        <dt>Scrim</dt><dd>Same blur, soft veil at the top</dd>
+      </dl>
+    </div>
+
+    <div>
+      <p class="hint">Scroll the stamps and tap one to pick it. The close button, Escape or a tap outside the sheet closes it.</p>
+      <p class="readout" id="readout" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="stage-col">
+    <div class="frame" id="frame">
+      <div class="phone" id="phone">
+        <div class="hdr">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M19.59 12.06H4.71M10.94 5.83L4.71 12.06L10.94 18.29" stroke="#464646" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p>vishruth’s scrapbook</p>
+          <i role="img" aria-label="Profile photo"></i>
+        </div>
+        <div class="paper" style="left:24px;top:150px;width:164px;height:196px;transform:rotate(-2deg)"><div style="background:#D5DAE2"><span></span></div></div>
+        <div class="paper" style="left:204px;top:168px;width:160px;height:130px;transform:rotate(2.5deg)"><div style="background:#E3D4CF"><span></span></div></div>
+        <div class="paper" style="left:212px;top:318px;width:150px;height:184px;transform:rotate(-1.5deg)"><div style="background:#D4E0D6"><span></span></div></div>
+        <div class="paper" style="left:36px;top:372px;width:150px;height:120px;transform:rotate(1.5deg)"><div style="background:#E6E0CC"><span></span></div></div>
+        <div class="paper" style="left:60px;top:536px;width:270px;height:150px;transform:rotate(-1deg)"><div style="background:#DAD6E4"><span></span></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ------------------------------------------------------------------
+   BoopFab: the Boop button plus its stamp sheet.
+   Usage:  const fab = new BoopFab(hostElement, { placement: 'bc', name: 'Vishruth', onSelect: (key, label) => {} });
+   hostElement must be position:relative (or absolute) and 390 x 844.
+   placement: 'br' | 'bc' | 'tr' (same coordinates as the add button).
+   Optional: x, y overrides, onOpen, onClose.
+   Methods: open(), close(), setPlacement(name), setName(text), destroy().
+------------------------------------------------------------------- */
+(function () {
+  var FONT = '"Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif';
+  var INK = '#464646';
+  var HEADER_SHADOW = '0 7px 7.5px rgba(143,143,143,.10),0 27px 13.5px rgba(143,143,143,.09),0 60px 18px rgba(143,143,143,.05),0 107px 21.5px rgba(143,143,143,.01),0 168px 23.5px rgba(143,143,143,0)';
+
+  var CSS = [
+    '.boopfab{position:absolute;left:0;top:0;width:390px;height:844px;border-radius:48px;overflow:hidden;pointer-events:none;font-family:' + FONT + '}',
+    '.boopfab *{box-sizing:border-box}',
+
+    /* Scrim: identical to the add button's */
+    '.boopfab__scrim{position:absolute;inset:0;background:rgba(46,32,18,.38);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;transition:opacity 220ms ease}',
+    '.boopfab--open .boopfab__scrim{opacity:1;pointer-events:auto}',
+
+    /* Sheet */
+    '.boopfab__sheet{position:absolute;inset:0;visibility:hidden;transition:visibility 0s linear 320ms}',
+    '.boopfab--open .boopfab__sheet{visibility:visible;transition-delay:0s}',
+
+    /* Header: no container. A heading sits on the scrim and the close control is its own round button. */
+    '.boopfab__veil{position:absolute;left:0;right:0;top:0;height:170px;background:linear-gradient(to bottom,rgba(46,32,18,.38),rgba(46,32,18,0));opacity:0;transition:opacity 220ms ease}',
+    '.boopfab--open .boopfab__veil{opacity:1}',
+    '.boopfab__head{position:absolute;left:18px;right:18px;top:56px;height:52px;display:flex;align-items:center;justify-content:space-between;gap:16px}',
+    '.boopfab__heading{display:flex;flex-direction:column;gap:2px;min-width:0;opacity:0;transform:translateY(-10px);transition:transform 200ms ease-in,opacity 160ms ease}',
+    '.boopfab--open .boopfab__heading{opacity:1;transform:none;transition:transform 420ms cubic-bezier(.34,1.56,.64,1) 40ms,opacity 160ms ease 40ms}',
+    '.boopfab__title{font-family:"Shantell Sans","Comic Sans MS","Marker Felt",sans-serif;font-size:26px;font-weight:500;line-height:1.1;letter-spacing:0;color:#FFFFFF;white-space:nowrap;text-shadow:0 1px 3px rgba(46,32,18,.35)}',
+    '.boopfab__count{font-family:"Shantell Sans","Comic Sans MS","Marker Felt",sans-serif;font-size:14px;font-weight:600;line-height:1.3;letter-spacing:0;color:rgba(255,255,255,.9);text-shadow:0 1px 2px rgba(46,32,18,.35)}',
+    '.boopfab__close{appearance:none;width:48px;height:48px;flex:none;padding:0;border:.5px solid #ECECEC;border-radius:50%;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent;pointer-events:auto;',
+    'box-shadow:0 27px 13.5px rgba(40,28,14,.09),0 7px 7.5px rgba(40,28,14,.12);opacity:0;transform:scale(.3);transition:transform 220ms ease-in,opacity 160ms ease}',
+    '.boopfab--open .boopfab__close{opacity:1;transform:none;transition:transform 420ms cubic-bezier(.34,1.56,.64,1) 60ms,opacity 160ms ease 60ms}',
+    '.boopfab--open .boopfab__close:hover{transform:scale(1.08);transition:transform 200ms cubic-bezier(.34,1.56,.64,1)}',
+    '.boopfab--open .boopfab__close:active{transform:scale(.92);transition:transform 160ms cubic-bezier(.34,1.56,.64,1)}',
+    '.boopfab__close:focus-visible{outline:2px solid #FFFFFF;outline-offset:3px}',
+
+    '.boopfab__scroll{position:absolute;left:0;right:0;top:120px;bottom:0;overflow-x:hidden;overflow-y:auto;padding:14px 18px 48px;pointer-events:auto;overscroll-behavior:contain;scrollbar-width:none;',
+    '}',
+    '.boopfab__scroll::-webkit-scrollbar{display:none}',
+    '.boopfab__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}',
+
+    '.boopfab__stamp{appearance:none;display:block;width:100%;padding:0;margin:0;border:0;background:none;font:inherit;cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent;',
+    'opacity:0;transform:translateY(28px) scale(.92);transition:transform 200ms ease-in,opacity 160ms ease}',
+    '.boopfab--open .boopfab__stamp{opacity:1;transform:none;transition:transform 420ms cubic-bezier(.34,1.56,.64,1) calc(var(--d) * 40ms),opacity 160ms ease calc(var(--d) * 40ms)}',
+    '.boopfab--open.boopfab--picking .boopfab__stamp:not(.boopfab__stamp--picked){opacity:0;transition:opacity 160ms ease}',
+    '.boopfab__card{display:block;background:#FFFFFF;border:.5px solid #ECECEC;border-radius:24px;padding:8px;box-shadow:0 1px 2px rgba(40,28,14,.10),0 8px 12px rgba(40,28,14,.10),0 20px 24px rgba(40,28,14,.06);transition:transform 200ms cubic-bezier(.34,1.56,.64,1)}',
+    '.boopfab__card svg{display:block;width:100%;height:auto}',
+    '.boopfab__stamp:hover .boopfab__card{transform:scale(1.03)}',
+    '.boopfab__stamp:active .boopfab__card{transform:scale(.97)}',
+    '.boopfab__stamp--picked .boopfab__card,.boopfab__stamp--picked:hover .boopfab__card{transform:scale(1.06)}',
+    '.boopfab__stamp:focus-visible .boopfab__card{outline:2px solid ' + INK + ';outline-offset:3px}',
+
+    /* Button: same box, fill, stroke and shadow as the add button */
+    '.boopfab__pill{appearance:none;position:absolute;transform:translate(-50%,-50%);width:99px;height:52px;padding:0 14px;display:flex;align-items:center;justify-content:center;',
+    'background:#FFFFFF;color:' + INK + ';border:.5px solid #ECECEC;border-radius:360px;box-shadow:' + HEADER_SHADOW + ';',
+    'pointer-events:auto;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;outline:none;',
+    'opacity:1;transition:opacity 180ms ease,transform 320ms cubic-bezier(.34,1.56,.64,1)}',
+    '.boopfab__pill:active{transform:translate(-50%,-50%) scale(.96)}',
+    '.boopfab__pill:focus-visible{outline:2px solid ' + INK + ';outline-offset:3px}',
+    '.boopfab--open .boopfab__pill{opacity:0;pointer-events:none;transform:translate(-50%,-50%) scale(.9)}',
+    '.boopfab__mark{display:block;width:80%;height:auto;margin:0 auto;pointer-events:none}',
+
+    '@media (prefers-reduced-motion:reduce){.boopfab *{transition-duration:.01ms !important;transition-delay:0s !important}}'
+  ].join('');
+
+  var PLACEMENTS = {
+    br: { x: 318, y: 784 },
+    bc: { x: 195, y: 776 },
+    tr: { x: 322, y: 152 }
+  };
+
+  /* The BOOP mark, cropped to its artwork. Colors are the original file's. */
+  var BOOP_SVG = '<svg class="boopfab__mark" viewBox="67 120.5 546 148.2" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M235.276 132.264C245.236 129.61 251.235 130.059 261.226 131.757C267.76 132.301 271.489 132.475 276.948 136.604C288.483 145.327 296.021 154.95 302.166 168.04C301.555 169.464 300.889 170.312 300.305 171.952C300.557 172.838 300.368 172.726 300.957 173.072C302.025 172.617 302.5 171.647 303.187 170.645C304.634 172.398 307.393 184.936 308.125 187.856C309.632 193.218 309.001 198.425 309.633 203.779C311.941 223.35 301.662 243.208 284.85 253.161C283.387 254.027 277.269 255.386 275.04 256.254C271.141 257.772 266.004 259.77 261.97 260.578C260.319 260.885 254.215 262.502 252.758 261.821C252.465 261.337 252.118 259.395 251.326 259.525C224.671 263.902 193.891 249.675 186.975 222.005C184.284 211.241 182.41 195.05 188.343 185.016L191.932 184.035C195.138 175.098 202.979 163.91 210.177 158.205C217.933 152.058 219.494 151.553 222.387 141.766C223.615 137.611 230.862 133.742 235.276 132.264Z" fill="#2F4DD5"/><path d="M247.077 231.135C245.793 230.833 244.515 230.504 243.245 230.147C236.619 228.234 226.163 223.131 222.824 216.654C218.635 208.53 220.207 199.836 222.407 191.287C223.728 185.493 231.996 175.299 237.472 173.39C244.509 170.937 246.99 173.435 248.763 163.7C249.37 160.366 252.093 160.609 254.827 161.777C264.878 166.074 268.908 176.943 272.875 186.247C274.441 189.289 275.477 187.574 276.075 190.486C276.675 193.415 277.795 197.285 277.652 200.259L277.349 200.789L276.663 200.721C276.099 201.706 276.312 203.254 276.357 204.468L276.78 205.174C277.657 205.28 277.957 205.305 278.791 205.571C278.738 206.565 278.49 207.049 278.305 207.973C275.602 221.5 264.591 227.562 251.538 229.889L252.155 235.072L251.099 236.156C250.014 234.025 248.725 232.781 247.077 231.135Z" fill="white"/><path d="M272.875 186.247C274.441 189.289 275.477 187.574 276.075 190.486C276.675 193.415 277.795 197.285 277.652 200.259L277.349 200.789L276.663 200.721C276.099 201.706 276.312 203.254 276.357 204.468C275.045 199.144 274.232 192.115 272.875 186.247Z" fill="#2F4DD5"/><path d="M229.739 141.816C229.772 138.969 231.226 138.476 233.346 136.731C233.653 137.927 234.177 139.74 234.365 140.903C234.678 141.811 234.822 141.991 234.621 142.882C233.088 144.15 231.698 144.679 229.953 143.368L229.739 141.816Z" fill="#2F4DD5"/><path d="M229.739 141.816L234.365 140.903C234.678 141.811 234.822 141.991 234.621 142.882C233.088 144.15 231.698 144.679 229.953 143.368L229.739 141.816Z" fill="#2F4DD5"/><path d="M283.673 216.595L288.93 215.725C288.948 217.191 289.141 218.649 289.305 220.107L284.512 221.076L283.673 216.595Z" fill="#2F4DD5"/><path d="M228.887 161.73L230.12 161.805C231.176 162.726 231.495 164.912 231.866 166.361L227.973 166.907C227.079 166.966 226.823 167.06 226.048 166.692C226.208 164.632 228.887 166.083 228.887 161.73Z" fill="#2F4DD5"/><path d="M262.809 142.561L263.666 143.003C264.344 144.237 267.844 149.333 267.921 149.737C263.549 149.858 261.889 146.459 262.809 142.561Z" fill="#2F4DD5"/><path d="M218.172 181.365C218.838 181.409 218.827 181.452 219.359 181.814C220.406 184.377 220.997 185.1 220.673 187.866C219.837 188.8 219.883 188.51 218.259 188.681C217.439 188.736 217.406 188.73 216.616 188.479L216.581 188.007C216.922 187.664 217.256 187.315 217.584 186.96C219.035 185.375 218.304 184.014 218.172 181.365Z" fill="#2F4DD5"/><path d="M192.3 216.016L193.139 216.348C194.796 218.121 195.818 221.869 194.016 223.705C191.422 219.402 191.026 221.879 192.3 216.016Z" fill="white"/><path d="M280.352 246.932C280.882 247.096 285.118 250.061 285.435 250.616L285.144 251.05L284.095 251.072C282.007 251.374 280.283 251.354 278.185 251.376L278.461 251.11C280.216 249.4 280.324 249.33 280.352 246.932Z" fill="#2F4DD5"/><path d="M276.17 177.976C278.098 177.506 280.244 176.616 281.533 178.568L281.281 179.105C280.067 179.95 280.333 179.703 278.714 179.863C278.127 180.766 279.1 180.779 278.225 182.336L277.48 182.053C277.017 180.703 276.58 179.343 276.17 177.976Z" fill="#2F4DD5"/><path d="M225.379 234.933C227.348 234.674 231.84 233.898 233.546 234.55L233.698 235.146C231.584 235.684 227.54 237.391 225.738 236.815C225.192 235.926 225.37 236.154 225.379 234.933Z" fill="#2F4DD5"/><path d="M293.564 211.935C295.439 212.665 295.929 214.234 295.013 216.02C294.129 216.918 292.84 216.877 291.535 217.027C290.699 216.709 291 216.974 290.556 216.264C291.415 214.777 291.64 215.427 293.134 214.256C293.117 213.131 293.097 212.948 293.564 211.935Z" fill="#2F4DD5"/><path d="M216.025 227.024L220.156 226.621L220.287 227.361L220.582 226.859C220.482 227.846 220.184 227.583 219.056 228.536C218.881 229.65 218.835 230.842 217.572 231.077C216.378 230.076 216.244 228.523 216.025 227.024Z" fill="#2F4DD5"/><path d="M251.099 236.156L252.155 235.072C252.457 237.053 252.994 239.556 252.656 241.475L252.378 241.763L252.392 241.769L252.623 241.479L251.837 240.342L251.838 240.491C251.581 239.127 251.233 237.51 251.099 236.156Z" fill="#2F4DD5"/><path d="M331.409 168.084C336.62 162.039 342.606 157.135 347.843 151.368C350.123 148.857 349.261 141.619 351.459 138.314C361.134 123.777 382.228 125.764 396.318 131.71C397.455 132.192 399.667 132.581 400.367 133.359L399.588 134.523C399.777 135.59 407.989 140.955 409.539 142.105C417.748 148.2 422.528 158.901 427.685 167.506C428.433 168.756 429.357 168.372 430.696 168.7C432.763 170.014 436.147 181.266 436.98 183.962C439.113 189.518 438.339 195.23 438.923 200.715C440.329 213.901 439.279 222.346 432.466 234.323C431.615 235.886 431.213 236.533 430.135 237.94C421.318 249.238 412.715 254.666 399.877 259.966C394.871 262.283 389.454 265.052 383.43 263.647C382.546 263.44 382.26 263.242 381.205 263.082C378.001 263.412 374.66 264.144 371.54 264.577C363.755 265.657 357.678 262.605 351.291 258.622C349.087 257.247 345.05 255.973 342.807 254.538C334.506 249.227 327.598 237.813 325.491 228.382C322.825 216.447 321.846 205.517 324.811 193.586C326.348 187.398 325.242 187.57 328.57 182.008C328.363 181.323 326.974 180.198 326.363 179.636C326.763 179.197 327.152 178.748 327.531 178.29C330.131 175.145 331.802 172.207 331.409 168.084Z" fill="#2F4DD5"/><path d="M381.205 263.082C387.41 261.902 393.729 261.135 399.877 259.966C394.871 262.283 389.454 265.052 383.43 263.647C382.546 263.44 382.26 263.242 381.205 263.082Z" fill="#2F4DD5"/><path d="M430.135 237.94C429.508 236.816 428.704 232.226 429.331 231.149L429.888 231.286C430.98 232.33 431.163 232.896 431.802 234.28L432.466 234.323C431.615 235.886 431.213 236.533 430.135 237.94Z" fill="#2F4DD5"/><path d="M379.8 162.998C386.454 161.46 389.767 166.602 393.414 171.038C401.006 180.271 405.634 193.206 406.372 205.088C406.833 212.468 406.215 218.348 400.805 223.91C393.996 231.094 387.258 233.631 377.602 234.058C374.762 233.869 372.302 234.465 369.552 235.04C364.283 232.623 360.697 230.184 357.256 225.419C352.72 219.138 353.261 203.382 356.145 196.304C357.317 193.43 358.912 190.429 360.584 187.79C361.019 187.123 359.591 186.122 360.016 185.474C363.068 180.824 369.057 177.597 374.007 176.005C380.33 173.971 377.817 167.828 379.8 162.998Z" fill="white"/><path d="M335.438 247.12C337.908 246.54 342.873 245.162 345.422 245.342C345.874 245.374 346.042 245.921 346.345 246.429C343.439 247.073 340.192 247.984 337.202 248.207C336.236 248.279 336.059 247.801 335.438 247.12Z" fill="#2F4DD5"/><path d="M363.447 134.24C364.946 134.815 364.869 136.967 365.617 138.07C366.236 138.988 367.255 138.433 368.105 139.456L367.479 139.92L364.159 141.561C363.829 139.192 363.37 136.612 363.447 134.24Z" fill="white"/><path d="M407.482 168.742C408.437 169.465 412.333 175.349 412.283 177.048C410.817 176.992 409.251 172.931 407.63 171.932C407.102 171.606 407.411 169.492 407.482 168.742Z" fill="#2F4DD5"/><path d="M367.391 157.857C368.314 157.742 368.376 157.702 369.192 158.075C370.062 159.188 370.055 161.276 370.193 162.764C369.072 162.819 369.389 162.958 368.526 162.468C367.702 161.324 367.593 159.318 367.391 157.857Z" fill="#2F4DD5"/><path d="M424.17 222.326C425.519 222.181 427.817 221.698 428.907 222.131L429.063 222.827C427.385 223.215 425.721 224.409 424.268 223.368L424.17 222.326Z" fill="#2F4DD5"/><path d="M426.486 197.365C427.923 196.686 430.317 195.999 431.509 197.225C429.439 198.073 427.855 199.357 426.486 197.365Z" fill="#2F4DD5"/><path d="M367.419 171.374C369.099 170.886 370.485 170.195 371.921 170.927L372.185 171.969C370.544 172.139 368.399 172.757 367.419 171.374Z" fill="#2F4DD5"/><path d="M92.7521 121.275C94.3662 121.002 94.687 120.678 96.0122 121.171C96.9143 122.498 96.6989 123.678 97.2156 125.066C102.373 124.75 114.263 124.421 119.096 124.968C119.537 125.527 120.209 127.323 120.638 127.437C124.185 128.374 129.057 128.093 132.479 129.242C140.206 131.835 148.295 133.703 156.013 136.146C159.64 137.294 163.629 139.968 166.917 141.843C168.667 142.96 168.183 144.208 169.137 144.421L169.373 144.246C170.176 143.662 170.395 143.469 171.422 143.507C172.234 143.965 172.329 144.031 172.831 144.814L172.706 145.277C171.633 145.396 170.858 145.429 169.788 145.456L169.507 145.846C170.7 148.066 173.278 148.122 173.956 149.153C179.159 157.064 178.842 169.863 173.268 177.497C170.479 181.316 163.961 184.872 160.486 188.269C160.487 188.768 160.488 189.198 160.488 189.56L159.895 189.793C159.795 189.189 159.718 188.837 159.564 188.244C158.152 187.957 153.797 188.968 152.705 189.781L152.825 190.313C156.297 192.064 163.743 198.971 165.39 202.37C171.841 215.687 168.259 235.971 155.237 244.211C152.346 246.043 149.303 247.639 146.415 249.483L145.981 249.265L145.61 247.842C144.305 247.432 136.566 251.71 134.513 252.241C113.711 257.621 90.6125 262.898 79.1352 239.606C71.656 224.427 68.7251 213.692 69.4621 196.729C69.6166 193.185 69.3328 187.84 70.7197 184.577C71.4259 182.151 71.8155 180.04 72.2913 177.56C72.2848 173.982 74.1581 163.934 74.7225 159.919C61.4917 150.956 67.3051 131.469 82.2148 127.413C80.6774 123.586 81.3492 126.403 79.5696 124.831L79.9113 124.334C82.7643 122.9 89.3662 121.896 92.7521 121.275Z" fill="#2F4DD5"/><path d="M92.7521 121.275C94.3662 121.002 94.687 120.678 96.0122 121.171C96.9143 122.498 96.6989 123.678 97.2156 125.066L96.6269 124.92C95.168 125.456 86.9761 126.893 85.3061 126.929C84.6613 125.758 84.5168 125.386 83.4955 124.504C81.6541 124.547 82.0931 126.087 82.2148 127.413C80.6774 123.586 81.3492 126.403 79.5696 124.831L79.9113 124.334C82.7643 122.9 89.3662 121.896 92.7521 121.275Z" fill="white"/><path d="M92.7521 121.275C94.3662 121.002 94.687 120.678 96.0122 121.171C96.9143 122.498 96.6989 123.678 97.2156 125.066L96.6269 124.92C92.6817 124.34 94.8941 125.227 92.7521 121.275Z" fill="white"/><path d="M101.802 206.492C109.472 205.515 128.714 205.287 132.577 213.471C132.84 212.79 132.996 212.384 133.177 211.679C134.315 210.85 134.019 210.791 135.182 210.828C136.589 212.028 136.669 215.223 136.166 216.815L135.441 217.473C133.008 219.448 128.725 220.683 125.734 221.675C123.871 224.244 123.04 224.601 119.911 225.523C118.143 226.044 114.995 226.087 113.622 224.715L113.462 224.559C113.353 224.441 113.244 224.324 113.134 224.207C110.522 224.252 108.749 222.649 106.99 220.9L105.509 220.96C104.242 220.392 102.845 219.556 101.656 218.805C100.213 217.895 96.8626 216.804 97.5922 214.793C98.5841 213.973 100.194 214.039 101.529 213.947C101.301 211.174 100.895 209.218 101.802 206.492Z" fill="white"/><path d="M101.529 213.947C101.301 211.174 100.895 209.218 101.802 206.492L101.896 206.812C102.766 209.86 103.345 219.229 105.329 220.518L106.99 220.9L105.509 220.96C104.242 220.392 102.845 219.556 101.656 218.805C100.213 217.895 96.8626 216.804 97.5922 214.793C98.5841 213.973 100.194 214.039 101.529 213.947Z" fill="#2F4DD5"/><path d="M113.134 224.207C117.22 223.834 121.731 222.672 125.734 221.675C123.871 224.244 123.04 224.601 119.911 225.523C118.143 226.044 114.995 226.087 113.622 224.715L113.462 224.559C113.353 224.441 113.244 224.324 113.134 224.207Z" fill="#2F4DD5"/><path d="M132.577 213.471C132.84 212.79 132.996 212.384 133.177 211.679C134.315 210.85 134.019 210.791 135.182 210.828C136.589 212.028 136.669 215.223 136.166 216.815L135.441 217.473C135.166 215.728 133.285 215.333 132.577 213.471Z" fill="white"/><path d="M106.604 160.658C111.534 160.251 115.774 160.073 120.672 159.202C120.941 159.979 121.204 160.757 121.461 161.538C122.635 162.382 127.535 162.484 129.399 162.717C133.368 163.212 136.756 163.725 140.622 164.874C140.53 166.159 140.252 167.502 140.021 168.778C137.964 170.4 136.962 171.003 134.668 172.286C133.439 172.739 131.942 173.121 130.651 173.375C122.068 175.063 113.879 179.17 105.432 181.124C105.576 174.29 105.967 167.464 106.604 160.658Z" fill="white"/><path d="M87.208 146.473C87.9004 146.432 87.8503 146.437 88.4412 146.809C89.1494 149.399 89.8029 153.628 90.3894 156.451L86.618 156.907L86.2283 156.727C84.7696 154.583 85.6138 152.769 86.7408 150.805C86.6588 149.202 86.399 149.719 85.4346 148.055C85.9293 146.892 85.8569 147.21 87.208 146.473Z" fill="#2F4DD5"/><path d="M142.726 188.485L143.43 188.617C143.808 189.099 143.933 189.343 144.058 189.929C144.727 193.065 143.404 193.104 141.078 193.685L140.292 193.887L139.803 193.287C139.317 190.317 140.237 189.553 142.726 188.485Z" fill="#2F4DD5"/><path d="M140.809 231.42L141.361 231.835C142.605 234.926 143.855 239.191 143.523 242.559L143.133 242.866L142.631 242.107C142.235 240.877 141.813 239.409 141.236 238.273C140.231 238.383 139.432 238.283 138.766 237.499C139.078 237.052 140.432 236.688 141.033 236.476C141.294 235.45 140.919 232.625 140.809 231.42Z" fill="#2F4DD5"/><path d="M121.457 145C122.824 145.367 126.474 147.562 126.728 149.047C125.108 149.33 123.457 149.666 121.838 149.975C121.7 148.318 121.573 146.659 121.457 145Z" fill="#2F4DD5"/><path d="M148.739 199.526C150.055 199.436 152.499 199.15 153.515 199.901C152.746 200.837 152.834 200.581 151.451 200.96C151.576 202.275 151.914 203.396 150.718 204.198C149.129 203.384 149.008 201.136 148.739 199.526Z" fill="#2F4DD5"/><path d="M81.1357 207.588C81.7515 207.476 82.1537 207.659 82.7585 207.834C82.9878 208.392 82.9482 208.108 82.8614 208.72C82.7048 208.991 76.4577 212.578 75.6308 213.057L74.489 213L74.3957 212.524C76.6941 211.029 79.2302 209.525 81.1357 207.588Z" fill="#2F4DD5"/><path d="M76.2522 144.229C77.4137 144.111 79.6317 143.895 80.601 144.399C80.3452 145.339 80.0758 145.277 79.1379 145.962C78.7747 147.059 78.7327 147.26 77.9549 148.102L77.3604 148.055C76.5365 147.024 76.4566 145.563 76.2522 144.229Z" fill="#2F4DD5"/><path d="M158.505 232.151C159.868 232.841 160.389 234.177 159.931 235.691C159.493 237.142 158.852 237.148 157.589 237.727L157.112 237.649L156.794 237.159C157.209 235.422 157.869 233.816 158.505 232.151Z" fill="white"/><path d="M108.008 142.425C109.21 142.391 108.918 142.235 109.851 142.743C110.815 144.27 110.813 145.813 110.597 147.588C108.238 147.363 107.541 144.308 108.008 142.425Z" fill="#2F4DD5"/><path d="M154.595 178.973C156.837 178.344 158.592 177.313 159.894 179.526C157.477 180.296 155.962 181.351 154.595 178.973Z" fill="#2F4DD5"/><path d="M118.584 195.596L119.244 195.869C119.921 196.958 120.317 199.114 120.632 200.434C119.853 200.433 119.893 200.427 119.185 200.081C118.469 198.85 118.605 197.069 118.584 195.596Z" fill="#2F4DD5"/><path d="M161.213 148.431C163.075 147.841 164.611 147.197 166.238 148.407C164.201 149.178 162.621 150.229 161.213 148.431Z" fill="#2F4DD5"/><path d="M504.114 134.182C519.791 133.674 536.925 136.615 548.265 147.209C574.283 171.52 556.811 213.924 527.588 226.608C513.998 232.507 509.564 233.916 494.855 234.234C493.63 234.251 492.402 234.215 491.178 234.126C491.384 242.089 492.788 258.527 487.575 264.965C486.041 266.858 481.121 268.502 478.568 268.517C474.585 268.54 469.698 265.821 466.938 263.007C464.79 260.78 463.179 258.092 462.226 255.148C461.688 253.534 456.701 224.325 456.719 224.147C456.746 223.887 456.769 223.866 456.854 223.658C457.533 223.402 458.214 223.154 458.899 222.914C458.718 215.736 456.952 205.647 456.256 198.337C454.6 190.332 454.652 186.777 454.607 178.683C454.722 176.204 454.777 174.624 455.23 172.178C458.943 146.749 478.997 138.654 502.209 136.555C502.695 137.638 502.934 138.59 503.926 139.11C504.518 138.414 504.421 137.52 504.345 136.56C504.277 135.767 504.202 134.974 504.114 134.182Z" fill="#2F4DD5"/><path d="M458.899 222.914C458.718 215.736 456.952 205.647 456.256 198.337C456.865 200.723 457.433 203.95 457.921 206.423C458.738 210.578 461.033 218.044 461.005 222.107C460.374 222.741 459.798 222.741 458.899 222.914Z" fill="#2F4DD5"/><path d="M454.607 178.684C454.722 176.206 454.777 174.626 455.23 172.179C455.921 172.784 455.73 172.632 456.531 172.872C458.663 173.513 460.121 175.538 461.394 177.224C459.143 177.796 456.915 178.432 454.607 178.684Z" fill="#2F4DD5"/><path d="M489.832 200.861C489.597 200.076 489.388 199.284 489.205 198.485C488.02 193.216 487.714 187.396 487.249 182.026C487.273 178.815 487.3 178.505 490.243 177.308C490.528 177.191 492.593 175.19 493.032 174.779C498.753 169.419 516.858 168.706 522.9 172.892C523.86 170.901 524.825 170.931 526.851 170.449C528.04 170.262 529.706 169.861 530.777 170.274L530.853 170.617C529.736 171.599 529.478 171.511 529.081 172.729C529.48 174.498 530.465 177.321 530.202 178.858C529.428 179.688 529.538 179.449 528.203 179.703C528.247 181.312 528.277 182.922 528.296 184.532C522.692 185.151 525.236 185.673 522.394 189.807C514.635 201.091 502.49 203.467 489.832 200.861Z" fill="white"/><path d="M526.851 170.449C528.04 170.262 529.706 169.861 530.777 170.274L530.853 170.617C529.736 171.599 529.478 171.511 529.081 172.729C529.48 174.498 530.465 177.321 530.202 178.858C529.428 179.688 529.538 179.449 528.203 179.703C527.95 177.771 527.708 176.952 527.13 175.074C526.711 172.945 526.597 172.6 526.851 170.449Z" fill="#2F4DD5"/><path d="M522.9 172.892C523.86 170.901 524.825 170.931 526.851 170.449C526.597 172.6 526.711 172.945 527.13 175.074C524.998 174.747 524.601 174.146 522.9 172.892Z" fill="#2F4DD5"/><path d="M465.527 228.653L466.858 228.636C470.74 231.891 471.521 235.548 472.106 240.219C470.467 240.544 468.97 241.4 467.544 240.68L467.243 239.624C467.056 238.532 466.551 236.766 467.029 236.029C467.932 235.829 468.343 235.81 469.081 235.265L468.934 234.586L467.999 234.075L466.811 234.429C465.548 233.323 466.439 232.203 465.126 230.847C464.334 231.253 464.156 231.425 463.302 231.411C462.961 230.579 462.944 230.891 463.204 230.171L464.907 229.839L465.527 228.653Z" fill="#2F4DD5"/><path d="M507.76 161.711C509.266 163.407 510.665 165.254 512.29 167.069L512.195 167.695L510.77 168.637C509.821 169.286 508.823 169.606 507.957 168.771C507.463 167.06 507.734 163.697 507.76 161.711Z" fill="white"/><path d="M473.396 180.537C474.784 180.561 476.502 180.383 477.791 180.738C477.07 181.445 476.534 181.387 475.51 181.512C475.783 182.225 475.919 182.758 476.111 183.498C475.747 184.629 476.027 184.344 475.171 184.793C473.341 184.021 473.547 182.293 473.396 180.537Z" fill="#2F4DD5"/><path d="M466.691 196.801C468 196.352 469.844 195.964 471.223 195.634C471.469 196.985 471.961 197.703 470.42 198.506C469.271 199.103 468.485 198.852 467.306 198.435C466.845 197.7 466.842 197.665 466.691 196.801Z" fill="white"/><path d="M555.364 172.523C556.527 172.471 557.02 172.396 558.181 172.586L558.394 173.001C557.641 173.831 556.544 173.921 555.436 174.151C554.018 174.425 552.095 174.612 550.626 174.8C552.435 173.679 553.425 173.302 555.364 172.523Z" fill="#2F4DD5"/><path d="M501.098 207.266C501.51 207.296 502.057 207.396 502.48 207.46C503.363 208.552 503.179 210.374 503.23 211.881C502.631 212.101 502.953 212.039 502.206 211.883C501.49 210.711 501.315 208.683 501.098 207.266Z" fill="#2F4DD5"/><path d="M525.916 192.841C526.642 192.867 526.65 192.913 527.288 193.2C528.035 194.335 528.007 195.946 528.109 197.336L527 197.091C526.098 196.105 526.098 194.269 525.916 192.841Z" fill="#2F4DD5"/><path d="M587.856 134.919C591.174 134.028 595.478 133.788 598.882 134.329C618.523 137.451 611.501 166.581 611.561 180.271C611.575 184.172 611.633 188.074 611.743 191.973C611.952 197.969 612.654 202.517 610.596 208.349C608.649 213.873 607.805 218.364 602.68 221.979C598.109 224.114 591.191 223.958 586.812 221.52C582.685 219.224 580.835 214.971 579.46 210.679C578.065 206.313 575.931 177.979 577.313 175.61C577.696 175.576 578.849 175.469 578.916 175.298C580.845 170.35 580.736 151.482 581.116 147.31C581.326 144.987 581.79 142.694 582.503 140.473C583.453 137.577 585.222 136.215 587.856 134.919Z" fill="#2F4DD5"/><path d="M582.363 191.382C583.598 191.11 585.446 190.545 586.566 190.938C587.396 191.69 587.372 192.511 587.554 193.667C585.897 193.784 584.722 194.409 583.293 194.186C582.363 193.159 582.615 193.013 582.363 191.382Z" fill="white"/><path d="M583.967 199.496C585.056 199.886 588.219 201.395 589.094 202.095L589.159 202.783C587.756 203.112 586.072 203.743 584.682 204.218L583.967 199.496Z" fill="#2F4DD5"/><path d="M597.663 138.281C598.213 138.396 598.689 138.376 598.97 138.751C600.144 140.314 600.259 144.602 600.17 146.422C599.681 146.21 599.662 146.126 599.263 145.769C598.284 143.451 597.482 140.826 597.663 138.281Z" fill="#2F4DD5"/><path d="M590.353 151.084C591.391 150.684 591.866 150.516 592.681 151.249C592.726 152.263 592.825 151.861 592.116 152.776C590.825 153.276 591.055 153.09 589.524 152.857C588.461 152.855 587.355 152.988 586.471 152.491C587.356 151.775 589.176 151.406 590.353 151.084Z" fill="#2F4DD5"/><path d="M583.487 235.839C589.214 234.337 595.977 234.582 601.387 237.078C605.893 239.1 609.382 242.863 611.065 247.507C614.192 256.352 610.458 262.59 601.925 265.621C592.46 268.071 577.479 265.02 573.809 254.389C570.867 245.859 574.877 238.558 583.487 235.839Z" fill="#2F4DD5"/><path d="M593.102 246.769C593.633 246.824 594.042 246.98 594.548 247.139C595.15 248.105 595.599 249.979 595.938 251.146C594.632 251.606 594.999 251.706 594.001 251.3C593.277 250.265 593.237 248.114 593.102 246.769Z" fill="#2F4DD5"/></svg>';
+
+  var CLOSE_ICON = function (fid) {
+    return '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="' + INK + '" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible" aria-hidden="true"><g filter="url(#' + fid + ')"><path d="M6.3 6.2Q12 11.9 17.8 17.7M17.7 6.3Q12.1 12 6.2 17.9" stroke-width="1.8"></path></g></svg>';
+  };
+
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+  function defs(u) {
+    return '' +
+      '<filter id="' + u + '-ink" x="-5%" y="-5%" width="110%" height="110%">' +
+        '<feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="warp"></feTurbulence>' +
+        '<feDisplacementMap in="SourceGraphic" in2="warp" scale="4" xChannelSelector="R" yChannelSelector="G" result="d"></feDisplacementMap>' +
+        '<feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="1" seed="9" result="grain"></feTurbulence>' +
+        '<feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -6 0 0 0 5.0" result="speck"></feColorMatrix>' +
+        '<feComposite in="d" in2="speck" operator="in"></feComposite>' +
+      '</filter>' +
+      '<filter id="' + u + '-icon" filterUnits="userSpaceOnUse" x="-12" y="-12" width="48" height="48"><feTurbulence type="fractalNoise" baseFrequency="0.11" numOctaves="2" seed="11"></feTurbulence><feDisplacementMap in="SourceGraphic" scale="0.6"></feDisplacementMap></filter>' +
+      '<path id="' + u + '-p2t" d="M32 150 A92 92 0 0 1 216 150"></path>' +
+      '<path id="' + u + '-p2b" d="M20 150 A104 104 0 0 0 228 150"></path>' +
+      '<path id="' + u + '-p4t" d="M48 150 A102 102 0 0 1 252 150"></path>' +
+      '<path id="' + u + '-p4b" d="M36 150 A114 114 0 0 0 264 150"></path>' +
+      '<path id="' + u + '-p5t" d="M52 150 A98 98 0 0 1 248 150"></path>' +
+      '<path id="' + u + '-p5b" d="M42 150 A108 108 0 0 0 258 150"></path>' +
+      '<path id="' + u + '-p8t" d="M58 150 A92 92 0 0 1 242 150"></path>' +
+      '<path id="' + u + '-p8b" d="M44 150 A106 106 0 0 0 256 150"></path>' +
+      '<path id="' + u + '-p9t" d="M80 150 A70 70 0 0 1 220 150"></path>' +
+      '<path id="' + u + '-p9b" d="M68 150 A82 82 0 0 0 232 150"></path>' +
+      '<path id="' + u + '-p10t" d="M52 150 A98 98 0 0 1 248 150"></path>';
+  }
+
+  /* The ten "Thinking of you" stamps, ported from the stamps doc */
+  function stamps(name, u) {
+    var F = 'url(#' + u + '-ink)';
+    var n = esc(name) + ' was';
+    var P = function (id) { return '#' + u + '-' + id; };
+    var SPARK = 'M10 0 Q11 9 20 10 Q11 11 10 20 Q9 11 0 10 Q9 9 10 0Z';
+    return [
+      { key: 'nostalgic', label: 'Road-trip nostalgia', inner: `
+        <g filter="${F}" stroke="#3a9f4b" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M30 40 H270 V130 A14 14 0 0 0 270 158 V260 H30 V158 A14 14 0 0 0 30 130 Z"></path>
+          <rect x="30" y="40" width="240" height="48" fill="#3a9f4b"></rect>
+          <rect x="30" y="214" width="240" height="46" fill="#3a9f4b"></rect>
+          <text data-fit="216" x="150" y="74" text-anchor="middle" stroke="none" fill="#f3f2f2" style="font-family:'Shantell Sans';font-weight:800;font-size:26px;text-transform:uppercase;"><tspan>${n}</tspan></text>
+          <text data-fit="216" x="150" y="246" text-anchor="middle" stroke="none" fill="#f3f2f2" style="font-family:'Shantell Sans';font-weight:800;font-size:24px;text-transform:uppercase;">thinking of you</text>
+          <g transform="translate(0 -16)">
+            <path d="M98 166 Q100 110 150 110 Q200 110 202 166"></path>
+            <path d="M116 166 Q118 128 150 128 Q182 128 184 166"></path>
+            <rect x="66" y="166" width="168" height="38" rx="5"></rect>
+            <path d="M146 144 Q151 139 156 144" stroke-width="4"></path>
+            <path d="M138 152 Q150 162 164 151" stroke-width="4"></path>
+            <path d="M234 176 Q226 185 234 194" stroke-width="4"></path>
+            <path d="M66 176 Q74 185 66 194" stroke-width="4"></path>
+            <ellipse cx="104" cy="206" rx="12" ry="15" fill="#3a9f4b"></ellipse>
+            <ellipse cx="196" cy="206" rx="12" ry="15" fill="#3a9f4b"></ellipse>
+            <path d="M58 132 H82 M50 148 H76" stroke-width="4"></path>
+          </g>
+          <path transform="translate(60 94) scale(0.7)" d="${SPARK}" fill="#3a9f4b" stroke="none"></path>
+          <text x="258" y="112" text-anchor="end" stroke="none" fill="#3a9f4b" style="font-family:'Courier Prime';font-weight:700;font-size:11px;">06·14·19</text>
+          <text transform="translate(252 40) rotate(12)" text-anchor="middle" fill="#3a9f4b" stroke="#f3f2f2" stroke-width="8" paint-order="stroke" style="font-family:'Shantell Sans';font-weight:800;font-size:28px;">BOOP!</text>
+        </g>` },
+
+      { key: 'giddy', label: 'Giddy', inner: `
+        <g filter="${F}" stroke="#d7322c" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="124" cy="150" r="118" stroke-width="6"></circle>
+          <circle cx="124" cy="150" r="72" stroke-width="3"></circle>
+          <text data-fit="250" stroke="none" fill="#d7322c" style="font-family:'Shantell Sans';font-weight:800;font-size:23px;letter-spacing:1px;text-transform:uppercase;"><textPath href="${P('p2t')}" startOffset="50%" text-anchor="middle"><tspan>${n}</tspan></textPath></text>
+          <text stroke="none" fill="#d7322c" style="font-family:'Shantell Sans';font-weight:800;font-size:23px;letter-spacing:1px;text-transform:uppercase;"><textPath href="${P('p2b')}" startOffset="50%" text-anchor="middle">thinking of you</textPath></text>
+          <g transform="translate(-6 0)">
+            <circle cx="130" cy="180" r="24"></circle>
+            <path d="M130 156 V204 M106 180 H154 M113 163 L147 197 M113 197 L147 163" stroke-width="2.5"></path>
+            <ellipse cx="130" cy="208" rx="28" ry="5" fill="#d7322c"></ellipse>
+            <path d="M118 132 Q116 150 124 160 L138 160 Q142 146 136 132" fill="#f3f2f2"></path>
+            <circle cx="126" cy="114" r="19" fill="#f3f2f2"></circle>
+            <path d="M117 112 Q121 107 125 112 M129 112 Q133 107 137 112" stroke-width="3"></path>
+            <path d="M118 120 Q127 128 136 119" stroke-width="3"></path>
+            <path d="M137 142 Q152 142 162 134 L168 138" stroke-width="4.5"></path>
+            <path d="M98 168 L88 166 M96 182 L84 184 M100 196 L90 202" stroke-width="3"></path>
+          </g>
+          <path d="M244 106 q6 -8 12 0 t12 0 t12 0 t12 0 M244 124 q6 -8 12 0 t12 0 t12 0 t12 0 M244 184 q6 -8 12 0 t12 0 t12 0 t12 0 M244 202 q6 -8 12 0 t12 0 t12 0 t12 0" stroke-width="4"></path>
+          <text x="270" y="148" text-anchor="middle" stroke="none" fill="#d7322c" style="font-family:'Courier Prime';font-weight:700;font-size:13px;">AUG 21</text>
+          <text x="270" y="164" text-anchor="middle" stroke="none" fill="#d7322c" style="font-family:'Courier Prime';font-weight:700;font-size:13px;">2011</text>
+          <text transform="translate(252 40) rotate(12)" text-anchor="middle" fill="#d7322c" stroke="#f3f2f2" stroke-width="8" paint-order="stroke" style="font-family:'Shantell Sans';font-weight:800;font-size:28px;">BOOP!</text>
+        </g>` },
+
+      { key: 'memory', label: 'Struck by a memory', inner: `
+        <g filter="${F}" stroke="#f3f2f2" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="40" y="40" width="220" height="220" fill="#e97b90" stroke="none"></rect>
+          <rect x="40" y="40" width="220" height="220" stroke-width="16" stroke-dasharray="0 22"></rect>
+          <rect x="58" y="58" width="184" height="184" stroke-width="3"></rect>
+          <text data-fit="166" x="150" y="90" text-anchor="middle" stroke="none" fill="#f3f2f2" style="font-family:'Shantell Sans';font-weight:800;font-size:22px;text-transform:uppercase;"><tspan>${n}</tspan></text>
+          <text data-fit="166" x="150" y="228" text-anchor="middle" stroke="none" fill="#f3f2f2" style="font-family:'Shantell Sans';font-weight:800;font-size:22px;text-transform:uppercase;">thinking of you</text>
+          <g transform="translate(150 140) scale(0.72) translate(-150 -126)">
+            <circle cx="140" cy="150" r="32"></circle>
+            <circle cx="130" cy="144" r="3.5" fill="#f3f2f2" stroke="none"></circle>
+            <circle cx="150" cy="144" r="3.5" fill="#f3f2f2" stroke="none"></circle>
+            <path d="M127 157 Q140 168 153 157" stroke-width="4.5"></path>
+            <path d="M170 106 V76 Q170 68 176 68 Q182 68 182 76 V106" fill="#e97b90"></path>
+            <rect x="162" y="102" width="30" height="28" rx="10" fill="#e97b90"></rect>
+            <path d="M172 112 V120 M182 112 V120" stroke-width="3"></path>
+            <path d="M196 64 L204 58 M198 78 L208 79 M168 58 L164 50" stroke-width="4"></path>
+            <path d="M128 182 L126 194 L110 194 Q110 186 121 186 M152 182 L154 194 L170 194 Q170 186 159 186" stroke-width="4.5"></path>
+          </g>
+          <text x="150" y="206" text-anchor="middle" stroke="none" fill="#f3f2f2" style="font-family:'Courier Prime';font-weight:700;font-size:12px;letter-spacing:1px;">DEC 03 2008</text>
+          <text transform="translate(252 40) rotate(12)" text-anchor="middle" fill="#e97b90" stroke="#f3f2f2" stroke-width="8" paint-order="stroke" style="font-family:'Shantell Sans';font-weight:800;font-size:28px;">BOOP!</text>
+        </g>` },
+
+      { key: 'curious', label: 'Wondering how you are', inner: `
+        <g filter="${F}" stroke="#25a3a1" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="150" cy="150" r="128" stroke-width="6"></circle>
+          <circle cx="150" cy="150" r="90" stroke-width="2.5"></circle>
+          <text data-fit="280" stroke="none" fill="#25a3a1" style="font-family:'Shantell Sans';font-weight:800;font-size:25px;letter-spacing:3px;text-transform:uppercase;"><textPath href="${P('p4t')}" startOffset="50%" text-anchor="middle"><tspan>${n}</tspan></textPath></text>
+          <text stroke="none" fill="#25a3a1" style="font-family:'Shantell Sans';font-weight:800;font-size:25px;letter-spacing:3px;text-transform:uppercase;"><textPath href="${P('p4b')}" startOffset="50%" text-anchor="middle">thinking of you</textPath></text>
+          <circle cx="150" cy="128" r="40"></circle>
+          <ellipse cx="150" cy="128" rx="18" ry="40" stroke-width="3"></ellipse>
+          <path d="M115 108 H185 M110 128 H190 M115 148 H185" stroke-width="3"></path>
+          <path d="M150 74 A54 54 0 0 0 150 182 V196 M132 198 H168"></path>
+          <circle cx="137" cy="122" r="11" fill="#f3f2f2" stroke-width="4"></circle>
+          <circle cx="163" cy="122" r="11" fill="#f3f2f2" stroke-width="4"></circle>
+          <circle cx="139" cy="117" r="4.5" fill="#25a3a1" stroke="none"></circle>
+          <circle cx="165" cy="117" r="4.5" fill="#25a3a1" stroke="none"></circle>
+          <path d="M98 96 V108 M92 102 H104 M200 88 V98 M195 93 H205" stroke-width="3"></path>
+          <rect x="102" y="206" width="96" height="24" rx="6" stroke-width="2.5"></rect>
+          <text x="150" y="223" text-anchor="middle" stroke="none" fill="#25a3a1" style="font-family:'Courier Prime';font-weight:700;font-size:13px;">NOV 03 2002</text>
+          <text transform="translate(252 40) rotate(12)" text-anchor="middle" fill="#25a3a1" stroke="#f3f2f2" stroke-width="8" paint-order="stroke" style="font-family:'Shantell Sans';font-weight:800;font-size:28px;">BOOP!</text>
+        </g>` },
+
+      { key: 'hug', label: 'Big hug', inner: `
+        <g filter="${F}" stroke="#f3f2f2" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M150 28 C190 24 207 46 234 56 C264 68 274 104 270 140 C268 170 282 196 260 222 C238 252 206 268 170 270 C140 274 112 278 86 258 C58 238 28 216 30 178 C32 146 20 116 38 88 C56 60 100 32 150 28 Z" fill="#ee8a24" stroke="none"></path>
+          <circle cx="150" cy="150" r="88" stroke-width="3"></circle>
+          <text data-fit="268" stroke="none" fill="#f3f2f2" style="font-family:'Shantell Sans';font-weight:800;font-size:22px;letter-spacing:1px;text-transform:uppercase;"><textPath href="${P('p5t')}" startOffset="50%" text-anchor="middle"><tspan>${n}</tspan></textPath></text>
+          <text stroke="none" fill="#f3f2f2" style="font-family:'Shantell Sans';font-weight:800;font-size:22px;letter-spacing:1px;text-transform:uppercase;"><textPath href="${P('p5b')}" startOffset="50%" text-anchor="middle">thinking of you</textPath></text>
+          <path d="M158 168 L180 198 L204 182 M142 172 L150 206 L128 212"></path>
+          <path d="M172 124 Q184 92 150 86 Q120 84 112 100 L106 96 M112 100 L104 106"></path>
+          <circle cx="150" cy="142" r="28" fill="#ee8a24"></circle>
+          <path d="M137 140 Q142 145 147 140 M153 140 Q158 145 163 140" stroke-width="3.5"></path>
+          <path d="M141 152 Q150 159 159 152" stroke-width="3.5"></path>
+          <path d="M123 150 H98 M98 142 Q84 142 84 150 Q84 158 98 158 M90 142 L82 136 M86 148 L76 146 M88 156 L78 160" stroke-width="4"></path>
+          <path transform="translate(72 108) scale(0.9)" d="${SPARK}" fill="#f3f2f2" stroke="none"></path>
+          <path transform="translate(202 116) scale(0.65)" d="${SPARK}" fill="#f3f2f2" stroke="none"></path>
+          <text x="150" y="226" text-anchor="middle" stroke="none" fill="#f3f2f2" style="font-family:'Courier Prime';font-weight:700;font-size:11px;letter-spacing:1px;">APR 02 2015</text>
+          <text transform="translate(252 40) rotate(12)" text-anchor="middle" fill="#ee8a24" stroke="#f3f2f2" stroke-width="8" paint-order="stroke" style="font-family:'Shantell Sans';font-weight:800;font-size:28px;">BOOP!</text>
+        </g>` },
+
+      { key: 'hi', label: 'Just saying hi', inner: `
+        <g filter="${F}" stroke="#2366c2" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="40" y="92" width="220" height="128" fill="#2366c2" stroke="none"></rect>
+          <rect x="40" y="48" width="220" height="172" rx="4" stroke-width="6"></rect>
+          <path d="M40 92 H260"></path>
+          <text data-fit="166" x="52" y="80" stroke="none" fill="#2366c2" style="font-family:'Shantell Sans';font-weight:800;font-size:22px;text-transform:uppercase;"><tspan>${n}</tspan></text>
+          <path d="M228 72 H236 M244 66 L252 76 M252 66 L244 76" stroke-width="3.5"></path>
+          <path d="M88 220 Q88 128 150 128 Q212 128 212 220 Z" fill="#f3f2f2" stroke="none"></path>
+          <path d="M128 166 Q134 160 140 166 M160 166 Q166 160 172 166" stroke-width="4"></path>
+          <path d="M136 180 Q150 192 164 180" stroke-width="4"></path>
+          <path d="M226 150 l8 -6 M228 164 l10 0" stroke="#f3f2f2" stroke-width="3.5"></path>
+          <path transform="translate(194 104) scale(0.85)" d="${SPARK}" fill="#f3f2f2" stroke="none"></path>
+          <path transform="translate(104 138) scale(0.6)" d="${SPARK}" fill="#f3f2f2" stroke="none"></path>
+          <text x="52" y="112" stroke="none" fill="#f3f2f2" style="font-family:'Courier Prime';font-weight:700;font-size:11px;letter-spacing:1px;">SEP 09 2017</text>
+          <text data-fit="230" x="150" y="256" text-anchor="middle" stroke="none" fill="#2366c2" style="font-family:'Shantell Sans';font-weight:800;font-size:26px;text-transform:uppercase;">thinking of you</text>
+          <text transform="translate(252 40) rotate(12)" text-anchor="middle" fill="#2366c2" stroke="#f3f2f2" stroke-width="8" paint-order="stroke" style="font-family:'Shantell Sans';font-weight:800;font-size:28px;">BOOP!</text>
+        </g>` },
+
+      { key: 'daydream', label: 'Daydreaming', inner: `
+        <g filter="${F}" stroke="#9563b6" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <text data-fit="236" x="150" y="54" text-anchor="middle" stroke="none" fill="#9563b6" style="font-family:'Shantell Sans';font-weight:800;font-size:26px;text-transform:uppercase;"><tspan>${n}</tspan></text>
+          <text data-fit="236" x="150" y="272" text-anchor="middle" stroke="none" fill="#9563b6" style="font-family:'Shantell Sans';font-weight:800;font-size:26px;text-transform:uppercase;">thinking of you</text>
+          <g transform="translate(150 158) scale(0.8) translate(-150 -150)">
+            <path d="M70 230 A40 40 0 0 1 52 160 A44 44 0 0 1 104 94 A52 52 0 0 1 196 90 A44 44 0 0 1 250 150 A44 44 0 0 1 230 230 Z" stroke-width="6"></path>
+            <path d="M120 172 L92 160 L88 174 L120 188 M180 172 L208 162 L212 176 L180 188" stroke-width="4.5"></path>
+            <ellipse cx="150" cy="194" rx="26" ry="5" fill="#9563b6" stroke="none"></ellipse>
+            <circle cx="150" cy="158" r="26" fill="#f3f2f2" stroke-width="4.5"></circle>
+            <path d="M138 156 Q143 161 148 156 M152 156 Q157 161 162 156" stroke-width="3.5"></path>
+            <path d="M142 168 Q150 174 158 168" stroke-width="3.5"></path>
+            <circle cx="178" cy="132" r="3" fill="#9563b6" stroke="none"></circle>
+            <circle cx="189" cy="120" r="5" stroke-width="3"></circle>
+            <circle cx="208" cy="104" r="13" stroke-width="3"></circle>
+            <path transform="translate(201 97) scale(0.7)" d="${SPARK}" fill="#9563b6" stroke="none"></path>
+            <text x="150" y="220" text-anchor="middle" stroke="none" fill="#9563b6" style="font-family:'Courier Prime';font-weight:700;font-size:15px;letter-spacing:2px;">MAY 30 2014</text>
+          </g>
+          <text transform="translate(252 40) rotate(12)" text-anchor="middle" fill="#9563b6" stroke="#f3f2f2" stroke-width="8" paint-order="stroke" style="font-family:'Shantell Sans';font-weight:800;font-size:28px;">BOOP!</text>
+        </g>` },
+
+      { key: 'grateful', label: 'Grateful', inner: `
+        <g filter="${F}" stroke="#c98e0a" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="150" cy="150" r="118" stroke-width="14" pathLength="350" stroke-dasharray="0 10"></circle>
+          <circle cx="150" cy="150" r="114" stroke-width="5"></circle>
+          <circle cx="150" cy="150" r="84" stroke-width="2.5"></circle>
+          <text data-fit="250" stroke="none" fill="#c98e0a" style="font-family:'Shantell Sans';font-weight:800;font-size:21px;letter-spacing:1px;text-transform:uppercase;"><textPath href="${P('p8t')}" startOffset="50%" text-anchor="middle"><tspan>${n}</tspan></textPath></text>
+          <text stroke="none" fill="#c98e0a" style="font-family:'Shantell Sans';font-weight:800;font-size:21px;letter-spacing:1px;text-transform:uppercase;"><textPath href="${P('p8b')}" startOffset="50%" text-anchor="middle">thinking of you</textPath></text>
+          <circle cx="150" cy="158" r="19"></circle>
+          <path d="M141 155 Q144 150 147 155 M153 155 Q156 150 159 155" stroke-width="3"></path>
+          <path d="M144 163 Q150 168 156 163" stroke-width="3"></path>
+          <g stroke-width="4" transform="translate(150 150) scale(0.86) translate(-150 -150)">
+            <path transform="translate(-14 0)" d="M128 192 Q104 200 96 180 L90 140 Q88 132 95 132 Q101 132 102 140 L104 154 L102 124 Q102 116 109 116 Q116 116 116 124 L118 152 L120 122 Q120 114 127 115 Q134 116 133 124 L131 154 L136 142 Q139 136 144 138 Q148 141 146 148 L138 176 Z" fill="#f3f2f2"></path>
+            <path transform="translate(14 0)" d="M172 192 Q196 200 204 180 L210 140 Q212 132 205 132 Q199 132 198 140 L196 154 L198 124 Q198 116 191 116 Q184 116 184 124 L182 152 L180 122 Q180 114 173 115 Q166 116 167 124 L169 154 L164 142 Q161 136 156 138 Q152 141 154 148 L162 176 Z" fill="#f3f2f2"></path>
+          </g>
+          <path transform="translate(140 100) scale(1)" d="${SPARK}" fill="#c98e0a" stroke="none"></path>
+          <text x="150" y="212" text-anchor="middle" stroke="none" fill="#c98e0a" style="font-family:'Courier Prime';font-weight:700;font-size:12px;letter-spacing:1px;">JAN 01 2020</text>
+          <text transform="translate(252 40) rotate(12)" text-anchor="middle" fill="#c98e0a" stroke="#f3f2f2" stroke-width="8" paint-order="stroke" style="font-family:'Shantell Sans';font-weight:800;font-size:28px;">BOOP!</text>
+        </g>` },
+
+      { key: 'overjoyed', label: 'Overjoyed', inner: `
+        <g filter="${F}" stroke="#4a92d2" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="272,150 246.6,175.9 255.7,211 220.7,220.7 211,255.7 175.9,246.6 150,272 124.1,246.6 89,255.7 79.3,220.7 44.3,211 53.4,175.9 28,150 53.4,124.1 44.3,89 79.3,79.3 89,44.3 124.1,53.4 150,28 175.9,53.4 211,44.3 220.7,79.3 255.7,89 246.6,124.1"></polygon>
+          <circle cx="150" cy="150" r="92" stroke-width="2.5"></circle>
+          <text data-fit="190" stroke="none" fill="#4a92d2" style="font-family:'Shantell Sans';font-weight:800;font-size:19px;text-transform:uppercase;"><textPath href="${P('p9t')}" startOffset="50%" text-anchor="middle"><tspan>${n}</tspan></textPath></text>
+          <text data-fit="226" stroke="none" fill="#4a92d2" style="font-family:'Shantell Sans';font-weight:800;font-size:19px;text-transform:uppercase;"><textPath href="${P('p9b')}" startOffset="50%" text-anchor="middle">thinking of you</textPath></text>
+          <g transform="translate(150 146) scale(0.68) translate(-150 -146)">
+            <path d="M106 146 H194 M150 102 V190 M119 115 L181 177 M119 177 L181 115" stroke-width="24" stroke-linecap="butt"></path>
+            <path d="M108.5 146 H191.5 M150 104.5 V187.5 M121 117 L179 175 M121 175 L179 117" stroke="#f3f2f2" stroke-width="14" stroke-linecap="butt"></path>
+            <circle cx="143" cy="142" r="3" fill="#4a92d2" stroke="none"></circle>
+            <circle cx="157" cy="142" r="3" fill="#4a92d2" stroke="none"></circle>
+            <path d="M142 150 Q150 157 158 150" stroke-width="3.5"></path>
+          </g>
+          <text x="150" y="200" text-anchor="middle" stroke="none" fill="#4a92d2" style="font-family:'Courier Prime';font-weight:700;font-size:11px;letter-spacing:1px;">MAR 21 2023</text>
+          <text transform="translate(252 40) rotate(12)" text-anchor="middle" fill="#4a92d2" stroke="#f3f2f2" stroke-width="8" paint-order="stroke" style="font-family:'Shantell Sans';font-weight:800;font-size:28px;">BOOP!</text>
+        </g>` },
+
+      { key: 'grin', label: 'Big grin', inner: `
+        <g filter="${F}" stroke="#e05a78" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="150" cy="150" r="128" stroke-width="6"></circle>
+          <circle cx="150" cy="150" r="92" stroke-width="2.5"></circle>
+          <text stroke="none" fill="#e05a78" style="font-family:'Shantell Sans';font-weight:800;font-size:30px;letter-spacing:12px;"><textPath href="${P('p10t')}" startOffset="50%" text-anchor="middle">BOOP</textPath></text>
+          <path d="M95 239 V251 M89 245 H101 M205 239 V251 M199 245 H211 M150 254 V266 M144 260 H156" stroke-width="3"></path>
+          <g>
+            <circle cx="150" cy="156" r="56" fill="#f3f2f2"></circle>
+            <circle cx="132" cy="138" r="5.5" fill="#e05a78" stroke="none"></circle>
+            <circle cx="168" cy="138" r="5.5" fill="#e05a78" stroke="none"></circle>
+            <path d="M120 162 Q150 166 180 162 Q176 194 150 194 Q124 194 120 162 Z" fill="#f3f2f2" stroke-width="4.5"></path>
+            <path d="M121 170 H179 M140 164 V179 M160 164 V179" stroke-width="3"></path>
+          </g>
+        </g>` }
+    ];
+  }
+
+  function ensureAssets() {
+    if (!document.getElementById('boopfab-css')) {
+      var st = document.createElement('style'); st.id = 'boopfab-css'; st.textContent = CSS; document.head.appendChild(st);
+    }
+    if (!document.querySelector('link[href*="Shantell"]')) {
+      var l = document.createElement('link'); l.rel = 'stylesheet';
+      l.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Shantell+Sans:wght@500;600;800&family=Courier+Prime:wght@700&display=swap';
+      document.head.appendChild(l);
+    }
+  }
+
+  function BoopFab(host, opts) {
+    var self = this;
+    this.opts = Object.assign({ placement: 'bc', name: 'Vishruth', onSelect: null, onOpen: null, onClose: null }, opts || {});
+    this.isOpen = false; this.picked = -1; this.timers = []; this.stampList = [];
+    this.uid = 'boopfab' + (++BoopFab._n);
+    ensureAssets();
+
+    var root = document.createElement('div');
+    root.className = 'boopfab';
+    root.innerHTML =
+      '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>' + defs(this.uid) + '</defs></svg>' +
+      '<div class="boopfab__scrim"></div><div class="boopfab__veil"></div>' +
+      '<div class="boopfab__sheet" role="dialog" aria-modal="true" aria-labelledby="' + this.uid + '-title" aria-hidden="true">' +
+        '<div class="boopfab__head"><div class="boopfab__heading"><span class="boopfab__title" id="' + this.uid + '-title">Send a boop</span><span class="boopfab__count"></span></div><button type="button" class="boopfab__close" aria-label="Close">' + CLOSE_ICON(this.uid + '-icon') + '</button></div>' +
+        '<div class="boopfab__scroll"><div class="boopfab__grid"></div></div>' +
+      '</div>' +
+      '<button type="button" class="boopfab__pill" aria-label="Open stamps" aria-haspopup="dialog" aria-expanded="false">' + BOOP_SVG + '</button>';
+
+    this.root = root;
+    this.scrim = root.querySelector('.boopfab__scrim');
+    this.sheet = root.querySelector('.boopfab__sheet');
+    this.scroll = root.querySelector('.boopfab__scroll');
+    this.grid = root.querySelector('.boopfab__grid');
+    this.closeBtn = root.querySelector('.boopfab__close');
+    this.countEl = root.querySelector('.boopfab__count');
+    this.pill = root.querySelector('.boopfab__pill');
+
+    this.pill.addEventListener('click', function () { self.open(); });
+    this.closeBtn.addEventListener('click', function () { self.close(); });
+    this.scrim.addEventListener('click', function () { self.close(); });
+    this.grid.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('.boopfab__stamp') : null;
+      if (b) self.pick(+b.getAttribute('data-i'));
+    });
+    root.addEventListener('keydown', function (e) { if (e.key === 'Escape') self.close(); });
+
+    this.renderGrid();
+    this.place();
+    this.sync();
+    host.appendChild(root);
+    this.fit();
+
+    if (document.fonts && document.fonts.load) {
+      Promise.all([
+        document.fonts.load("800 26px 'Shantell Sans'"),
+        document.fonts.load("500 26px 'Shantell Sans'"),
+        document.fonts.load("600 14px 'Shantell Sans'"),
+        document.fonts.load("700 12px 'Courier Prime'"),
+        document.fonts.load('400 16px Inter')
+      ]).then(function () { if (!self.destroyed) self.fit(); }, function () {});
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (!self.destroyed) self.fit(); });
+  }
+  BoopFab._n = 0;
+
+  var proto = BoopFab.prototype;
+
+  proto.later = function (fn, ms) { this.timers.push(setTimeout(fn, ms)); };
+
+  proto.place = function () {
+    var o = this.opts, b = PLACEMENTS[o.placement] || PLACEMENTS.bc;
+    this.pill.style.left = (o.x != null ? o.x : b.x) + 'px';
+    this.pill.style.top = (o.y != null ? o.y : b.y) + 'px';
+  };
+
+  proto.renderGrid = function () {
+    var list = stamps(this.opts.name, this.uid);
+    this.stampData = list;
+    this.countEl.textContent = list.length + ' stamps';
+    this.grid.innerHTML = list.map(function (s, i) {
+      return '<button type="button" class="boopfab__stamp" data-i="' + i + '" style="--d:' + Math.min(i, 5) + '" aria-label="' + esc(s.label) + '">' +
+        '<span class="boopfab__card"><svg viewBox="0 0 300 300" aria-hidden="true">' + s.inner + '</svg></span></button>';
+    }).join('');
+    this.stampList = Array.prototype.slice.call(this.grid.querySelectorAll('.boopfab__stamp'));
+    this.sync();
+    if (this.root.isConnected) this.fit();
+  };
+
+  /* Shrinks any text that would overrun its stamp, measured from its designed size */
+  proto.fit = function () {
+    var nodes = this.root.querySelectorAll('text[data-fit]');
+    for (var i = 0; i < nodes.length; i++) {
+      var el = nodes[i];
+      if (el._b == null) el._b = parseFloat(el.style.fontSize) || 16;
+      el.style.fontSize = el._b + 'px';
+      var max = +el.getAttribute('data-fit'), len = 0;
+      try { len = el.getComputedTextLength(); } catch (_) { continue; }
+      if (len > max) el.style.fontSize = (el._b * max / len) + 'px';
+    }
+  };
+
+  proto.sync = function () {
+    var c = this.root.classList, self = this;
+    c.toggle('boopfab--open', this.isOpen);
+    c.toggle('boopfab--picking', this.picked >= 0);
+    this.stampList.forEach(function (el, i) { el.classList.toggle('boopfab__stamp--picked', i === self.picked); });
+    this.pill.setAttribute('aria-expanded', this.isOpen ? 'true' : 'false');
+    this.pill.tabIndex = this.isOpen ? -1 : 0;
+    this.sheet.setAttribute('aria-hidden', this.isOpen ? 'false' : 'true');
+  };
+
+  proto.open = function () {
+    var self = this;
+    if (this.isOpen) return;
+    this.isOpen = true; this.picked = -1;
+    this.scroll.scrollTop = 0;
+    this.sync(); this.fit();
+    this.later(function () { try { self.closeBtn.focus({ preventScroll: true }); } catch (_) {} }, 60);
+    if (this.opts.onOpen) this.opts.onOpen();
+  };
+
+  proto.close = function (restoreFocus) {
+    var self = this;
+    if (!this.isOpen) return;
+    this.isOpen = false; this.picked = -1;
+    this.sync();
+    this.later(function () { if (!self.isOpen) self.scroll.scrollTop = 0; }, 340);
+    if (restoreFocus !== false) { try { this.pill.focus({ preventScroll: true }); } catch (_) {} }
+    if (this.opts.onClose) this.opts.onClose();
+  };
+
+  proto.pick = function (i) {
+    var self = this;
+    if (!this.isOpen || this.picked >= 0 || !this.stampData[i]) return;
+    this.picked = i;
+    this.sync();
+    try { if (navigator.vibrate) navigator.vibrate(12); } catch (_) {}
+    this.later(function () { self.close(); }, 460);
+    if (this.opts.onSelect) this.opts.onSelect(this.stampData[i].key, this.stampData[i].label);
+  };
+
+  proto.setPlacement = function (name) {
+    this.opts.placement = name;
+    if (this.isOpen) this.close(false);
+    this.place();
+  };
+
+  proto.setName = function (text) {
+    this.opts.name = (text && String(text).trim()) || 'Someone';
+    this.renderGrid();
+  };
+
+  proto.destroy = function () {
+    this.destroyed = true;
+    this.timers.forEach(clearTimeout);
+    this.root.remove();
+  };
+
+  window.BoopFab = BoopFab;
+})();
+
+/* ---------------- Preview wiring ---------------- */
+(function () {
+  var phone = document.getElementById('phone');
+  var frame = document.getElementById('frame');
+  var readout = document.getElementById('readout');
+
+  var fab = new BoopFab(phone, {
+    placement: 'bc',
+    name: 'Vishruth',
+    onSelect: function (key, label) { readout.innerHTML = 'Picked <b>' + label + '</b>'; },
+    onOpen: function () { readout.textContent = ''; }
+  });
+
+  var btns = Array.prototype.slice.call(document.querySelectorAll('.seg button'));
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      fab.setPlacement(b.getAttribute('data-p'));
+      btns.forEach(function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      readout.textContent = '';
+    });
+  });
+
+  document.getElementById('name').addEventListener('input', function (e) { fab.setName(e.target.value); });
+
+  function fit() {
+    var col = frame.parentElement.clientWidth || 390;
+    var s = Math.max(0.55, Math.min(1, col / 390, (window.innerHeight - 32) / 844));
+    phone.style.transform = 'scale(' + s + ')';
+    frame.style.width = (390 * s) + 'px';
+    frame.style.height = (844 * s) + 'px';
+  }
+  fit();
+  window.addEventListener('resize', fit);
+})();
+</script>
+
+</body></html>
