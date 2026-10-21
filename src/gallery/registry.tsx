@@ -15,6 +15,7 @@ import { ScrapbookCanvasPage } from '@/scrapbook/canvas';
 import AppShell from '@/screens/AppShell/AppShell';
 import { LIBRARY_ACTIVE_INDEX, LIBRARY_PEOPLE, OWNER_HANDLE, OWNER_NAME } from '@/data/mock';
 import ScrapbookStylePreview from './ScrapbookStylePreview';
+import ComposeMemoryScreen from '@/screens/ComposeMemoryScreen/ComposeMemoryScreen';
 
 export type GalleryKind = 'screen' | 'component';
 
@@ -37,6 +38,13 @@ export const SCREENS: GalleryEntry[] = [
 ];
 
 export const COMPONENTS: GalleryEntry[] = [
+  {
+    kind: 'component',
+    id: 'compose-memory',
+    title: 'Compose memory flows',
+    description: 'Interactive Stamp, Note, ParcelTag, and VoicePostcard compose states. Use the small flow tabs in the frame.',
+    render: () => <ComposeMemoryScreen />,
+  },
   {
     kind: 'component',
     id: 'header',

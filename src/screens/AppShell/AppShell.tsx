@@ -4,6 +4,12 @@ import HomeBottomNavigation from '@/components/HomeBottomNavigation/HomeBottomNa
 import type { HomeBottomNavigationValue } from '@/components/HomeBottomNavigation/HomeBottomNavigation';
 import { SAMPLE_IMAGE_SRCS } from '@/scrapbook/fixtures/sampleItems';
 import CanvasScreen from '@/screens/CanvasScreen/CanvasScreen';
+import ComposeMemoryScreen from '@/screens/ComposeMemoryScreen/ComposeMemoryScreen';
+import type { ComposeKind, ComposedMemory } from '@/screens/ComposeMemoryScreen/ComposeMemoryScreen';
+import type { AddFabKind } from '@/components/AddFab';
+import { LIBRARY_ACTIVE_INDEX, LIBRARY_PEOPLE } from '@/data/mock';
+import type { PlacedMemory } from '@/scrapbook/placement';
+import { loadMemories, saveMemory } from '@/scrapbook/persistence/localScrapbookStore';
 import HomeScreenShell from '@/screens/HomeScreen/HomeScreenShell';
 import { decodeImages } from '@/utils/decodeImages';
 import './AppShell.css';
@@ -104,6 +110,52 @@ function ScreenPanel({ active, id, labelledBy, className, children }: ScreenPane
 
 export default function AppShell() {
   const [navValue, setNavValue] = useState<HomeBottomNavigationValue>('home');
+  const [selectedPerson, setSelectedPerson] = useState(LIBRARY_ACTIVE_INDEX);
+  const [composeKind, setComposeKind] = useState<ComposeKind | null>(null);
+  const [createdItems, setCreatedItems] = useState<PlacedMemory[]>([]);
+  const savingRef = useRef(false);
+  const recipient = LIBRARY_PEOPLE[selectedPerson];
+
+  useEffect(() => {
+    const onPopState = () => setComposeKind(null);
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadMemories(recipient.name).then((items) => {
+      if (!cancelled) setCreatedItems(items);
+    }).catch((error: unknown) => console.warn('Could not restore scrapbook memories', error));
+    return () => { cancelled = true; };
+  }, [recipient.name]);
+
+  const openCompose = (kind: AddFabKind) => {
+    if (composeKind) return;
+    window.history.pushState({ scrapbookCompose: true, scrapbookId: `library:${recipient.name}` }, '');
+    setComposeKind(kind);
+  };
+  const closeCompose = () => {
+    if (window.history.state?.scrapbookCompose) window.history.back();
+    else setComposeKind(null);
+  };
+  const completeCompose = async (memory: ComposedMemory) => {
+    if (savingRef.current) return;
+    savingRef.current = true;
+    const id = crypto.randomUUID();
+    const seed = [...id].reduce((value, char) => ((value * 31) + char.charCodeAt(0)) | 0, 17);
+    const base = { id, scrapbookId: `library:${recipient.name}`, recipientId: recipient.name, authorId: 'prototype-contributor', createdAt: new Date().toISOString(), seed };
+    const mediaKey = memory.kind === 'stamp' || memory.kind === 'voice' ? `media:${id}` : undefined;
+    const item: PlacedMemory = memory.kind === 'stamp' ? { ...base, kind: 'stamp', text: memory.caption, src: URL.createObjectURL(memory.file), mediaKey, ratio: memory.ratio } : memory.kind === 'note' ? { ...base, kind: 'note', text: memory.text } : memory.kind === 'tag' ? { ...base, kind: 'tag', text: memory.title, url: memory.url } : { ...base, kind: 'voice', src: URL.createObjectURL(memory.blob), mediaKey, durationSec: memory.durationSec };
+    try {
+      await saveMemory(item, memory.kind === 'stamp' ? memory.file : memory.kind === 'voice' ? memory.blob : undefined);
+      setCreatedItems((items) => [...items, item]);
+      closeCompose();
+    } catch (error) {
+      console.error('Could not save scrapbook memory', error);
+      window.alert("Couldn't save this memory. Please try again.");
+    } finally { savingRef.current = false; }
+  };
 
   // Pre-decode the canvas screen's photos while Home is still showing, so the first switch
   // to Journal doesn't stall on JPEG decode (the canvas panel is mounted from the start but
@@ -116,14 +168,19 @@ export default function AppShell() {
   return (
     <div className="app-shell-root">
       <ScreenPanel active={navValue === 'home'} id="panel-home" labelledBy="tab-home" className="app-shell-home">
-        <HomeScreenShell />
+        <HomeScreenShell selectedPerson={selectedPerson} onSelectPerson={setSelectedPerson} />
       </ScreenPanel>
       <ScreenPanel active={navValue === 'journal'} id="panel-journal" labelledBy="tab-journal" className="app-shell-canvas">
-        <CanvasScreen />
+        <CanvasScreen recipientName={recipient.name} onAddSelect={openCompose} items={createdItems.filter((item) => item.recipientId === recipient.name)} />
       </ScreenPanel>
-      <nav className="app-shell-nav-overlay">
+      {!composeKind && <nav className="app-shell-nav-overlay">
         <HomeBottomNavigation value={navValue} onChange={setNavValue} />
-      </nav>
+      </nav>}
+      {composeKind && (
+        <div className="app-shell-compose" role="dialog" aria-modal="true" aria-label={`Compose memory for ${recipient.name}`}>
+          <ComposeMemoryScreen kind={composeKind} recipientName={recipient.name} onClose={closeCompose} onComplete={completeCompose} showDevTabs={false} />
+        </div>
+      )}
     </div>
   );
 }

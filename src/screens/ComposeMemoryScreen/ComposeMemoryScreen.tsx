@@ -1,0 +1,65 @@
+import { useEffect, useRef, useState } from 'react';
+import Note from '@/components/Note';
+import ParcelTag from '@/components/ParcelTag';
+import { ScreenShell } from '@/components/ScreenShell';
+import Stamp from '@/components/Stamp';
+import VoicePostcard from '@/components/VoicePostcard';
+import './ComposeMemoryScreen.css';
+
+export type ComposeKind = 'stamp' | 'note' | 'tag' | 'voice';
+export type ComposedMemory =
+  | { kind: 'stamp'; file: File; src: string; ratio: number; caption: string }
+  | { kind: 'note'; text: string }
+  | { kind: 'tag'; url: string; title: string }
+  | { kind: 'voice'; blob: Blob; src: string; durationSec: number };
+
+export interface ComposeMemoryScreenProps {
+  kind?: ComposeKind;
+  recipientName?: string;
+  onComplete?: (memory: ComposedMemory) => void;
+  onClose?: () => void;
+  showDevTabs?: boolean;
+}
+
+function SendButton({ enabled, dark = false, onClick }: { enabled: boolean; dark?: boolean; onClick: () => void }) {
+  return <button type="button" className={`compose-send${dark ? ' compose-send--light' : ''}`} disabled={!enabled} onClick={onClick}><svg width="132" height="60" aria-hidden="true"><g filter="url(#ink)"><path d="M70 3 C120 1 132 18 130 32 C128 50 100 58 64 57 C24 56 3 46 3 30 C3 12 30 4 78 6" /></g></svg><span>send</span></button>;
+}
+
+function CloseButton({ dark, onClose }: { dark?: boolean; onClose: () => void }) {
+  return <button type="button" className={`compose-close${dark ? ' compose-close--light' : ''}`} aria-label="Discard draft and close" onClick={onClose}><svg width="24" height="24" aria-hidden="true"><g filter="url(#ink)"><path d="M3 3 L21 22 M22 2 L2 21" /></g></svg></button>;
+}
+
+function validUrl(value: string) { try { const parsed = new URL(value.includes('://') ? value : `https://${value}`); return parsed.protocol === 'https:' || parsed.protocol === 'http:'; } catch { return false; } }
+function durationOf(src: string): Promise<number> { return new Promise((resolve) => { const audio = document.createElement('audio'); audio.preload = 'metadata'; audio.onloadedmetadata = () => resolve(Number.isFinite(audio.duration) ? audio.duration : 0); audio.onerror = () => resolve(0); audio.src = src; }); }
+
+function PhotoCompose({ recipientName, done, close }: { recipientName: string; done: (memory: ComposedMemory) => void; close: () => void }) {
+  const input = useRef<HTMLInputElement>(null); const url = useRef<string | undefined>(undefined); const [state, setState] = useState<'empty' | 'loading' | 'ready' | 'error'>('empty'); const [media, setMedia] = useState<{ file: File; src: string; ratio: number }>(); const [caption, setCaption] = useState('');
+  useEffect(() => () => { if (url.current) URL.revokeObjectURL(url.current); }, []);
+  const select = (file?: File) => { if (!file) return; if (!file.type.startsWith('image/')) { setState('error'); return; } setState('loading'); const src = URL.createObjectURL(file); const image = new Image(); image.onload = () => { if (url.current) URL.revokeObjectURL(url.current); url.current = src; setMedia({ file, src, ratio: image.naturalWidth / image.naturalHeight }); setState('ready'); }; image.onerror = () => { URL.revokeObjectURL(src); setState('error'); }; image.src = src; };
+  return <div className="compose-page compose-photo"><CloseButton onClose={() => { if (!media || window.confirm('Discard this photo draft?')) close(); }} /><div className="compose-recipient">for {recipientName}</div><input ref={input} className="compose-file" type="file" accept="image/*" onChange={(event) => select(event.target.files?.[0])} />
+    <div className="compose-photo-card" onClick={() => input.current?.click()} role="button" tabIndex={0} onKeyDown={(event) => event.key === 'Enter' && input.current?.click()}><div className="compose-preview-no-events"><Stamp media={media ? { kind: 'image', src: media.src, ratio: media.ratio } : { kind: 'empty', ratio: 1, label: state === 'loading' ? 'uploading' : 'photo' }} caption="" owner={recipientName} from="you" date="" viewer="self" seed={41} zoom={1.6} /></div>{!media && state !== 'loading' && <div className="compose-upload"><svg width="60" height="60"><g filter="url(#ink)"><path d="M30 38 L30 8 M18 20 L30 7 L42 20 M8 34 L8 52 L52 52 L52 34" /></g></svg><span>{state === 'error' ? 'choose an image file' : 'upload from device'}</span></div>}{state === 'loading' && <div className="compose-upload compose-upload--loading"><svg width="150" height="10"><g filter="url(#ink)"><path className="compose-progress-track" d="M2 5 C40 3 100 7 148 4" /><path className="compose-progress" d="M2 5 C40 3 100 7 148 4" /></g></svg><span>uploading</span></div>}</div>
+    {media && <label className="compose-caption">add a line, if you want<input value={caption} onChange={(event) => setCaption(event.target.value)} maxLength={180} /></label>}<div className="compose-send-wrap"><SendButton enabled={!!media} onClick={() => media && done({ kind: 'stamp', ...media, caption })} /></div></div>;
+}
+
+function NoteCompose({ recipientName, done, close }: { recipientName: string; done: (memory: ComposedMemory) => void; close: () => void }) {
+  const [text, setText] = useState('');
+  return <div className="compose-page compose-note"><CloseButton onClose={close} /><div className="compose-recipient">for {recipientName}</div><div className="compose-note-card"><div className="compose-preview-no-events"><Note text="" owner={recipientName} senderName="you" date="" viewer="self" seed={12} zoom={1.6} rot={-1.5} /></div><textarea aria-label="Write your memory" value={text} onChange={(event) => setText(event.target.value)} maxLength={420} placeholder="write here" /></div><div className="compose-send-wrap"><SendButton enabled={!!text.trim()} onClick={() => text.trim() && done({ kind: 'note', text: text.trim() })} /></div></div>;
+}
+
+function LinkCompose({ recipientName, done, close }: { recipientName: string; done: (memory: ComposedMemory) => void; close: () => void }) {
+  const [url, setUrl] = useState(''); const [title, setTitle] = useState(''); const [focus, setFocus] = useState(''); const usable = validUrl(url);
+  return <div className="compose-page compose-link"><CloseButton dark onClose={close} /><div className="compose-recipient">for {recipientName}</div><div className="compose-link-fields">{([{ key: 'url', label: 'link', value: url, set: setUrl }, { key: 'title', label: 'title', value: title, set: setTitle }] as const).map((field) => <label key={field.key} className={`compose-field ${(focus === field.key || field.value) ? 'is-up' : ''} ${focus === field.key ? 'is-focused' : ''}`}><span>{field.label}</span><input value={field.value} onChange={(event) => field.set(event.target.value)} onFocus={() => setFocus(field.key)} onBlur={() => setFocus('')} autoComplete="off" /><svg width="305" height="8"><g filter="url(#ink)"><path d="M-2 4 C80 2 190 6 307 3" /></g></svg></label>)}</div><div className={`compose-tag-card${title ? ' is-ready' : ''}`}><div className="compose-preview-no-events"><ParcelTag url={usable ? (url.includes('://') ? url : `https://${url}`) : ''} linkLabel={title || 'title'} preview={{ kind: 'empty', ratio: 1, label: 'link' }} owner={recipientName} senderName="you" date="" viewer="self" seed={27} zoom={1.3} rot={3} /></div></div><div className="compose-send-wrap compose-send-wrap--link"><SendButton dark enabled={usable} onClick={() => usable && done({ kind: 'tag', url: url.includes('://') ? url : `https://${url}`, title })} /></div></div>;
+}
+
+function VoiceCompose({ recipientName, done, close }: { recipientName: string; done: (memory: ComposedMemory) => void; close: () => void }) {
+  const [state, setState] = useState<'ready' | 'recording' | 'finalizing' | 'review'>('ready'); const [src, setSrc] = useState<string>(); const [blob, setBlob] = useState<Blob>(); const [dur, setDur] = useState(0); const [elapsed, setElapsed] = useState(0); const recorder = useRef<MediaRecorder | undefined>(undefined); const stream = useRef<MediaStream | undefined>(undefined); const ticker = useRef<number | undefined>(undefined); const started = useRef(0); const discardOnStop = useRef(false); const srcRef = useRef<string | undefined>(undefined);
+  const stopTracks = () => stream.current?.getTracks().forEach((track) => track.stop()); const clearTicker = () => { if (ticker.current) { clearInterval(ticker.current); ticker.current = undefined; } };
+  const discard = () => { discardOnStop.current = true; clearTicker(); if (recorder.current?.state === 'recording') recorder.current.stop(); stopTracks(); if (srcRef.current) URL.revokeObjectURL(srcRef.current); srcRef.current = undefined; setSrc(undefined); setBlob(undefined); setDur(0); setElapsed(0); setState('ready'); };
+  useEffect(() => () => { discardOnStop.current = true; clearTicker(); stopTracks(); if (srcRef.current) URL.revokeObjectURL(srcRef.current); }, []);
+  const record = async () => { try { discardOnStop.current = false; const nextStream = await navigator.mediaDevices.getUserMedia({ audio: true }); stream.current = nextStream; const nextRecorder = new MediaRecorder(nextStream); recorder.current = nextRecorder; const chunks: BlobPart[] = []; nextRecorder.ondataavailable = (event) => { if (event.data.size) chunks.push(event.data); }; nextRecorder.onstop = async () => { clearTicker(); stopTracks(); if (discardOnStop.current) return; setState('finalizing'); const captured = new Blob(chunks, { type: nextRecorder.mimeType || 'audio/webm' }); if (captured.size < 100) { setState('ready'); return; } const nextSrc = URL.createObjectURL(captured); srcRef.current = nextSrc; setBlob(captured); setSrc(nextSrc); setDur(await durationOf(nextSrc)); setState('review'); }; nextRecorder.start(); started.current = Date.now(); ticker.current = window.setInterval(() => setElapsed((Date.now() - started.current) / 1000), 170); setState('recording'); } catch { setState('ready'); } };
+  const stop = () => { clearTicker(); if (recorder.current?.state === 'recording') recorder.current.stop(); }; const recording = state === 'recording' || state === 'finalizing';
+  return <div className="compose-page compose-voice"><CloseButton dark onClose={() => { discard(); close(); }} /><div className="compose-recipient">for {recipientName}</div><div className="compose-voice-card"><VoicePostcard variant="compose" audioSrc={src} durationSec={state === 'review' ? dur : elapsed} owner={recipientName} senderName="you" date="" viewer="self" seed={19} zoom={1.5} rot={-2} /></div>{state !== 'review' && <div className="compose-record-copy"><span>{state === 'ready' ? 'tap to record' : state === 'recording' ? 'listening' : 'paused'}</span><small>{Math.floor(elapsed / 60)}:{String(Math.floor(elapsed % 60)).padStart(2, '0')}</small></div>}{state === 'recording' && <div className="compose-bars" aria-hidden="true">{Array.from({ length: 34 }, (_, index) => <i key={index} style={{ opacity: index < (Math.floor(elapsed / .17) % 34) ? 1 : .18, height: `${12 + (index * 13) % 34}px` }} />)}</div>}{state !== 'finalizing' && state !== 'review' && <button type="button" className="compose-record" onClick={state === 'ready' ? record : stop} aria-label={state === 'ready' ? 'Record audio' : 'Stop recording'}><svg width="84" height="84"><g filter="url(#ink)"><path d="M44 2 C70 2 82 22 82 42 C82 66 64 82 42 82 C18 82 2 64 2 42 C2 18 20 3 50 4" /><path className={recording ? 'compose-pause' : 'compose-dot'} d={recording ? 'M30 30 L38 30 L38 54 L30 54 Z M46 30 L54 30 L54 54 L46 54 Z' : 'M42 20 C54 20 64 30 64 42 C64 55 54 64 42 64 C30 64 20 54 20 42 C20 30 30 20 42 20Z'} /></g></svg></button>}{state === 'review' && <><div className="compose-send-wrap compose-send-wrap--voice"><SendButton dark enabled onClick={() => src && blob && done({ kind: 'voice', blob, src, durationSec: dur })} /></div><button type="button" className="compose-again" onClick={discard}>again</button></>}</div>;
+}
+
+const COMPOSE_BACKGROUNDS: Record<ComposeKind, string> = { stamp: '#f2c230', note: '#faf7f0', tag: '#2e6be6', voice: '#0f3b2e' };
+export default function ComposeMemoryScreen({ kind: initial = 'stamp', recipientName = 'maya', onComplete, onClose, showDevTabs = true }: ComposeMemoryScreenProps) { const [kind, setKind] = useState<ComposeKind>(initial); const done = (memory: ComposedMemory) => onComplete?.(memory); const close = () => onClose?.(); return <ScreenShell variant="canvas" background={COMPOSE_BACKGROUNDS[kind]}>{showDevTabs && <div className="compose-dev-tabs" role="tablist" aria-label="Compose flow">{(['stamp', 'note', 'tag', 'voice'] as ComposeKind[]).map((nextKind) => <button key={nextKind} type="button" role="tab" aria-selected={nextKind === kind} onClick={() => setKind(nextKind)}>{nextKind}</button>)}</div>}{kind === 'stamp' ? <PhotoCompose recipientName={recipientName} done={done} close={close} /> : kind === 'note' ? <NoteCompose recipientName={recipientName} done={done} close={close} /> : kind === 'tag' ? <LinkCompose recipientName={recipientName} done={done} close={close} /> : <VoiceCompose recipientName={recipientName} done={done} close={close} />}</ScreenShell>; }

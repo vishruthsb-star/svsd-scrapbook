@@ -3,6 +3,7 @@ import { mk } from '@/scrapbook/fixtures/sampleItems';
 import { FAB_PILL_HEIGHT, SAFE } from '../../constants';
 import { hash } from '../../itemSeed';
 import { rng } from '../../rng';
+import type { PlacedMemory } from '@/scrapbook/placement';
 
 export { hash, rng };
 
@@ -123,6 +124,89 @@ export interface StrataStrip {
   isQuiet: boolean;
   isFirst: boolean;
   items: StrataItem[];
+  dynamicItems: DynamicStrataItem[];
+}
+
+/** A created item lives in its month's real strip, never in a canvas-level overlay. */
+export interface DynamicStrataItem {
+  memory: PlacedMemory;
+  x: number;
+  y: number;
+  rot: number;
+  z: number;
+}
+
+const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+function memoryLabel(memory: PlacedMemory): string {
+  const date = new Date(memory.createdAt);
+  return `${MONTHS[date.getUTCMonth()] ?? 'JAN'} ${date.getUTCFullYear()}`;
+}
+
+function labelOrder(label: string): number {
+  const [month, yearText] = label.split(' ');
+  const year = Number(yearText) || 0;
+  // The intentional Jan-May fixture section follows JUN in the reference ordering.
+  const monthIndex = label.startsWith('JAN') ? 4 : Math.max(0, MONTHS.indexOf(month));
+  return year * 12 + monthIndex;
+}
+
+function naturalSize(memory: PlacedMemory): [number, number] {
+  if (memory.kind === 'stamp') {
+    const ratio = Math.max(.5, Math.min(2, memory.ratio ?? 1));
+    const captionLines = Math.max(0, Math.ceil((memory.text?.length ?? 0) / 19));
+    return [150, 122 / ratio + 32 + captionLines * 18];
+  }
+  if (memory.kind === 'note') return [200, Math.max(170, 50 + Math.ceil((memory.text?.length ?? 0) / 20) * 30)];
+  if (memory.kind === 'voice') return [230, 146];
+  return [124, Math.max(158, 116 + Math.ceil((memory.text?.length ?? 0) / 13) * 15)];
+}
+
+function mixedSeed(value: string): number {
+  let seed = hash(value) >>> 0;
+  seed ^= seed >>> 16;
+  seed = Math.imul(seed, 0x45d9f3b) >>> 0;
+  seed ^= seed >>> 16;
+  return seed >>> 0;
+}
+
+function dynamicRotation(id: string): number {
+  const value = mixedSeed(id) / 0xffffffff;
+  const rotation = -5 + value * 10;
+  return Math.abs(rotation) < .7 ? (rotation < 0 ? -.7 : .7) : Number(rotation.toFixed(2));
+}
+
+interface Bounds { x: number; y: number; w: number; h: number; }
+function overlaps(a: Bounds, b: Bounds, gap = 12): boolean {
+  return a.x - gap < b.x + b.w && a.x + a.w + gap > b.x && a.y - gap < b.y + b.h && a.y + a.h + gap > b.y;
+}
+
+/** Deterministic, rotation-aware packing below the reference fixtures in each strip. */
+export function packDynamicStrataItems(memories: PlacedMemory[], startY: number, frameW: number): DynamicStrataItem[] {
+  const occupied: Bounds[] = [];
+  return [...memories].sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id)).map((memory) => {
+    const z = .84;
+    const [naturalW, naturalH] = naturalSize(memory);
+    const width = naturalW * z;
+    const height = naturalH * z;
+    const radians = Math.abs(dynamicRotation(memory.id)) * Math.PI / 180;
+    const boxW = Math.abs(width * Math.cos(radians)) + Math.abs(height * Math.sin(radians));
+    const boxH = Math.abs(width * Math.sin(radians)) + Math.abs(height * Math.cos(radians));
+    const maxX = Math.max(12, frameW - boxW - 12);
+    const seed = mixedSeed(memory.id);
+    const candidates = [12 + (seed % Math.max(1, Math.floor(maxX - 11))), 12, maxX, Math.max(12, (frameW - boxW) / 2)];
+    let box: Bounds | undefined;
+    for (let row = 0; !box && row < 200; row += 1) {
+      const y = startY + row * 14;
+      for (const x of candidates) {
+        const next = { x: Math.round(x), y, w: boxW, h: boxH };
+        if (!occupied.some((other) => overlaps(next, other))) { box = next; break; }
+      }
+    }
+    const placed = box ?? { x: 12, y: occupied.reduce((bottom, item) => Math.max(bottom, item.y + item.h), startY) + 16, w: boxW, h: boxH };
+    occupied.push(placed);
+    return { memory, x: Math.round(placed.x + (boxW - width) / 2), y: Math.round(placed.y + (boxH - height) / 2), rot: dynamicRotation(memory.id), z };
+  });
 }
 
 /**
@@ -142,12 +226,26 @@ export interface StrataStrip {
  * them. `top` pixel offsets are computed BEFORE the reverse, in the original (newest-first)
  * ST order, so OCT 2026 still sits at `top: 0`. Do not sort/re-derive this order.
  */
-export function buildStrata(headerDelta: number, frameW: number): { strata: StrataStrip[]; acc: number } {
+export function buildStrata(headerDelta: number, frameW: number, memories: PlacedMemory[] = []): { strata: StrataStrip[]; acc: number } {
+  const byLabel = new Map<string, PlacedMemory[]>();
+  for (const memory of memories) {
+    const label = memoryLabel(memory);
+    byLabel.set(label, [...(byLabel.get(label) ?? []), memory]);
+  }
+  const definitions: StripDef[] = [...ST];
+  for (const label of byLabel.keys()) {
+    if (!definitions.some((definition) => definition.label === label)) definitions.push({ label, h: 142, tex: 'grid', its: [] });
+  }
+  definitions.sort((a, b) => labelOrder(b.label) - labelOrder(a.label));
   let acc = 0;
-  const strata = ST.map((s, i) => {
+  const strata = definitions.map((s) => {
     const pad = s.pad ? s.pad + headerDelta : 0;
-    const hh = s.h + pad;
-    const t = tear(frameW, hh, 11 + i * 7919);
+    const baseHeight = s.h + pad;
+    const dynamicItems = packDynamicStrataItems(byLabel.get(s.label) ?? [], baseHeight + 28, frameW);
+    const dynamicBottom = dynamicItems.reduce((bottom, item) => Math.max(bottom, item.y + naturalSize(item.memory)[1] * item.z + 24), baseHeight);
+    const hh = Math.max(baseHeight, Math.ceil(dynamicBottom));
+    const sourceIndex = ST.findIndex((definition) => definition.label === s.label);
+    const t = tear(frameW, hh, sourceIndex >= 0 ? 11 + sourceIndex * 7919 : Math.abs(hash(s.label)));
     const strip: StrataStrip = {
       label: s.label,
       tex: s.tex,
@@ -160,6 +258,7 @@ export function buildStrata(headerDelta: number, frameW: number): { strata: Stra
       isQuiet: !!s.quiet,
       isFirst: !!s.first,
       items: s.its.map(([id, p]) => ({ ...mk(id, p), y: (p.y ?? 0) + pad })),
+      dynamicItems,
     };
     acc += hh;
     return strip;

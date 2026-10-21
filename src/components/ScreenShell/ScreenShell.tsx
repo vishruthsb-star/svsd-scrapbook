@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import './ScreenShell.css';
 
 export interface ScreenShellProps {
@@ -14,13 +14,18 @@ export interface ScreenShellProps {
    * internal scrolling (it still sizes/centers the frame exactly like "default").
    */
   variant?: 'default' | 'canvas';
+  /** Lets a full-screen flow carry its background through the browser safe areas. */
+  background?: string;
   className?: string;
 }
 
-export default function ScreenShell({ children, maskBottom = true, variant = 'default', className }: ScreenShellProps) {
+export default function ScreenShell({ children, maskBottom = true, variant = 'default', background, className }: ScreenShellProps) {
   const isCanvas = variant === 'canvas';
   return (
-    <div className={`screenshell-root${className ? ' ' + className : ''}`}>
+    <div
+      className={`screenshell-root${className ? ' ' + className : ''}`}
+      style={background ? ({ '--screenshell-background': background } as CSSProperties) : undefined}
+    >
       <div className={`screenshell-scroll${isCanvas ? ' screenshell-scroll--canvas' : ''}`}>{children}</div>
       {!isCanvas && <div className="screenshell-band-top" aria-hidden="true" />}
       {!isCanvas && maskBottom && <div className="screenshell-band-bottom" aria-hidden="true" />}

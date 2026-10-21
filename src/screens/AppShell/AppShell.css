@@ -76,3 +76,9 @@
   transform: translateX(-50%);
   z-index: 20;
 }
+
+.app-shell-compose {
+  position: absolute;
+  inset: 0;
+  z-index: 300;
+}

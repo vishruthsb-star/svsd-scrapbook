@@ -1,9 +1,11 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AddFab } from '@/components/AddFab';
+import type { AddFabKind } from '@/components/AddFab';
 import { ScrapbookHeader } from '@/components/ScrapbookHeader';
 import type { ScrapbookHeaderProps } from '@/components/ScrapbookHeader';
 import { ScreenShell } from '@/components/ScreenShell';
 import { SketchDefs } from '@/components/SketchDefs';
+import type { PlacedMemory } from '@/scrapbook/placement';
 import { OWNER_HANDLE } from '@/data/mock';
 import './ScrapbookCanvasPage.css';
 import { DESIGN_W, FAB_PILL_HEIGHT, HEADER_REF_BOTTOM, SAFE } from './constants';
@@ -17,7 +19,7 @@ export interface ScrapbookCanvasPageProps {
   /** Volume 1 SPEC OVERRIDES naming — replaces 'self' | 'other'. The add button renders only when 'visitor'. */
   view: 'own' | 'visitor';
   /** Accepted now so style implementations can start consuming it; unused by the shared shell. */
-  items?: unknown[];
+  items?: PlacedMemory[];
   headerProps?: ScrapbookHeaderProps;
   ownerName?: string;
   /**
@@ -28,6 +30,7 @@ export interface ScrapbookCanvasPageProps {
    * standalone torn-strata preview doesn't have to contend with.
    */
   fabPlacement?: FabPlacement;
+  onAddSelect?: (kind: AddFabKind) => void;
 }
 
 /**
@@ -103,6 +106,8 @@ export default function ScrapbookCanvasPage({
   headerProps,
   ownerName = OWNER_HANDLE,
   fabPlacement: fabPlacementOverride,
+  onAddSelect,
+  items = [],
 }: ScrapbookCanvasPageProps) {
   const frameRef = useRef<HTMLDivElement>(null);
   const [frame, setFrame] = useState<{ w: number; h: number } | null>(null);
@@ -143,7 +148,7 @@ export default function ScrapbookCanvasPage({
           {headerDelta !== null &&
             designX0 !== null &&
             frame !== null &&
-            CANVAS_STYLES[style]({ view, headerDelta, ownerName, frameW: frame.w, frameH: frame.h, designX0 })}
+            CANVAS_STYLES[style]({ view, headerDelta, ownerName, frameW: frame.w, frameH: frame.h, designX0, items })}
         </div>
         <div ref={headerWrapRef} className="scrapbook-canvas-page-header">
           <ScrapbookHeader {...headerProps} />
@@ -156,6 +161,7 @@ export default function ScrapbookCanvasPage({
             frameH={frame!.h}
             cornerRadius={0}
             zIndex={200}
+            onSelect={onAddSelect}
             {...fabAnchor(fabPlacement, pillWidth ?? 0, FAB_PILL_HEIGHT, headerHeight as number, frame!.w, frame!.h)}
           />
         )}

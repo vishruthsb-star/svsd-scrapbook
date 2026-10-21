@@ -18,6 +18,8 @@ export interface ScrapbookItemProps {
   denom?: string;
   dur?: string;
   src?: string;
+  audioSrc?: string;
+  url?: string;
   /** Real image aspect ratio (width / height) — see src/scrapbook/fixtures/sampleItems.ts. */
   ratio?: number;
   from: string;
@@ -75,6 +77,8 @@ export default function ScrapbookItem({
   date,
   year,
   src,
+  audioSrc,
+  url,
   ratio,
   from,
   owner,
@@ -128,6 +132,7 @@ export default function ScrapbookItem({
     return (
       <VoicePostcard
         id={id}
+        audioSrc={audioSrc}
         durationSec={parseDurSec(dur)}
         owner={owner}
         senderName={from}
@@ -145,7 +150,7 @@ export default function ScrapbookItem({
   return (
     <ParcelTag
       id={id}
-      url=""
+      url={url ?? ''}
       linkLabel={text ?? ''}
       preview={preview}
       owner={owner}

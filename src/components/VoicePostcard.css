@@ -5,6 +5,7 @@
   font-family: var(--font-condensed);
   font-size: 11px;
   letter-spacing: 0.14em;
+  color: inherit;
 }
 .voice-play-hit {
   position: absolute;

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { ScrapbookItem } from '@/components/ScrapbookItem';
 import './TornStrata.css';
 import { buildStrata, hash, strataPageHeight } from './tornStrataGeometry';
+import type { PlacedMemory } from '@/scrapbook/placement';
 
 export interface TornStrataProps {
   view: 'own' | 'visitor';
@@ -10,6 +11,7 @@ export interface TornStrataProps {
   frameW: number;
   frameH: number;
   designX0: number;
+  items?: PlacedMemory[];
 }
 
 /**
@@ -24,8 +26,8 @@ export interface TornStrataProps {
  * offset by `designX0` so it lands in the same position relative to the reference's
  * 390-wide design box, centered within the real (possibly wider) frame.
  */
-export default function TornStrata({ view, headerDelta, ownerName, frameW, designX0 }: TornStrataProps) {
-  const { strata, acc } = useMemo(() => buildStrata(headerDelta, frameW), [headerDelta, frameW]);
+export default function TornStrata({ view, headerDelta, ownerName, frameW, designX0, items = [] }: TornStrataProps) {
+  const { strata, acc } = useMemo(() => buildStrata(headerDelta, frameW, items), [headerDelta, frameW, items]);
   const sH = strataPageHeight(acc, view);
 
   return (
@@ -78,6 +80,28 @@ export default function TornStrata({ view, headerDelta, ownerName, frameW, desig
                   />
                 </div>
               ))}
+              {strip.dynamicItems.map(({ memory, x, y, rot, z }) => {
+                const date = new Date(memory.createdAt);
+                return <div key={memory.id} className="torn-strata-item torn-strata-item--created" style={{ left: x + designX0, top: y }}>
+                  <ScrapbookItem
+                    id={memory.id}
+                    type={memory.kind}
+                    text={memory.text}
+                    date={date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
+                    year={String(date.getFullYear())}
+                    src={memory.kind === 'voice' ? undefined : memory.src}
+                    audioSrc={memory.kind === 'voice' ? memory.src : undefined}
+                    url={memory.url}
+                    ratio={memory.ratio}
+                    from={memory.authorId}
+                    owner={ownerName}
+                    view={view}
+                    rot={rot}
+                    zoom={z}
+                    seed={memory.seed}
+                  />
+                </div>;
+              })}
             </div>
           ))}
         </div>

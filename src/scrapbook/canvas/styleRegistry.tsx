@@ -4,6 +4,7 @@ import PaperWheel from './styles/PaperWheel/PaperWheel';
 import ThemeSpreads from './styles/ThemeSpreads/ThemeSpreads';
 import TornStrata from './styles/TornStrata/TornStrata';
 import type { FabPlacement } from './fabAnchor';
+import type { PlacedMemory } from '@/scrapbook/placement';
 
 export type CanvasStyle = 'torn-strata' | 'theme-spreads' | 'envelopes-lip' | 'paper-wheel';
 
@@ -18,6 +19,8 @@ export interface CanvasStyleProps {
   frameH: number;
   /** (frameW - 390) / 2 — hand-placed reference-coordinate content offsets by this so it lands centered regardless of how much wider the real frame is than the reference's 390. */
   designX0: number;
+  /** Created memories are consumed by the style that owns their grouping/navigation. */
+  items?: PlacedMemory[];
 }
 
 /**

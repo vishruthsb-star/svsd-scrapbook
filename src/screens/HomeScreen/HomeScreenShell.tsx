@@ -1,10 +1,12 @@
 import { ScreenShell } from '@/components/ScreenShell';
 import HomeScreen from './HomeScreen';
 
-export default function HomeScreenShell() {
+export interface HomeScreenShellProps { selectedPerson?: number; onSelectPerson?: (index: number) => void; }
+
+export default function HomeScreenShell(props: HomeScreenShellProps) {
   return (
     <ScreenShell>
-      <HomeScreen />
+      <HomeScreen {...props} />
     </ScreenShell>
   );
 }

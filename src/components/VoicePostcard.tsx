@@ -23,6 +23,8 @@ export interface VoicePostcardProps {
   zoom?: number;
   rot?: number;
   onRemove?: (id: string) => void;
+  /** Compose uses the same card geometry with its intentionally inverted ink/paper palette. */
+  variant?: 'default' | 'compose';
 }
 
 function formatDuration(totalSeconds: number): string {
@@ -45,7 +47,7 @@ interface VoicePlaybackProps {
  * swapping sources resets all of this for free via a normal remount — no manual "reset
  * state when this prop changes" effect needed.
  */
-function VoicePlayback({ audioSrc, durationSec, bars, strokeWidth }: VoicePlaybackProps) {
+function VoicePlayback({ audioSrc, durationSec, bars, strokeWidth, ink }: VoicePlaybackProps & { ink: string }) {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [knownDuration, setKnownDuration] = useState<number | undefined>(undefined);
@@ -90,7 +92,7 @@ function VoicePlayback({ audioSrc, durationSec, bars, strokeWidth }: VoicePlayba
           if (audioRef.current) audioRef.current.currentTime = 0;
         }}
       />
-      <svg className="item-lay" width={VOICE_W} height={VOICE_H} style={{ strokeWidth }}>
+      <svg className="item-lay" width={VOICE_W} height={VOICE_H} style={{ strokeWidth, stroke: ink }}>
         <g style={INK_FILTER_STYLE}>
           <path d={barsPath} />
         </g>
@@ -113,26 +115,29 @@ export default function VoicePostcard({
   zoom = 1,
   rot = 0,
   onRemove,
+  variant = 'default',
 }: VoicePostcardProps) {
   const [flipped, setFlipped] = useState(false);
   const G = useMemo(() => voiceGeometry(seed), [seed]);
 
   const sw = inkStrokeWidths(zoom);
   const censorWidth = censorWidthFor(VOICE_W, VOICE_PX);
+  const ink = variant === 'compose' ? FIELD_PAPER : DEFAULT_INK;
+  const field = variant === 'compose' ? '#10100f' : FIELD_PAPER;
 
   const front = (
     <>
-      <svg className="item-lay" width={VOICE_W} height={VOICE_H} style={{ strokeWidth: sw.thick }}>
+      <svg className="item-lay" width={VOICE_W} height={VOICE_H} style={{ strokeWidth: sw.thick, stroke: ink }}>
         <g style={INK_FILTER_STYLE}>
-          <path d={G.fillD} style={{ fill: FIELD_PAPER, stroke: 'none' }} />
+          <path d={G.fillD} style={{ fill: field, stroke: 'none' }} />
           <path d={G.outline} />
           <path d={G.divider} />
           <path d={G.chipLines} />
           <path d={G.scalBox} />
-          <path d={G.playTriangle} style={{ fill: DEFAULT_INK, stroke: 'none' }} />
+          <path d={G.playTriangle} style={{ fill: ink, stroke: 'none' }} />
         </g>
       </svg>
-      <VoicePlayback key={audioSrc ?? 'none'} audioSrc={audioSrc} durationSec={durationSec} bars={G.bars} strokeWidth={sw.thick} />
+      <VoicePlayback key={audioSrc ?? 'none'} audioSrc={audioSrc} durationSec={durationSec} bars={G.bars} strokeWidth={sw.thick} ink={ink} />
     </>
   );
 
@@ -141,9 +146,9 @@ export default function VoicePostcard({
 
   const back = (
     <>
-      <svg className="item-lay" width={VOICE_W} height={VOICE_H} style={{ strokeWidth: sw.thick }}>
+      <svg className="item-lay" width={VOICE_W} height={VOICE_H} style={{ strokeWidth: sw.thick, stroke: ink }}>
         <g style={INK_FILTER_STYLE}>
-          <path d={G.fillD} style={{ fill: FIELD_PAPER, stroke: 'none' }} />
+          <path d={G.fillD} style={{ fill: field, stroke: 'none' }} />
           <path d={G.outline} />
           <path d={G.backLines} style={{ strokeWidth: sw.thin }} />
         </g>
@@ -160,12 +165,12 @@ export default function VoicePostcard({
         censorScribble={G.censorScribble}
         censorWidth={censorWidth}
       />
-      {showRemove && <RemoveButton cardWidth={VOICE_W} seed={seed} ink={DEFAULT_INK} onRemove={handleRemove!} />}
+      {showRemove && <RemoveButton cardWidth={VOICE_W} seed={seed} ink={ink} onRemove={handleRemove!} />}
     </>
   );
 
   return (
-    <Decor seed={seed} width={VOICE_W} height={VOICE_H} zoom={zoom} rot={rot} field={FIELD_PAPER}>
+    <Decor seed={seed} width={VOICE_W} height={VOICE_H} zoom={zoom} rot={rot} ink={ink} field={field}>
       <FlipCard front={front} back={back} width={VOICE_W} height={VOICE_H} flipped={flipped} onFlip={setFlipped} />
     </Decor>
   );

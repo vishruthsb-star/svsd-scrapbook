@@ -1,0 +1,9 @@
+import type { CanvasStyle } from '@/scrapbook/canvas/styleRegistry';
+
+export type PlacedKind = 'stamp' | 'note' | 'tag' | 'voice';
+export interface PlacedMemory { id:string; scrapbookId:string; recipientId:string; authorId:string; createdAt:string; seed:number; kind:PlacedKind; text?:string; src?:string; mediaKey?:string; ratio?:number; url?:string; durationSec?:number; theme?:'late-nights'|'laughing'|'trips'|'songs'; }
+export interface Placement { id:string; group:string; x:number; y:number; rot:number; zoom:number; page:number; }
+const size=(m:PlacedMemory)=>m.kind==='stamp'?[150,Math.max(130,122/Math.max(.5,Math.min(2,m.ratio??1))+48)]:m.kind==='note'?[200,170]:m.kind==='voice'?[230,146]:[124,200] as [number,number];
+const hash=(s:string)=>{let n=0;for(let i=0;i<s.length;i++)n=(n*31+s.charCodeAt(i))|0;return Math.abs(n);};
+const month=(m:PlacedMemory)=>m.createdAt.slice(0,7);
+export function placeMemories(style:CanvasStyle, memories:PlacedMemory[], frameW=390):Placement[]{const sorted=[...memories].sort((a,b)=>a.createdAt.localeCompare(b.createdAt)||a.id.localeCompare(b.id));const groups=new Map<string,PlacedMemory[]>();for(const m of sorted){const g=style==='theme-spreads'?(m.theme??'late-nights'):month(m);groups.set(g,[...(groups.get(g)??[]),m]);}const out:Placement[]=[];for(const[g,items]of groups){items.forEach((m,i)=>{const [w,h]=size(m);const col=i%2,row=Math.floor(i/2), page=Math.floor(i/6);const seed=hash(m.id);let x=24+col*(frameW/2-12-w/2),y=210+row*(h+32);if(style==='torn-strata'){y=150+i*(h+30);x=24+(i%2)*(frameW-w-48);}if(style==='envelopes-lip'){x=22+col*(150-w/2);y=140+row*(h+28);}if(style==='paper-wheel'){x=24+col*(frameW/2-20-w/2);y=230+row*(h+26);}out.push({id:m.id,group:g,x:Math.max(12,Math.round(x)),y:Math.round(y),rot:(seed%13)-6,zoom:1,page});});}return out;}

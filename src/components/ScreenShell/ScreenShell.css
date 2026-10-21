@@ -8,7 +8,7 @@
   width: 100%;
   max-width: var(--screen-frame-width, 402px);
   margin: 0 auto;
-  background: var(--screen-bg);
+  background: var(--screenshell-background, var(--screen-bg));
 }
 
 .screenshell-scroll {
@@ -45,7 +45,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  background: var(--screen-bg);
+  background: var(--screenshell-background, var(--screen-bg));
   z-index: 2;
   pointer-events: none;
 }
