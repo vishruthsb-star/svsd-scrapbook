@@ -25,6 +25,8 @@ export interface CanvasStyleProps {
   boopStamps?: PlacedBoopStamp[];
   /** Set only after a successful user insertion; styles may reveal this item in their own scroller. */
   scrollTargetId?: string | null;
+  /** A style calls this once its bounded DOM-target request has completed. */
+  onScrollTargetHandled?: (id: string) => void;
 }
 
 /**

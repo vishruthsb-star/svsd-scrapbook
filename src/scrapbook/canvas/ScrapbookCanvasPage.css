@@ -26,8 +26,8 @@
 .scrapbook-canvas-page-header {
   position: absolute;
   top: var(--safe-top);
-  left: 50%;
-  transform: translateX(-50%);
+  left: var(--safe-side);
+  right: var(--safe-side);
   z-index: 50;
 }
 

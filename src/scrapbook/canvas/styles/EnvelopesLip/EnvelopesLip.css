@@ -99,6 +99,31 @@
   letter-spacing: 0.2em;
 }
 
+.envelopes-lip-pages {
+  position: absolute;
+  left: 92px;
+  top: 164px;
+  width: 146px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-condensed);
+  font-size: 12px;
+  letter-spacing: .08em;
+  z-index: 4;
+}
+
+.envelopes-lip-pages button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.envelopes-lip-pages button:disabled { opacity: .35; cursor: default; }
+
 .envelopes-lip-putback-wrap {
   position: absolute;
   left: 0;

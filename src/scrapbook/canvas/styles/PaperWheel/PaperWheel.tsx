@@ -1,10 +1,16 @@
 import type { CSSProperties, PointerEvent as ReactPointerEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ScrapbookItem } from '@/components/ScrapbookItem';
+import type { ScrapbookItemType } from '@/components/ScrapbookItem';
 import { SAFE } from '../../constants';
 import { hash } from '../../itemSeed';
 import './PaperWheel.css';
 import { RISE, WHEEL_D, buildWheel, effFromDi } from './paperWheelGeometry';
+import type { PlacedMemory } from '@/scrapbook/placement';
+import { revealInScroller, useTargetReveal } from '../../revealTarget';
+import type { PlacedBoopStamp } from '@/scrapbook/boopStamps';
+import { BoopStamp } from '@/components/BoopFab';
+import { targetIdForElement, wheelMonthForElement } from '@/scrapbook/placement/dynamicLayout';
 
 export interface PaperWheelProps {
   view: 'own' | 'visitor';
@@ -13,6 +19,10 @@ export interface PaperWheelProps {
   frameW: number;
   frameH: number;
   designX0: number;
+  items?: PlacedMemory[];
+  boopStamps?: PlacedBoopStamp[];
+  scrollTargetId?: string | null;
+  onScrollTargetHandled?: (id: string) => void;
 }
 
 const START_DI = 11; // di() default: cfg().n - 1
@@ -85,7 +95,7 @@ function MeasuredItem({
  * cross-fade by `eff` (the live value), not just the settled `di` — so a new month's
  * items always start in the reference position.
  */
-export default function PaperWheel({ view, headerDelta, ownerName, frameW, frameH, designX0 }: PaperWheelProps) {
+export default function PaperWheel({ view, headerDelta, ownerName, frameW, frameH, designX0, items = [], boopStamps = [], scrollTargetId, onScrollTargetHandled }: PaperWheelProps) {
   const [di, setDi] = useState(START_DI);
   const [ddx, setDdx] = useState(0);
   const [ddrag, setDdrag] = useState(false);
@@ -95,17 +105,35 @@ export default function PaperWheel({ view, headerDelta, ownerName, frameW, frame
   const scaleRef = useRef(1);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [itemBottoms, setItemBottoms] = useState<Record<string, number>>({});
+  const [measuredHeights, setMeasuredHeights] = useState<Record<string, number>>({});
+  const targetMemory = scrollTargetId ? [...items, ...boopStamps].find((item) => targetIdForElement(item) === scrollTargetId) : undefined;
+  const targetMonth = targetMemory ? wheelMonthForElement(targetMemory) : -1;
+  const [appliedTarget, setAppliedTarget] = useState<string | null>(null);
+  if (scrollTargetId && targetMonth >= 0 && appliedTarget !== scrollTargetId) {
+    setAppliedTarget(scrollTargetId);
+    if (ddx !== 0) setDdx(0);
+    if (di !== targetMonth + 1) setDi(targetMonth + 1);
+  } else if (!scrollTargetId && appliedTarget !== null) setAppliedTarget(null);
 
-  const wheel = useMemo(() => buildWheel(di, ddx, frameH), [di, ddx, frameH]);
+  // Wheel-item coordinates use the fixed 390px reference box and are then centered by
+  // designX0 below, just like the authored fixture placements.
+  const wheel = useMemo(() => buildWheel(di, ddx, frameH, Math.min(frameW, 390), items, boopStamps, measuredHeights), [boopStamps, di, ddx, frameH, frameW, items, measuredHeights]);
   const eff = effFromDi(di, ddx);
 
   useEffect(() => {
+    if (scrollTargetId && targetMonth === eff) return;
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
-  }, [eff]);
+  }, [eff, scrollTargetId, targetMonth]);
 
   const handleBottomMeasured = useCallback((id: string, bottom: number) => {
     setItemBottoms((prev) => (prev[id] === bottom ? prev : { ...prev, [id]: bottom }));
   }, []);
+
+  const reveal = useCallback((target: HTMLElement) => {
+    const scroller = scrollRef.current;
+    if (scroller) revealInScroller(scroller, target, 138, RISE + SAFE.bottom + 16);
+  }, []);
+  useTargetReveal({ targetId: scrollTargetId, ready: targetMonth < 0 || eff === targetMonth, rootRef: scrollRef, reveal, onHandled: onScrollTargetHandled });
 
   const lowestVisibleBottom = Math.max(0, ...wheel.items.filter((it) => it.op === 1).map((it) => itemBottoms[it.id] ?? 0));
   const contentH = Math.max(frameH, lowestVisibleBottom + headerDelta + RISE + SAFE.bottom + 24);
@@ -177,26 +205,16 @@ export default function PaperWheel({ view, headerDelta, ownerName, frameW, frame
                 onBottomMeasured={handleBottomMeasured}
                 style={{ left: it.x + designX0, top: it.y, opacity: it.op, transform: it.tf, pointerEvents: it.pe }}
               >
-                <ScrapbookItem
-                  id={it.id}
-                  type={it.type}
-                  text={it.text}
-                  label={it.label}
-                  city={it.city}
-                  date={it.date}
-                  year={it.year}
-                  denom={it.denom}
-                  dur={it.dur}
-                  src={it.src}
-                  ratio={it.ratio}
-                  from={it.from}
-                  owner={ownerName}
-                  view={view}
-                  attach={it.attach}
-                  rot={it.rot}
-                  zoom={it.z}
-                  seed={hash(it.id)}
-                />
+                <div
+                  data-scrapbook-item-id={it.memory || it.boop ? targetIdForElement(it.boop ?? it.memory!) : undefined}
+                  ref={(element) => {
+                    if ((!it.memory && !it.boop) || !element || element.offsetHeight <= 0) return;
+                    const height = element.offsetHeight / it.z;
+                    setMeasuredHeights((previous) => previous[it.id] === height ? previous : { ...previous, [it.id]: height });
+                  }}
+                >
+                  {it.boop ? <div style={{ width: it.boop.width, transform: `rotate(${it.rot}deg)` }}><BoopStamp stampKey={it.boop.stampKey} recipientName={it.boop.recipientName} className="canvas-boop-stamp" /></div> : <ScrapbookItem id={it.id} type={it.type as ScrapbookItemType} text={it.text} label={it.label} city={it.city} date={it.date} year={it.year} denom={it.denom} dur={it.dur} src={it.memory?.kind === 'voice' ? undefined : it.src} audioSrc={it.memory?.kind === 'voice' ? it.src : undefined} url={it.memory?.url} ratio={it.ratio} from={it.from} owner={ownerName} view={view} attach={it.attach} rot={it.rot} zoom={it.z} seed={it.memory?.seed ?? hash(it.id)} />}
+                </div>
               </MeasuredItem>
             ))}
           </div>

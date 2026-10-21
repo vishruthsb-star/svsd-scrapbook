@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fabAnchor } from './fabAnchor';
+import { fabAnchor, rightSafeCenter } from './fabAnchor';
 
 const PILL_H = 52;
 const HEADER_HEIGHT = 61; // ScrapbookHeader's measured height (X), for this worked example
@@ -26,5 +26,11 @@ describe('fabAnchor', () => {
     expect(wide.x).toBe((24 + (402 - 24)) / 2);
     const tr = fabAnchor('tr', 120, PILL_H, HEADER_HEIGHT, 402, FRAME_H);
     expect(tr.x).toBe(402 - 24 - 60);
+  });
+
+  it('keeps any right-anchored pill on the shared safe edge at narrow and wide frame widths', () => {
+    expect(rightSafeCenter(390, 99) + 99 / 2).toBe(366);
+    expect(rightSafeCenter(320, 99) + 99 / 2).toBe(296);
+    expect(rightSafeCenter(480, 99) + 99 / 2).toBe(456);
   });
 });

@@ -3,6 +3,15 @@ import type { CanvasStyle } from '@/scrapbook/canvas';
 
 export const OWNER_NAME = 'Vishruth';
 export const OWNER_HANDLE = 'vishruth';
+export const SCRAPBOOK_COVERS: Record<string, string> = {
+  vishruth: '/album-covers/vishruth.jpg',
+  priya: '/album-covers/priya.jpg',
+  maya: '/album-covers/maya.jpg',
+  jun: '/album-covers/jun.jpg',
+  ana: '/album-covers/ana.jpg',
+  sam: '/album-covers/sam.jpg',
+  theo: '/album-covers/theo.jpg',
+};
 
 /**
  * Which scrapbook canvas style (torn-strata / theme-spreads / envelopes-lip / paper-wheel)
@@ -13,12 +22,12 @@ export const OWNER_HANDLE = 'vishruth';
 export const DEFAULT_SCRAPBOOK_STYLE: CanvasStyle = 'torn-strata';
 
 export const LIBRARY_PEOPLE: LibraryPerson[] = [
-  { name: 'priya', col: 1 },
-  { name: 'maya', col: 2, unread: true },
-  { name: 'jun', col: 0 },
-  { name: 'ana', col: 0 },
-  { name: 'sam', col: 1 },
-  { name: 'theo', col: 2, unread: true },
+  { name: 'priya', col: 1, coverImage: SCRAPBOOK_COVERS.priya },
+  { name: 'maya', col: 2, unread: true, coverImage: SCRAPBOOK_COVERS.maya },
+  { name: 'jun', col: 0, coverImage: SCRAPBOOK_COVERS.jun },
+  { name: 'ana', col: 0, coverImage: SCRAPBOOK_COVERS.ana },
+  { name: 'sam', col: 1, coverImage: SCRAPBOOK_COVERS.sam },
+  { name: 'theo', col: 2, unread: true, coverImage: SCRAPBOOK_COVERS.theo },
 ];
 
 export const LIBRARY_ACTIVE_INDEX = LIBRARY_PEOPLE.findIndex((p) => p.name === 'priya');

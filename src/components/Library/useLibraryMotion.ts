@@ -31,6 +31,15 @@ function targetYFor(i: number, sel: number, n: number, cfg: LibraryConfig): numb
   return i <= sel ? slotTop(i, cfg.tabH, cfg.gap) : slotShelf(i, n, cfg.gap);
 }
 
+/**
+ * Parent renders may recreate `people`/`config` objects while their authored geometry is
+ * unchanged. Only a real geometry change may reset the imperative motion state; otherwise
+ * a controlled selection update would immediately snap over the spring that just started.
+ */
+function geometrySignature(n: number, cfg: LibraryConfig, people: LibraryPerson[]): string {
+  return `${n}|${Object.values(cfg).join('|')}|${people.map(({ name, col }) => `${name}:${col}`).join(',')}`;
+}
+
 function matrixOf(el: HTMLElement | null): DOMMatrixReadOnly {
   if (!el) return new DOMMatrixReadOnly();
   const t = getComputedStyle(el).transform;
@@ -64,6 +73,7 @@ export function useLibraryMotion(n: number, cfg: LibraryConfig, people: LibraryP
   const springRef = useRef<SpringState[]>([]);
   const rafIdRef = useRef(0);
   const mqMatchesRef = useRef(false);
+  const geometrySignatureRef = useRef<string | null>(null);
 
   const reduced = useCallback(() => {
     const m = cfgRef.current.motion;
@@ -259,12 +269,18 @@ export function useLibraryMotion(n: number, cfg: LibraryConfig, people: LibraryP
   }, [place, setFills]);
 
   // Keep the latest config/people available to the imperative code above without ever
-  // touching refs during render (only effects write these).
+  // touching refs during render (only effects write these). Array/object identity is not
+  // a geometry change: a parent can supply fresh derived person objects when the selected
+  // folder changes. Snapping in that path cancels the spring mid-flight.
   useEffect(() => {
     cfgRef.current = cfg;
     peopleRef.current = people;
-    snapAll();
-  }, [cfg, people, snapAll]);
+    const nextGeometrySignature = geometrySignature(n, cfg, people);
+    if (geometrySignatureRef.current !== nextGeometrySignature) {
+      geometrySignatureRef.current = nextGeometrySignature;
+      snapAll();
+    }
+  }, [n, cfg, people, snapAll]);
 
   // prefers-reduced-motion: read only in an effect, never during render; subscribe for changes.
   useEffect(() => {

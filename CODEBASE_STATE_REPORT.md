@@ -1,249 +1,308 @@
 # Codebase State Report
 
-**Audit date:** 20 October 2026  
+**Audit date:** 21 October 2026 (America/New_York)  
 **Repository:** `SVSD_Vishruth_Cal`  
-**Purpose:** Product, implementation, and engineering handoff for an assistant without repository access.
+**Audited commit:** `3600f9cd7a3603490dbdd709d0ac25def17b1847` (`Update scrapbook UI and interactions`)  
+**Scope:** Full source and documentation inventory; current working-tree additions included. No application source was modified for this audit.
 
-## 1. Executive Summary
+## Executive summary
 
-This repository contains a visual prototype for a personal scrapbook product. Its premise is that memories shared by friends should feel like mail kept in a shoebox: a person's page contains hand-drawn photo stamps, handwritten notes, voice postcards, and link tags. A card-catalog-like Library offers a way to choose a friend's scrapbook, while an individual canvas arranges remembered items by month.
+This is a React scrapbook prototype built around the idea of postal keepsakes: photo stamps, handwritten notes, voice postcards, parcel tags, and small BOOP stamps arranged in a friend's scrapbook. The intended experience is to browse one's own book or a friend's, switch its presentation, add a memory, and receive mailbox activity. There is no server, account system, or real multi-user synchronization. The current runtime is a local browser prototype with hardcoded people/notifications, browser storage, and fixture content.
 
-The intended users are a scrapbook owner and invited friends or visitors. The intended use cases are browsing a friend's memory collection, switching between friends, opening and flipping keepsakes, and eventually adding memories. The implemented experience is currently a front-end prototype: a Home view with sample people, a multi-style Journal canvas with fixture memories, and a component gallery for exploring UI. There is no application backend, authentication, real invitation flow, real scrapbook ownership, or persistence of scrapbook content. The gallery's older item board has local demo state and browser storage, but that should not be mistaken for product data.
+Compared with the previous report, the app now has an active Home → scrapbook path, functional AddFab → four compose flows → IndexedDB save/load, a scrapbook profile with presentation and contributor controls, a mailbox/invitation prototype, and the BOOP stamp picker with local persistence. The four original canvas presentations and four artifact renderers remain. Current application entry is still the Gallery at `/#/`; the product is `/#/screens/app`.
 
-The code includes substantial custom visual work: seeded SVG line art, four item types with shared flip/back/decor behavior, an animated Library, screen transitions, four canvas layouts, and a fan-shaped add control. The main product shell appears at `#/screens/app` from the gallery, not at `/`; `/` is the gallery index. The home and canvas screens are composed by `AppShell`, but current canvas props use sample data and a visitor view. The add button is displayed but has no selection callback in the integrated canvas. The development stage is best described as a detailed, interactive design prototype with core presentation flows implemented and product data/actions still mocked or absent.
+The experience is materially more integrated, but not production-complete. The mailbox and participant list are fixtures; invitation acceptance is explicitly a placeholder; profile controls are local state; content has no server sync or authorization. Created memories are persisted locally but rendered through a generic absolute-position layer rather than each canvas style's native grouping/scroll system. Build and tests pass; lint has one confirmed error. See validation below.
 
-## 2. Product Concept and User Experience
+## Product intent and current behavior
 
-### Concept and intended flow
+### Intended product
 
-The product models social memories as physical-feeling artifacts instead of a conventional feed. The intended hierarchy is a home/library screen, a selected person's scrapbook, then individual artifacts that can be opened or flipped. The references also show an add flow intended to fan outward from a pill control, with choices for stamp, note, voice, or tag.
+The product frames shared memories as ephemera saved in a scrapbook. A book owner can view their own book, browse books in a Library, choose a visual presentation (canvas, wheel, envelope, or cover/spreads), and permit contributors to add artifacts. A visitor can compose photo, note, link, or voice memories; BOOP is a lightweight stamped reaction. The mailbox is intended to surface invitations and memory activity.
 
-### Implemented journeys
+### What currently works in this repository
 
-1. **Open the prototype:** Navigate to the gallery root (`/`) and choose the App screen. The gallery mounts `AppShell`, which starts on Home.
-2. **Switch Home and Journal:** Use the bottom tab bar. The two panels stay mounted and fade between visible states. The Journal currently shows the fixed torn-strata canvas for a visitor.
-3. **Browse the Library:** Select a folder tab to animate the catalog. The initial selection is Priya. In the Home screen wiring, `onOpen` is not supplied, so selecting the already-active person does not navigate to a distinct scrapbook.
-4. **Browse the canvas:** Scroll the monthly torn-paper strips and flip sample items. The other three styles can be inspected from gallery component previews, not selected from the product's Home or Journal UI.
-5. **Explore component prototypes:** Gallery entries expose isolated components and canvas styles at fixed preview sizes. The older root-level `App.tsx` also contains richer test controls, file upload, sample board removal, and URL preview fetching; it is not mounted by `main.tsx`'s routes.
+- The gallery route exposes the product shell and isolated component/screen previews.
+- Home opens the owner's scrapbook cover or a selected Library person's scrapbook. Browser history is used for back navigation.
+- The scrapbook header opens a profile screen; profile choices map to one of four canvas styles and are persisted in `localStorage` per `library:<name>` key.
+- AddFab selection opens a matching compose flow. Photo selection, note entry, URL/title entry, and browser microphone recording/review are implemented. Successful submissions are written to IndexedDB and appended to current state.
+- IndexedDB persists item records and photo/audio blobs by recipient. Reloading loads records and creates object URLs for media.
+- A visitor mailbox displays static notification rows. Selecting a row opens a local invitation placeholder, or opens a scrapbook and sets an item scroll target.
+- BOOP's ten reference SVG designs are displayed in a picker. Selection appends a positioned stamp to localStorage and the canvas overlay.
+- Four canvas presentations, seeded visual cards, flips, and style-specific local interactions remain available. The gallery can inspect style/view variants independently.
 
-### Navigation and behavior
+### What remains simulated or incomplete
 
-`src/main.tsx` uses `HashRouter`. Routes are `/` (GalleryIndex), `/screens/:id` (ScreenStage), and `/components/:id` (ComponentStage). `src/gallery/registry.tsx` currently lists one screen, `app`, and a set of component and style previews. Within AppShell, `HomeBottomNavigation` switches `home` and `journal` state without route changes. There is no account/auth navigation or server-backed routing.
+No authentication, backend/API, server persistence, real invitations, permission enforcement, delivery, notification read updates, or real social relationships exist. The mailbox's targets are demo data. Profile contributors, cover images, and presentation selections are local-only; cover images are in-memory object URLs rather than persisted files. Created memory content is local to the browser. The dynamic overlay has placement, clipping, grouping, and reveal defects described below. There is no browser-level or visual regression suite.
 
-The scrapbook item components implement click/tap flips and role-dependent sender/date privacy. VoicePostcard uses an HTML audio element when an audio source is provided. ParcelTag can open its link. The component gallery and legacy harness use supplied sample values rather than persisted entities. In `ScrapbookCanvasPage`, the add control is rendered for `view="visitor"`, but no `onSelect` is passed, so selecting an add kind does not start a creation flow.
+## Repository structure
 
-### Product assumptions and documented UX decisions
-
-`CLAUDE.md` and `docs/scrapbook-canvas-spec.md` establish conventions: use a 390-wide reference coordinate system centered in the live frame; all standard screens use `ScreenShell`; canvas pages instead use its bands-free canvas variant; safe-area tokens live in `src/index.css`; and the canvas styles use fixture-specific hand placements copied from reference designs. Item decorations are seeded to remain stable between renders. Reduced-motion preferences are observed for some transitions. These are implementation rules, not evidence of a deployed product decision or user research.
-
-## 3. Repository Structure
+Generated `node_modules/` and `dist/` are excluded. `Microsoft/Windows/PowerShell/ModuleAnalysisCache` and `.claude/` are present as untracked/local artifacts; neither is application source. `.git` reports the current commit above. Git status also showed `?? .claude/`; Git's global ignore file could not be read due to host permissions, so status visibility may be incomplete for globally ignored files.
 
 ```text
 .
-├── CLAUDE.md                         # Detailed product/design/implementation instructions
-├── CODEBASE_STATE_REPORT.md          # This handoff
-├── package.json / package-lock.json  # Scripts and dependencies
-├── vite.config.ts                    # Vite, React plugin, @ -> src alias
-├── tsconfig*.json / eslint.config.js  # TypeScript and lint configuration
-├── index.html                        # Vite document shell
+├── CLAUDE.md                              # engineering rules, visual and item implementation conventions
+├── CODEBASE_STATE_REPORT.md               # this handoff
+├── README.md                              # still generic Vite starter text
+├── package.json / package-lock.json       # scripts and pinned dependency graph
+├── vite.config.ts / tsconfig*.json         # Vite alias/build and TypeScript projects
+├── eslint.config.js / index.html           # lint and document shell
 ├── docs/
-│   └── scrapbook-canvas-spec.md      # Canvas porting and layout constraints
-├── references/                       # Standalone HTML/DC prototypes and source assets
+│   ├── scrapbook-canvas-spec.md            # authoritative canvas port constraints
+│   ├── compose-and-placement-architecture.md # compose/data architecture audit and known integration risks
+│   └── compose-ui-diagnostic-report.md     # compose wiring diagnostic and reproducible findings
+├── references/                             # standalone HTML/DC design sources, assets and harnesses
 ├── public/
-│   ├── aquarium.jpg                  # Legacy harness sample
-│   └── scrapbook/                    # Canvas fixture JPEGs
-├── src/
-│   ├── main.tsx                      # React root and hash routes
-│   ├── App.tsx / App.css             # Legacy item playground/demo board (not main route)
-│   ├── index.css                     # Global fonts/tokens/reset
-│   ├── types/index.ts                # Item/media/layout/geometry TypeScript types
-│   ├── data/mock.ts                  # Home sample people and default canvas style
-│   ├── assets/                       # Rose, icon, bundled font asset
-│   ├── components/                   # Shared and feature UI components
-│   │   ├── Library/                  # Animated card-catalog geometry and motion
-│   │   ├── AddFab/                   # Imperative animated add-fan engine and wrapper
-│   │   ├── ScreenShell/              # Mobile frame and safe-area behavior
-│   │   ├── ScrapbookItem/, ScrapbookHeader/, ThemeNavigation/
-│   │   └── Stamp, Note, VoicePostcard, ParcelTag, FlipCard, ItemBack, Decor, etc.
-│   ├── screens/
-│   │   ├── AppShell/                 # Home/Journal composition and transitions
-│   │   ├── HomeScreen/               # Header, Library, invite section
-│   │   └── CanvasScreen/             # Product-shell selection of canvas style
-│   ├── scrapbook/
-│   │   ├── canvas/                  # Shared canvas page, anchors, fixture rendering
-│   │   │   └── styles/              # TornStrata, ThemeSpreads, EnvelopesLip, PaperWheel
-│   │   └── fixtures/sampleItems.ts  # Twelve reference-derived sample memories
-│   ├── gallery/                     # Gallery index, preview stages, registry
-│   ├── utils/                       # Geometry, layout, image decoding, filters, helpers
-│   └── data/
-└── .claude/settings.local.json      # Local Claude configuration (not needed for product)
+│   ├── favicon.svg, aquarium.jpg
+│   └── scrapbook/                          # four local canvas fixture JPEGs
+└── src/
+    ├── main.tsx, index.css, App.tsx, App.css
+    ├── assets/                              # rose, airplane icon, Inter file
+    ├── components/                          # reusable visual primitives (see inventory)
+    ├── data/                                # hardcoded home, mailbox and profile fixtures
+    ├── gallery/                             # gallery routes, registry, previews and FAB layout lab
+    ├── screens/
+    │   ├── AppShell/                        # product state, orchestration, overlays and local persistence calls
+    │   ├── HomeScreen/                      # Home cover, Library and invite composition
+    │   ├── CanvasScreen/                    # shell adapter into shared canvas page
+    │   ├── ComposeMemoryScreen/              # four authoring flows
+    │   ├── MailboxScreen/ InvitationScreen/  # notification list and placeholder acceptance screen
+    │   └── ScrapbookProfileScreen/           # local book settings and contributor UI
+    ├── scrapbook/
+    │   ├── canvas/                           # shared frame, fab anchor and four style renderers
+    │   ├── fixtures/                         # reference-derived sample memories
+    │   ├── persistence/                      # IndexedDB item/blob store
+    │   ├── placement/                        # generic dynamic memory placement helper
+    │   └── boopStamps.ts                      # local BOOP stamp records/storage
+    ├── types/index.ts                        # base card and contributor/presentation types
+    └── utils/                                # geometry, filters, measured text, image decoding
 ```
 
-`node_modules/` and `dist/` are generated/dependency directories and omitted. The working tree also contains an unrelated untracked `Microsoft/Windows/PowerShell/ModuleAnalysisCache` file/tree; it is not part of the application architecture and was not included in this report.
+### Where to change things
 
-## 4. Technical Architecture
+- Route registration and font/global setup: `src/main.tsx`, `src/index.css`.
+- Product flow, history, storage orchestration and selected book: `src/screens/AppShell/AppShell.tsx`.
+- Home and people selection: `src/screens/HomeScreen/` and `src/data/mock.ts`.
+- Compose controls and media state: `src/screens/ComposeMemoryScreen/`.
+- Canvas frame/overlay and add anchors: `src/scrapbook/canvas/ScrapbookCanvasPage.tsx`, `fabAnchor.ts`, and `styles/`.
+- Dynamic placement and persistence: `src/scrapbook/placement/`, `src/scrapbook/persistence/localScrapbookStore.ts`.
+- Mailbox fixtures: `src/data/mailboxNotifications.ts`; profile fixture defaults/mapping: `src/data/scrapbookProfile.ts`.
+- Reusable visual components must be added to the single gallery registry, `src/gallery/registry.tsx`, in accordance with `CLAUDE.md`.
+- Legacy item board: root `src/App.tsx` / `App.css`; it is not imported by the active entry route.
 
-### Stack and startup
+## Architecture
 
-- React 19, TypeScript 6, Vite 8, React Router 7 (`HashRouter`).
-- CSS modules are not used; feature CSS files are imported alongside components.
-- `src/main.tsx` imports fonts, mounts `ScrapDefs`, then renders routes under `StrictMode`.
-- `vite.config.ts` configures `@` as an alias to `src`.
-- No API client, backend SDK, database, authentication provider, or service integration is present. One legacy demo fetches Microlink's screenshot API directly.
+### Stack and entry
 
-### Composition and data flow
+`package.json` identifies the package as `vite-tmp` version `0.0.0`. Runtime dependencies: React/React DOM `^19.2.8`, React Router DOM `^7.18.4`, and Fontsource packages for Shantell Sans, Barlow Condensed, DM Mono, and variable Inter. Dev tools include Vite `^8.3.0`, TypeScript `~6.0.2`, ESLint `^10.10.0`, Vitest `^5.0.5`, and Playwright `^1.63.0` (installed, but no e2e suite is configured).
 
-`main.tsx` → `GalleryIndex` → `ScreenStage` → `AppShell` → persistent `ScreenPanel`s → `HomeScreenShell`/`CanvasScreen` → feature components. AppShell owns the active bottom-tab value. HomeScreen passes constants from `data/mock.ts` into Header, Library, and InviteSection. CanvasScreen selects `torn-strata`, `visitor`, and top-right add placement. `ScrapbookCanvasPage` measures its frame/header (and sometimes add pill width), derives layout values, renders a `CANVAS_STYLES` entry, and mounts the shared add control.
+`src/main.tsx` imports the fonts, mounts `ScrapDefs`, enables `StrictMode`, then mounts `HashRouter`. Routes: `/` → `GalleryIndex`, `/screens/:id` → `ScreenStage`, `/components/:id` → `ComponentStage`. `src/gallery/registry.tsx` is the registration table; screen `app` mounts `AppShell`. Vite alias `@` points to `src`. There is no API client or backend SDK.
 
-The separate item-card system accepts explicit props (item identifier, seed, viewer, sender, date, media/text). `utils/geometry.ts` and `utils/layout.ts` compute seeded SVG and layout geometry. Item components combine those calculations with shared FlipCard, ItemBack, Decor, ScrapDefs, and RemoveButton components. The old `App.tsx` is a standalone harness for those components and not the active route tree.
+```text
+main.tsx
+└── HashRouter
+    ├── / → GalleryIndex → registry
+    ├── /screens/app → ScreenStage → AppShell
+    │   ├── HomeScreenShell → Header + ScrapbookCover + Library + InviteSection
+    │   ├── CanvasScreen → ScrapbookCanvasPage → canvas style + AddFab + BoopFab
+    │   ├── ComposeMemoryScreen overlay → Stamp / Note / Tag / Voice authoring
+    │   ├── MailboxScreen → static notifications → InvitationScreen or CanvasScreen
+    │   └── ScrapbookProfileScreen → style/contributor/cover controls
+    └── /components/:id → ComponentStage → isolated preview
+```
 
-### State and persistence
+AppShell is the central state owner. It tracks selected Library person, opened book, profile/mailbox/invitation/compose visibility, created memories, BOOP stamps, scroll target, and in-memory profile data. It uses browser `history.pushState`/`popstate` for nested screens. `ScreenPanel` keeps Home and canvas panels mounted for opacity transitions and manages `inert`, `aria-hidden`, and visibility at transition completion. The profile presentation is stored in localStorage; BOOP records in localStorage; scrapbook memories and blobs in IndexedDB. These are browser-local stores, not cloud persistence.
 
-There is no global state library. React local state and props drive the screens. AppShell tracks the selected Home/Journal tab; Library supports controlled or internal selected state; card items hold local flip/play state; each canvas style handles local presentation interactions. The product Home's sample people and selected index are constants. Canvas styles draw the static `sampleItems.ts` fixture with hard-coded placements.
+### Data models and flow
 
-The only confirmed product-adjacent browser persistence is in unmounted `App.tsx`: the demo board's removed IDs are saved under `scrapbook-board-v1`. Uploaded files use temporary object URLs revoked on replacement/unmount. No account memory or scrapbook content is saved. The root app shell does pre-decode fixture photos with `utils/decodeImages.ts` to reduce first canvas paint delay.
+- `ScrapItem` in `src/types/index.ts` is the original four-kind render-oriented union.
+- Canvas reference samples are a separate `SampleItemBase`/`MkResult` fixture model in `src/scrapbook/fixtures/sampleItems.ts`.
+- Dynamic saved items use `PlacedMemory` in `src/scrapbook/placement/index.ts`: recipient/book/author IDs, date, kind, content/media fields and optional theme/mediaKey. `placeMemories()` maps records to absolute x/y/rotation/zoom coordinates.
+- Mailbox rows and prototype target items are static values in `src/data/mailboxNotifications.ts`.
+- Profile contributors are static defaults in `src/data/scrapbookProfile.ts`; AppShell makes local mutable copies.
+- BOOP stamps use a separate `PlacedBoopStamp` model and localStorage key in `src/scrapbook/boopStamps.ts`.
 
-### Core models
+Compose success constructs a `PlacedMemory`, writes it via `saveMemory`, appends to `createdItems`, sets a scroll target, then closes compose. On recipient changes, AppShell loads that recipient's IndexedDB records plus matching static prototype items. For stamp/voice, blobs are stored separately and recreated as object URLs on load. The `src` object URLs are not centrally revoked when loaded/created memory sets change; this is a confirmed lifecycle risk.
 
-`src/types/index.ts` defines `StampMedia` (`image | video | empty`), `StampViewer` (`other | owner | self`), card geometry/layout shapes, and the discriminated `ScrapItem` union: stamp, note, voice, tag. The canvas fixture has a separate `SampleItemBase`/`MkResult` model in `src/scrapbook/fixtures/sampleItems.ts`, with type, text, date/year, sender, month (`m`), hand grouping, media and optional placement dimensions. The canvas page's `items` prop is currently `unknown[]` and unused; the fixtures are not wired through that prop. This is an architectural seam to resolve when connecting dynamic data.
+## Screens and flows
 
-## 5. Screens and Features Inventory
+### Gallery and AppShell
 
-Status labels mean implementation visible in this repository; “Implemented” does not imply production service behavior.
+The root hash is developer infrastructure, not the product Home. Open `/#/screens/app`. The App route initially renders Home, keeps panels mounted, and overlays compose when selected. The Home bottom tab navigation documented by the prior report is no longer the current primary flow: the latest Home has a scrapbook cover and Library; canvas is opened as a separate panel. `HomeScreenShell` routes the owner's cover to `own` and Library selections to named books.
 
-| Name | Status | Purpose and implementation | Files / limitations |
+### Home
+
+`HomeScreenShell.tsx` adapts Home to AppShell callbacks. `HomeScreen.tsx` composes `Header` (send opens mailbox), `HandDrawnDivider`, `ScrapbookCover`, `Library`, and `InviteSection`. Library selection updates AppShell and opening a person enters that person's book. Library geometry is measured and scaled to available width. The cover animation delays navigation by 180ms unless reduced motion is requested. InviteSection's standalone visual invite affordance remains present, but the active Home does not pass a send/invite callback to that section; no live invite transaction results from it. Owner, recipient names and folder entries are fixture data.
+
+Confirmed lint issue: `HomeScreen.tsx:24` assigns `openOwnScrapbookRef.current` during render, rejected by `react-hooks/refs`.
+
+### Scrapbook canvas
+
+`CanvasScreen.tsx` chooses style from the profile presentation mapping and passes owner, back/profile callbacks, add selection, dynamic items, BOOPs and scroll target into `ScrapbookCanvasPage`. Canvas style implementations are `TornStrata`, `ThemeSpreads`, `EnvelopesLip`, and `PaperWheel`. Each owns its own scrolling or local presentation interactions; reference fixture placements remain fixed. `ScrapbookCanvasPage` measures frame and header, computes the spec header delta, anchors AddFab from measured dimensions, mounts shared SVG defs, and renders BOOP at top-right in visitor context. The canvas spec calls for an unmasked, bands-free canvas shell.
+
+AppShell currently passes the active recipient's created records. `ScrapbookCanvasPage` computes placements and renders dynamic `ScrapbookItem`s as an absolute overlay over the canvas style. The helper groups by month/theme but resets layout coordinates for each group; the overlay is outside the style-specific scroll/group trees. Thus save/load is implemented, but natural chronological placement, overflow expansion, style-native insertion, and reliable post-save reveal are not. `scrollTargetId` does not itself solve absent native scroll/reveal integration. The compose/placement docs detail this.
+
+### Compose memory
+
+`ComposeMemoryScreen.tsx` offers stamp, note, tag, and voice modes. The active AppShell sets `showDevTabs={false}` and sends the selected AddFab kind. Stamp opens an image picker and previews via object URL; note has text input capped at 420 characters; tag validates the URL shape and accepts an optional title; voice requests microphone permission and uses `MediaRecorder`, review playback and redo. The composed memory is saved locally on Send.
+
+The voice close action currently runs `discard(); close();`, so the earlier diagnostic's stuck-close finding is fixed in the audited working tree. Browser permissions, codec compatibility and IndexedDB failure paths have not been exercised in a browser audit.
+
+### Mailbox and invitation
+
+`MailboxScreen.tsx` renders static rows from `MAILBOX_NOTIFICATIONS`, including unread dots, illustrations and keyboard-operable buttons. AppShell routes invitation targets to `InvitationScreen`; other targets open a book and may set a target ID. `InvitationScreen.tsx` explicitly states that the prototype records the invitation without accepting it. No read state is updated, and notification data is not generated by user activity.
+
+### Scrapbook profile
+
+`ScrapbookProfileScreen.tsx` displays cover art, presentation choices, contributor permissions and invite control. Presentation choice changes the canvas mapping and localStorage value. Removing contributors and adding a name (via `window.prompt`) only update AppShell state. Cover image selection uses an object URL held in memory and revoked on replacement/unmount; it is not persisted. These controls demonstrate a UI state, not access control or invitations.
+
+## Component inventory
+
+Integration status describes the active AppShell path, not whether a component can render in isolation.
+
+| Component | File | Purpose / key props | State | Integration status |
+|---|---|---|---|---|
+| `AppShell` / `ScreenPanel` | `src/screens/AppShell/AppShell.tsx` | Product flow orchestration, local history and stores | Owns major screen/data state | Integrated prototype; high coupling |
+| `Header` | `src/components/Header/` | Home masthead; `onSendClick` | Minimal | Integrated; send opens mailbox |
+| `ScrapbookCover` | `src/components/ScrapbookCover/` | Owner book cover and burst interaction | Animation refs | Integrated on Home; gallery preview |
+| `Library` | `src/components/Library/` | Animated folder catalog; people/select/open | Selected folder; motion hook | Integrated with fixture people and book opening |
+| `InviteSection` | `src/components/InviteSection/` | Handle/link/copy/invite visuals | Copy feedback | Partially integrated; invite action not wired on Home |
+| `HomeScreen` / `HomeScreenShell` | `src/screens/HomeScreen/` | Home composition and callback adapter | Geometry refs and cover timer | Integrated; one lint error |
+| `HomeBottomNavigation` | `src/components/HomeBottomNavigation/` | Legacy home/journal tabs | Selection | Gallery/legacy; not primary current AppShell navigation |
+| `ScrapbookHeader` | `src/components/ScrapbookHeader/` | Canvas title/back/profile actions | None | Integrated in canvas |
+| `ScrapbookCanvasPage` | `src/scrapbook/canvas/` | Frame, style, fab and dynamic overlay composition | Measurements, picker states | Integrated, placement incomplete |
+| `TornStrata` | `src/scrapbook/canvas/styles/TornStrata/` | Torn monthly strips | Scroll/presentation state | Integrated default style; dynamic items overlaid separately |
+| `ThemeSpreads` | `src/scrapbook/canvas/styles/ThemeSpreads/` | Theme panels and sample items | Panel/swipe state | Integrated by profile choice; dynamic insertion not native |
+| `EnvelopesLip` | `src/scrapbook/canvas/styles/EnvelopesLip/` | Envelope open/fan/return interaction | Open envelope | Integrated by profile choice; dynamic insertion not native |
+| `PaperWheel` | `src/scrapbook/canvas/styles/PaperWheel/` | Month wheel interaction | Selected month/drag | Integrated by profile choice; dynamic insertion not native |
+| `ScrapbookItem` | `src/components/ScrapbookItem/` | Canvas adapter for fixture/dynamic item kinds | Card-local | Integrated in canvas overlay and gallery |
+| `Stamp` | `src/components/Stamp.tsx` | Image/video keepsake | Flip/measure state | Reused by item adapters, compose, gallery, legacy harness |
+| `Note` | `src/components/Note.tsx` | Handwritten card | Flip/measure state | Reused; compose and gallery |
+| `VoicePostcard` | `src/components/VoicePostcard.tsx` | Audio postcard/waveform | Playback/audio state | Reused; compose and gallery; real recording in browser flow |
+| `ParcelTag` | `src/components/ParcelTag.tsx` | Link artifact and preview | Flip/measure state | Reused; compose/gallery; link metadata is local |
+| `FlipCard`, `ItemBack`, `Decor`, `RemoveButton` | `src/components/` | Shared flip/privacy/decor/remove behaviors | Flip and callbacks | Integrated into standalone item cards; not equivalent to every canvas renderer path |
+| `AddFab` / `addFabEngine` | `src/components/AddFab/` | Animated item-kind fan; `onSelect` | Imperative engine; open state | Integrated to compose in active canvas |
+| `BoopFab` / `BoopStamp` | `src/components/BoopFab/` | Picker and ten SVG reactions | Open/picked | Integrated; selected stamps locally persisted |
+| `MailboxStamp` | `src/components/MailboxStamp/` | Perforated mailbox type icon | None | Integrated in mailbox; static data |
+| `MailboxScreen` | `src/screens/MailboxScreen/` | Notification list | Parent-owned navigation | Integrated prototype |
+| `InvitationScreen` | `src/screens/InvitationScreen/` | Placeholder invitation destination | None | Integrated placeholder only |
+| `ScrapbookProfileScreen` | `src/screens/ScrapbookProfileScreen/` | Presentation, contributors, cover | Parent-owned values | Integrated local demo controls |
+| `ScreenShell` | `src/components/ScreenShell/` | Frame, safe areas, scrolling | None | Shared structural primitive |
+| `ThemeNavigation`, `PillButton`, `HandDrawnDivider`, `SketchDefs`, `ScrapDefs` | `src/components/` | Canvas nav, control, separator, SVG definitions | Varies | Reused across canvas/gallery/screens |
+| Gallery stages and preview harnesses | `src/gallery/` | Screen/component development previews | Preview-local state | Integrated development tooling, not product flows |
+
+Two item render paths remain: the standalone `Stamp`/`Note`/`VoicePostcard`/`ParcelTag` components with shared flip/decor layers, and canvas `ScrapbookItem` over fixture geometry. Do not assume a change to one renderer automatically affects the other.
+
+## Design system and visual implementation
+
+### Global tokens and fonts
+
+`src/index.css` defines `--font-hand: 'Shantell Sans', 'Comic Sans MS', cursive`, `--font-condensed: 'Barlow Condensed', sans-serif`, `--font-inter: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`, `--ink-link: #2e6be6`, `--color-text-muted: #a1a1a1`, `--color-text-strong: #000000`, `--safe-top: 62px`, `--safe-bottom: 32px`, `--safe-side: 24px`, `--screen-bg: #faf7f0`, and `--screen-frame-width: 402px`. Body uses Shantell Sans at weight 300; letterbox background is `#1a1a1a`. `src/main.tsx` loads Shantell Sans 300/500, Barlow Condensed 400/500/600, DM Mono 400, and variable Inter. Inter is also bundled at `src/assets/fonts/inter-latin-400.woff2` for component use where referenced.
+
+The canvas spec uses a 390 × 844 design frame and safe top/bottom/side of 62/34/24 for its canvas-specific reference geometry; global shell bottom token is 32px. Do not silently conflate those separate coordinate conventions. Canvas header height and frame are measured; `fabAnchor()` uses measured pill width for top-right and the working rectangle. FAB host z-index is configured at 200. The canvas has no opaque safe-area bands.
+
+### Styling and motion
+
+Styling is plain co-located CSS, with no Tailwind or animation package. SVG line art uses seeded geometry for stable wobble. `src/utils/geometry.ts`, `layout.ts`, `decor.ts`, and `filters.ts` centralize geometry, text/media sizing, deterministic decoration, and shared ink/paper definitions. AddFab remains an imperative DOM/CSS engine; other screens use CSS transitions and Web Animations API (cover), with reduced-motion support in selected systems. Profile and mailbox currently define separate SVG filter IDs/values. Colors and pixel values are often authored locally in component CSS/SVG, so `index.css` is not a complete design-token system.
+
+`ScreenShell` centers a 402px frame and manages safe-area masks for normal screens. Canvas and compose use its `variant="canvas"` bands-free mode. The style-specific canvases own scrolling. There is no single documented global z-index scale beyond key local values (canvas AddFab 200; compose overlay 300 per `AppShell.css`). Reference HTML/DC files are visual/design sources only unless explicitly imported; BOOP intentionally imports its reference HTML as raw source to retain exact authored stamp SVG data.
+
+### Responsive/accessibility observations
+
+The product is a mobile frame centered on desktop and the Library scales to fit. Canvas coordinates remain centered against 390 design width while actual frame dimensions are measured. Several controls use semantic buttons and labels, `ScreenPanel` handles hidden/inert states, and reduced motion is supported in selected animations. No full keyboard, screen-reader, contrast, small-height, or browser matrix audit has been performed. The voice flow depends on browser microphone APIs.
+
+## Functional interaction inventory
+
+| Trigger | Handler/state change | Feedback and completion | Persistence / limitation |
 |---|---|---|---|
-| Gallery index | Implemented | Entry point for component and screen previews. | `src/gallery/GalleryIndex.tsx`, `registry.tsx`. This is the `/` route, not a polished end-user landing page. |
-| App shell | Implemented (prototype) | Hosts Home and Journal panels, bottom tabs, transitions, and photo predecode. | `src/screens/AppShell/AppShell.tsx`, `AppShell.css`. State is local; no route/deep link per selected tab. |
-| Home / Library | Partially implemented | Header, animated folder catalog, invite copy/link. Sample people and selected person are static. | `src/screens/HomeScreen/`, `src/components/Library/`, `Header/`, `InviteSection/`. Selecting a person updates Library selection only; no friend scrapbook selection/navigation. |
-| Invite section | Partially implemented | Displays a generated-looking handle link and copy control. | `InviteSection.tsx/css`. Clipboard copy is real best-effort; invite button has optional callback but Home does not supply one. No invite/send workflow or real link validation. |
-| Journal canvas, torn strata | Implemented as fixed fixture prototype | Monthly torn paper bands, labels, sample item arrangements, scroll. Integrated into AppShell as visitor. | `CanvasScreen.tsx`, `ScrapbookCanvasPage.tsx`, `styles/TornStrata/`, `sampleItems.ts`. Static fixture and hand placements; no live data or authoring. |
-| Theme spreads | Implemented as preview prototype | Swipeable themed/panel layout and sample item presentation. | `styles/ThemeSpreads/`. Gallery only; not selectable in product shell. |
-| Envelopes lip | Implemented as preview prototype | Envelope/month interaction fans items out and supports “Put them back.” | `styles/EnvelopesLip/`, `EnvelopePhone.dc.html`. Local presentation state only. |
-| Paper wheel | Implemented as preview prototype | Drag/tap month wheel and transition between item groups. | `styles/PaperWheel/`, `WheelPhone.dc.html`. Local presentation state only. |
-| Add memory fan | Partially implemented | Imperative animated add pill/fan with item-kind selection affordances and anchors. | `components/AddFab/`; canvas mounts it for visitor. Integrated screen provides no `onSelect`, so choices have no creation result. |
-| Item cards (stamp, note, voice, tag) | Implemented as interactive components | Seeded visuals, flip/back face, viewer-dependent sender/date behavior, decorations; media/link/play controls. | `components/{Stamp,Note,VoicePostcard,ParcelTag}.tsx` and shared components. Gallery previews show them; canvas uses a different `ScrapbookItem` rendering path. |
-| Legacy playground / board | Prototype only | Mixed item board, controls, localStorage removals, file uploads and Microlink preview fetching. | `src/App.tsx`, `App.css`. Not mounted in `main.tsx`; therefore not part of normal route flow. |
+| Home header send | AppShell `openMailbox` | Mailbox panel transition | Route history only; rows are fixtures |
+| Owner cover activation | Home animation callback → `openOwnScrapbook` | Burst then opens own canvas | Not persistent |
+| Library folder/open | `onSelectPerson` / `openPersonScrapbook` | Folder animation and canvas opens | Selected person is local, people are fixtures |
+| Canvas header profile | `openProfile` | Profile panel | Local presentation preference persists; other profile values do not |
+| Profile presentation button | `selectPresentation` | Active option hatching and canvas style changes | localStorage per book key |
+| Profile remove/invite/cover controls | AppShell state update, prompt, file input | Contributor list/cover updates locally | No permission service; cover image not durable |
+| AddFab open/select | AddFab callback → `openCompose(kind)` | Compose overlay with kind-specific screen | History state; draft is not persisted |
+| Photo picker/send | `PhotoCompose` → `completeCompose` | Image preview, caption; then canvas data update | IndexedDB item + Blob; object URL lifecycle needs ownership cleanup |
+| Note type/send | textarea state → `completeCompose` | Live text and enabled send | IndexedDB text record |
+| Link type/send | URL validation and title state → `completeCompose` | ParcelTag preview and send | IndexedDB URL/title; no fetched preview in active compose |
+| Voice record/stop/review/send | getUserMedia/MediaRecorder and audio element | Timer, bars, playback/re-record | IndexedDB Blob; browser/codec dependent |
+| Close/back compose | screen callback/history | Returns to canvas; photo may confirm discard | Draft local only |
+| Mailbox row | `openMailboxNotification` | Invitation placeholder or selected scrapbook | Notification read flag is static, never marked read |
+| BOOP picker/select | `addBoopStamp` | Selection animation and positioned SVG | localStorage; not server-delivered |
+| Flip/play/link/remove card | Item card handlers | Card flips, audio plays, link opens, conditional remove | Per-component state/callback; dynamic product removal path must be verified |
+| Canvas style interactions | Each style local event handlers | Scroll, swipe, envelope fan, wheel/month changes | Presentation only; native insertion of dynamic items incomplete |
 
-## 6. Component Inventory
+The visible `InviteSection` and invitation/profile UI should not be interpreted as a working invitation lifecycle. Mailbox rows do not derive from compose or BOOP events. Browser history gives back affordances but is not a server route model.
 
-| Component / group | Purpose, props, state, integration |
-|---|---|
-| `ScreenShell` | Centered fixed-width mobile frame, scroll container, safe-area bands. `variant="canvas"` removes bands/padding and leaves scrolling to canvas styles. Used by screens and canvas. |
-| `AppShell` / `ScreenPanel` | Persistent Home/Journal panels with opacity transition, delayed `inert`/`aria-hidden` on exit, one-time enter animation and reduced-motion handling. Bottom navigation is overlaid at shell level. |
-| `HomeBottomNavigation` | Two tabs (Home, Journal), keyboard navigation, selected styling and animated pill. Wired to AppShell state. |
-| `Header` | Home greeting/title and send affordance. Used by Home. Any send action is presentation-only unless callback is passed. |
-| `Library` | SVG folder/card-catalog with tabs, unread dots, configurable geometry and custom motion hook (`useLibraryMotion`). Controlled/uncontrolled selection and `onSelect`/`onOpen`. Integrated with mock people. |
-| `InviteSection` | Rose doodle, link copy and invite button; component can receive `handle`/`onInvite`. Clipboard feedback is timed; invite callback is not wired from Home. |
-| `ScrapbookHeader` | Back/title/avatar header. Back callback optional; current canvas does not supply one. |
-| `ScrapbookCanvasPage` | Shared canvas stage, measures frame/header and add-pill width, passes dimensions/delta to style registry, mounts `SketchDefs` and AddFab. `items` prop is currently accepted but unused. |
-| Canvas style components | `TornStrata`, `ThemeSpreads`, `EnvelopesLip`, `PaperWheel` each own layout and interaction shape; registry maps `CanvasStyle` strings to component renderers. They consume fixture data/placements and presentation state. |
-| `ScrapbookItem` | Canvas-specific adapter/renderer for the fixture's four item kinds, applying item visuals and placement. Inspect it before changing canvas item behavior. |
-| `AddFab` + `addFabEngine` | React lifecycle wrapper over imperative DOM/CSS/animation engine. Options are captured at construction; placement changes are separately applied. Host is pointer-events-none and controls opt back in. |
-| `Stamp`, `Note`, `VoicePostcard`, `ParcelTag` | Standalone reusable scrap cards. Accept viewer/seed and item-specific text/media/link/audio; use deterministic geometry and common flip/back behavior. Voice card's audio UI requires actual audio source to play. |
-| `FlipCard`, `ItemBack`, `Decor`, `RemoveButton`, `ScrapDefs` | Shared flip, privacy-aware reverse face, deterministic tape/clip/corner adornment, conditional remove control, SVG filters/patterns. Remove action only displays for self/owner when a callback is provided. |
-| `ThemeNavigation`, `PillButton`, `SketchDefs` | Reusable navigation/pill/SVG definitions, available through gallery and/or canvas. |
-| `GalleryIndex`, `ScreenStage`, `ComponentStage`, `ScrapbookStylePreview` | Development preview infrastructure; `registry.tsx` is the single gallery registration list. |
+## Changes since previous report
 
-The repository has two overlapping item rendering systems: standalone card components (`Stamp`, etc.) and canvas `ScrapbookItem`. Avoid assuming that fixing one automatically changes the other.
+The previous report described a Home/Journal tab shell and a static canvas, stated that AddFab had no product callback, and described all scrapbook content as fixture-only. At audited commit `3600f9c`, those statements are superseded:
 
-## 7. Design System and Visual Implementation
+| Area | Previous report | Current verified state |
+|---|---|---|
+| Home composition | Header + Library + InviteSection; bottom Home/Journal tabs | New cover-first Home with section dividers, own scrapbook cover, Library, and mailbox access; active AppShell opens a separate canvas panel |
+| Book selection | Library selection did not open a person book | AppShell has `openOwnScrapbook` and `openPersonScrapbook`; selected name determines recipient scope |
+| Add memory | AddFab rendered without a callback | AddFab callback now opens compose modes through AppShell |
+| Compose | Reference-only/not implemented | `ComposeMemoryScreen` implements stamp/note/tag/voice authoring and is integrated in the shell |
+| Persistence | No product memory persistence | `localScrapbookStore.ts` uses IndexedDB item/blob stores with recipient index; local-only, no sync |
+| Dynamic items | No dynamic memories | AppShell passes loaded/new `PlacedMemory` records into canvas overlay; visual integration is incomplete |
+| Canvas styles | Only torn strata in shell; other styles gallery-only | Profile maps to and selects all four styles; native dynamic placement is still incomplete |
+| Profile | Not present | New profile screen exposes presentation, contributor removal/invite prompt, cover image selection |
+| Mailbox | Not present | New mailbox screen with static typed notifications, invitation placeholder and book targets |
+| BOOP | Not present | New picker from reference HTML, ten vector stamps, localStorage placement |
+| Tests | 2 files / 12 tests | 3 files / 16 tests pass (current test command) |
+| Lint/build | Prior report recorded passing | Build passes with chunk warning; lint currently fails at `HomeScreen.tsx:24` |
 
-- **Typography:** Fonts are loaded once in `src/main.tsx`: Shantell Sans (300/500), Barlow Condensed (400/500/600), DM Mono 400, and variable Inter. `src/index.css` exposes `--font-hand`, `--font-condensed`, and `--font-inter`. The item references and canvas use handwritten Shantell Sans; labels/navigation use condensed and UI uses Inter where appropriate.
-- **Global tokens:** `src/index.css` defines safe-area values (`62px`, `32px`, `24px`), screen background `#faf7f0`, frame width `402px`, text colors, and link blue. `src/utils/filters.ts` contains item ink/paper/filter constants. Other feature colors are often local CSS or inline SVG values.
-- **Layout:** `ScreenShell.css` centers a max 402px viewport and creates scroll/safe-area behavior. Canvas uses measured real frame dimensions while preserving 390px design coordinates, with `designX0` centering. `HomeScreen.css` owns specific section spacing; Home scales Library to fit available width.
-- **Visual treatment:** Wobbly line art is generated with seeded geometry utilities and SVG filters/patterns. Item cards use consistent flip, back layout, and decorations. Canvas styles use torn paper, scrapbook textures, envelopes, or wheel layouts. CSS transitions and imperative AddFab motion implement movement; reduced-motion handling exists in several transitions.
-- **Icons/assets:** Many icons are hand-authored inline SVG. `src/assets/rose.svg` drives the invite flower. `public/scrapbook/*.jpg` are fixture photos. Reference images and HTML/DC exports remain under `references/`.
-- **Responsive/accessibility:** The shell is mobile-frame oriented and centers on wider viewports. Some controls have labels and tab semantics; AppShell panels use `inert`, `aria-hidden`, and roles; InviteSection provides keyboard copy and live status. Coverage is not comprehensive: inspect SVG/control labels and keyboard support before shipping. Several art layers are decorative SVG; some controls/callbacks are inert without parent wiring.
+Recent git history (newest first) includes `3600f9c Update scrapbook UI and interactions`, `ab7bcc5 Implement mailbox screen and update spacing`, `d421cb5 Implement BOOP button, stamp picker, and canvas improvements`, `6b7244f Add scrapbook cover component and update component gallery`, `9169995 Fix compose UI, safe areas, and collision-free scrapbook placement`, and `b42834c Add compose flow design reference`. The commit names and code support the presence/timing of those changes; they do not prove product requirements or design approval. Current uncommitted `.claude/` is not described by commit history.
 
-There is no single tokenized component library or formal design-token package. Global tokens and shared primitives exist, but much visual styling remains distributed by feature.
+## Development progress matrix
 
-## 8. Reference Files and Implementation Fidelity
+Definitions: **Complete** means integrated for the stated prototype scope; **Partial** means usable flow with significant gaps; **Prototype** means demonstration/fixture behavior; **Not started** means absent; **Deprecated** means inactive path.
 
-`CLAUDE.md` is unusually important and explicitly names sources of truth. `docs/scrapbook-canvas-spec.md` gives layout/porting constraints. The source files are the design references; matching component names alone does not establish fidelity.
+| Feature | Status | Evidence / boundary |
+|---|---|---|
+| Vite/React entry, gallery routing | Complete | `main.tsx`, registry; gallery is root |
+| Home, owner cover, Library navigation | Partial | Functional local navigation; fixture identities, no account model |
+| Four artifact visuals and shared interactions | Complete for visual component scope | Gallery and compose reuse; canvas has separate renderer path |
+| Four canvas presentations | Prototype | Visually interactive; dynamic records not native to each style |
+| AddFab → compose selection | Complete for local flow | AppShell callback connected |
+| Stamp/note/tag/voice compose UI | Partial | UI and submission work; media/browser, draft and UX gaps remain |
+| Local memory persistence | Partial | IndexedDB records/blobs; no server, tests or URL cleanup ownership |
+| Dynamic memory placement/reveal | Partial | Absolute placement overlay exists; grouping/scroll/reveal defects |
+| BOOP picker and local stamps | Partial | Picker and local persistence work; no real delivery |
+| Mailbox | Prototype | Static rows and navigation only; no live events/read updates |
+| Invitation acceptance | Not started | Screen explicitly says it does not accept invitation |
+| Profile presentation preference | Partial | Per-book localStorage works; no server sync |
+| Contributor/permission management | Prototype | Local UI state only; not authorization |
+| Backend/auth/sharing | Not started | No service or identity integration |
+| Legacy `src/App.tsx` item playground | Deprecated from active routing | Not imported in `main.tsx`; useful only as harness/reference |
+| Automated tests | Partial | Geometry/anchor tests only, 16 pass; no compose/store/e2e tests |
 
-| Reference | Meaning and current relationship |
-|---|---|
-| `references/Scrapbook Directions.dc.html` | Main canvas design export. `sampleItems.ts`, `TornStrata`, `ThemeSpreads`, and canvas styles port fixture data/layouts from it. Design spec says strip phone bezel/harness and use app shell/header. |
-| `references/EnvelopePhone.dc.html`, `WheelPhone.dc.html` | Style-specific envelope and wheel details used alongside the main canvas reference. |
-| `references/Item.dc.html` | Source for Note, VoicePostcard, ParcelTag and common item presentation. CLAUDE says Stamp instead follows `stamp-test.html`. |
-| `references/stamp-test.html` | Documented source of truth for standalone Stamp behavior/layout. |
-| `references/Scrapbook Add Button.html` | Source for `AddFab` engine/fan animation. The integrated page positions the control but does not implement creation callbacks. |
-| `references/scrapbook-header.html`, `home-bottom-navigation.html`, `theme-navigation.html` | Visual sources for corresponding React components. |
-| `references/InviteSection.dc.html`, `library-harness.html` | Design/harness references for invitation and Library. |
-| `references/co Scrapbook.dc.html`, `co-scrapbook-v2.dc.html` | Board-level design context. CLAUDE documents that v2 adds an unimplemented card-catalog screen and imports item design rather than redefining its internals. |
-| `references/CanvasPhone.dc.html`, `references/WheelPhone.dc.html` | Phone design/harness references for canvas variations; inspect alongside production styles when changing those layouts. |
+## Known issues and technical debt
 
-Reference-backed details include fixture values and custom animation/geometry. No automated screenshot or pixel-diff validation was run. The report therefore cannot certify pixel-level parity. Static prototype assets in `references/` are not runtime assets unless imported/copied into `public/` or `src/`.
+### Confirmed
 
-## 9. Data Models and Application State
+1. **Lint fails:** `src/screens/HomeScreen/HomeScreen.tsx:24` writes to a ref during render; ESLint `react-hooks/refs` rejects it.
+2. **Dynamic placement is not style-native:** `placeMemories()` restarts positions for each group, and the generic overlay is outside style scrollers/groups. Multiple groups can overlap and content can be clipped.
+3. **No dependable post-save reveal:** setting `scrollTargetId` is not sufficient without a connected style-specific scroll/selection implementation.
+4. **Persistence is local only:** IndexedDB is per browser/device; no cloud or shared access.
+5. **Object URL lifecycle:** compose-created and `loadMemories()`-created media URLs are not clearly revoked when memory state is replaced or AppShell unmounts. Cover URLs do have explicit cleanup.
+6. **Mailbox/invitation and profile permissions are presentation/local state only.** No read update, acceptance, access enforcement, or real invite delivery.
+7. **No tests for AppShell flows, ComposeMemoryScreen, IndexedDB, mailbox targets, BOOP persistence, or dynamic placement integration.**
+8. **Large production chunk:** build reports 515.13 kB minified JS (163.98 kB gzip), over Vite's 500 kB warning threshold.
+9. **Duplicate rendering models:** `ScrapItem`, sample fixture data, and `PlacedMemory` are separate contracts; changes can diverge between renderer paths.
+10. **README remains generic Vite template text.** `CLAUDE.md` and docs are more authoritative.
 
-The standalone item system's central union is:
+### Risks needing runtime verification
 
-```ts
-type ScrapItem = StampScrapItem | NoteScrapItem | VoiceScrapItem | TagScrapItem;
-type StampViewer = 'other' | 'owner' | 'self';
-```
+- Microphone permission denial, browser codec support, playback, IndexedDB quota/private browsing and mobile browser behavior have not been manually exercised in this audit.
+- Responsive layout at short viewport heights, screen-reader order, keyboard control for all canvas gestures, contrast, and reduced-motion coverage need browser evaluation.
+- Dynamic overlay placement may collide with headers or style content and may miss native z-order; source structure confirms the architectural gap, exact visual impact is viewport-dependent.
+- No screenshot/pixel comparison confirms current reference fidelity.
+- Historical `docs/compose-ui-diagnostic-report.md` contains detailed findings from an earlier working-tree state. Its VoiceCompose stuck-close issue is no longer present: the current handler discards then calls close.
 
-Each standalone item has a common `id`, deterministic `seed`, `viewer`, `senderName`, `date`, and optional caption. Kind-specific fields carry media, note text, audio metadata, or URL/preview. The actual canvas fixture has a separate type union and IDs (`beer`, `quiet`, `leh`, `film`, `v1`, `beach`, `dog`, `buses`, `soup`, `v2`, `anyway`, `snow`) with sender, date/year, month and hand grouping. Images are local JPEGs under `public/scrapbook/`.
+## Development environment and validation
 
-State is local React component state. Important transitions include Home/Journal panel activation; Library selection; flip-card front/back; voice play/pause; open/closed add fan; envelope open/return; theme/month selection; and demo removal. Canvas content itself is fixture-based, not mutable application state. Only the legacy board's set of IDs is persisted in localStorage. Its temporary uploaded object URLs are resource-managed but not durable data.
-
-## 10. Development Progress
-
-### Accomplished
-
-- Functional build and routing/gallery framework.
-- Home and Journal prototype with tab transition and a custom folder Library.
-- Four custom item card types and shared card behaviors.
-- Four canvas style prototypes and reference-derived sample fixture.
-- Responsive frame/safe-area abstractions and custom visual language.
-- Imperative add-fan control and preview harnesses.
-- Unit tests for canvas geometry/anchor logic and library geometry (12 tests currently pass).
-
-### Partial/in progress by code state
-
-- Home Library selection does not resolve actual friend pages.
-- Invite and add controls have optional APIs but are not connected to actual operations.
-- Canvas display is visitor-only in the shell, static and built around fixture-specific positioning.
-- Multiple canvas designs are gallery previews, not user-selectable/persisted preferences.
-- The domain types for standalone cards and canvas fixtures are separate and not unified.
-
-### Experimental/legacy
-
-The root-level `App.tsx` is a rich item playground with board, upload controls, localStorage remove/reset and a Microlink screenshot request. It is not referenced by `main.tsx`, while current app UI is registered as a Gallery screen. Treat it as a harness unless route wiring changes.
-
-Git history was available. Recent commits include `eabf9ab` (“Change default scrapbook to torn strata design”), `f672144` (HomeBottomNavigation switching between Home and Canvas), and `b220a2c` (spacing/vertical scroll update). This supports that canvas selection and navigation were actively being developed, but does not establish broader product decisions or a complete chronology.
-
-## 11. Known Issues and Technical Debt
-
-### Confirmed from code
-
-- No backend/auth/data service exists; users, dates and memories are constants/fixtures.
-- Root path is a developer gallery rather than the product shell.
-- Home's people list changes Library selection but is not connected to a corresponding scrapbook.
-- `InviteSection`'s invite callback and `ScrapbookHeader`'s back callback are optional and not supplied in the shown product wiring.
-- Canvas `items?: unknown[]` is documented as accepted but unused. Current style implementations use fixture/hand-coded placements.
-- AddFab is mounted without an `onSelect` in `ScrapbookCanvasPage`, so the visible choice fan has no product action.
-- Four style choices are not exposed in product navigation or persisted as user preference.
-- Two item-rendering paths exist and may diverge: standalone card components and canvas `ScrapbookItem`.
-- README is still the generic Vite template and does not explain the product; CLAUDE.md is the substantive guide.
-- `App.tsx` behavior is not part of current routing; it is easy for developers to mistake it for the active app.
-- `Microsoft/Windows/PowerShell/ModuleAnalysisCache` is an unrelated untracked item visible in `git status`; leave it untouched unless its owner clarifies otherwise.
-
-### Potential risks to verify during future work
-
-- Accessibility should be reviewed end-to-end for all pointer-driven canvas interactions, focus order, reduced motion, and SVG-only affordances.
-- Microlink screenshot fetch in the unused demo depends on a third party, browser network/CORS behavior and remote service availability; it is not a production integration.
-- Any new item/data flow must reconcile the canvas fixture shape with the `ScrapItem` union rather than assume they are interchangeable.
-- Reference fidelity has no visual regression tooling in the repo, so CSS/geometry changes need deliberate preview comparison.
-- Some hooks and imperative animation systems measure DOM/font sizes; font loading and resizing are important, especially around AddFab and canvas placements.
-
-No TODO/FIXME markers were found in scanned `src`, `docs`, or `CLAUDE.md` content. That does not prove there are no unfinished features; the partial wiring above is visible without TODO markers.
-
-## 12. Development Environment
-
-### Commands
+Run from repository root:
 
 ```bash
 npm install
@@ -251,78 +310,52 @@ npm run dev       # Vite development server
 npm run build     # tsc -b && vite build
 npm run lint      # eslint .
 npm test          # vitest run
-npm run preview   # preview built dist output
+npm run preview   # serve dist build
 ```
 
-No environment variables are required by the active app. The legacy playground makes a direct Microlink request for an optional URL screenshot preview. Static output is produced in `dist/`. Dependencies are declared in `package.json`.
-
-### Validation run for this report
+Actual audit results:
 
 | Command | Result |
 |---|---|
-| `npm run build` | Passed; TypeScript project build and Vite production build completed. |
-| `npm run lint` | Passed; ESLint reported no diagnostics. |
-| `npm test` | Passed; 2 test files, 12 tests. |
+| `npm run build` | **Passed.** TypeScript and Vite build succeeded; Vite warned that the 515.13 kB minified JS chunk exceeds the 500 kB threshold. |
+| `npm run lint` | **Failed.** One error: `HomeScreen.tsx:24`, `react-hooks/refs` (cannot update ref during render). |
+| `npm test` | **Passed.** 3 test files, 16 tests. |
 
-These checks verify compile/lint/unit tests only. No browser/e2e or visual reference comparison was run.
+No app code was changed to achieve these results. Playwright is declared as a dependency but there is no configured browser test script. No browser interaction, visual test, or install command was run. No secrets or environment values were inspected for this audit.
 
-## 13. Current State and Next Steps
+## Recommended next steps
 
-The repository is a technically substantial front-end design prototype. The main Home-to-Journal presentation works with fixture content and a custom visual system. The path from presentation prototype to functioning scrapbook product remains open: identity, real friend/page selection, durable data, add/create flows, and invitations are not implemented.
+These are audit recommendations, not a claim of an existing approved roadmap:
 
-Recommended priorities (recommendations, not documented roadmap):
+1. Fix the lint error and add a focused Home cover/navigation regression test.
+2. Move dynamic item placement into canvas-style-owned render/group/scroll data. Start with TornStrata month strips, then implement explicit style adapters for theme, envelopes and wheel.
+3. Connect target-item reveal to each style's real scroller/selection and test multi-month insertion, reload and recipient changes.
+4. Define object URL ownership and cleanup for created/loaded stamp and voice media; cover existing cover URL cleanup behavior with tests.
+5. Add persistence and compose integration tests, including failure cases, and test voice close/permission behavior in supported browsers.
+6. Decide the intended root entry experience (gallery or product) and update README accordingly.
+7. Replace static mailbox/invitation/contributor fixtures with real service contracts only after backend, identity and permission requirements are defined.
+8. Evaluate lazy loading/code splitting to address the production chunk warning, and perform responsive/accessibility/reference visual checks.
 
-1. Decide and document the intended product route/entrypoint (gallery-first or product-first).
-2. Define real user, scrapbook, and memory entities and connect the Library selection to a page.
-3. Choose a single canonical item model and adapt both card renderers or retire the duplicated path.
-4. Wire the add fan to explicit creation screens/forms and persistence; ensure owner/visitor authorization behavior.
-5. Wire invitation and back/navigation controls and define their actual destinations/actions.
-6. Add integration/browser tests for navigation, item controls, responsive layouts, accessibility and reduced motion; consider screenshot baselines for reference-heavy design.
+## What the Next Coding Agent Must Know
 
-## 14. AI Development Handoff
+- Read first: `CLAUDE.md`, this report, `docs/scrapbook-canvas-spec.md`, `docs/compose-and-placement-architecture.md`, and `docs/compose-ui-diagnostic-report.md`. Treat source as current truth and the diagnostic report as potentially stale.
+- Current product preview is `/#/screens/app`; `/` is the gallery. Main routes are in `src/main.tsx`, and new reusable visuals belong in the existing `src/gallery/registry.tsx` convention.
+- Reuse `Stamp`, `Note`, `VoicePostcard`, `ParcelTag`, `FlipCard`, `ItemBack`, `Decor`, `AddFab`, `BoopFab`, `ScrapbookHeader`, `ScreenShell`, and the existing four canvas renderers. Avoid a third card implementation.
+- AppShell already wires Home → book, profile, mailbox, AddFab → compose, IndexedDB save/load, and local BOOP stamps. Extend these paths rather than duplicating screens or storage.
+- Canvas reference fidelity is governed by `docs/scrapbook-canvas-spec.md` and the files under `references/`; preserve measured frame/header/fab anchoring and each style's own scrolling/layout. The current dynamic-item overlay is a known incomplete seam.
+- The source of truth for global safe-area tokens is `src/index.css`; canvas reference bottom safe area is 34px while global shell token is 32px. Do not conflate them.
+- Do not treat static mailbox rows, `PROFILE_CONTRIBUTORS`, local profile mutations, localStorage, or IndexedDB as server-backed behavior or permissions.
+- `src/App.tsx` is the old, unmounted item harness. It is not the product entrypoint.
+- Fragile/high-coupling files: `AppShell.tsx` (many concerns/history/storage), `ScrapbookCanvasPage.tsx` (measuring and z-layer orchestration), AddFab's imperative engine (constructor-time options), and the separate fixture/dynamic placement models.
+- Current build passes, lint fails at `HomeScreen.tsx:24`, and tests pass 16/16. Do not infer browser/API behavior from those checks.
 
-Read these first before changing UI or behavior:
+## Quick reference
 
-1. `CLAUDE.md` — repository-specific architecture and visual invariants.
-2. `docs/scrapbook-canvas-spec.md` — canvas coordinates, safe areas and source-of-truth rules.
-3. `src/main.tsx`, `src/gallery/registry.tsx`, `src/screens/AppShell/AppShell.tsx` — routes and active product composition.
-4. `src/screens/CanvasScreen/CanvasScreen.tsx`, `src/scrapbook/canvas/ScrapbookCanvasPage.tsx`, `src/scrapbook/canvas/styleRegistry.tsx` — active canvas selection and shared shell.
-5. `src/scrapbook/fixtures/sampleItems.ts` and `src/components/ScrapbookItem/` — canvas sample records and rendering.
-6. `src/types/index.ts`, `src/components/Library/`, `src/components/AddFab/` — domain seam and complex interactions.
-
-Preserve these conventions unless deliberately changing the design: one `ScreenShell` per screen; edit safe-area values only in `src/index.css`; register new preview entries through `src/gallery/registry.tsx`; keep sample data centralized; use seeded geometry to avoid visual jitter; retain shared item flip/back/decor abstractions; don't reimplement `AddFab` animation casually; and compare against the specifically designated reference file for the component being changed. The four canvas styles intentionally have different scrolling models, so a single generic scroller is not assumed.
-
-Do not assume the gallery is the product UI, the legacy `App.tsx` is currently routed, fixtures are user data, an optional callback is connected, the add control creates anything, canvas `items` is consumed, a component's presence means it is integrated, or the reference exports are all runnable applications. Do not invent undocumented rationale or treat localStorage demo state as persistence architecture.
-
-## 15. Evidence and Confidence
-
-Primary evidence inspected includes:
-
-- Startup/routing: `src/main.tsx`; route registration: `src/gallery/registry.tsx`.
-- Product composition/transitions: `src/screens/AppShell/AppShell.tsx` and `AppShell.css`; screen wiring: `src/screens/HomeScreen/HomeScreen.tsx`, `HomeScreenShell.tsx`, `src/screens/CanvasScreen/CanvasScreen.tsx`.
-- Canvas architecture: `src/scrapbook/canvas/ScrapbookCanvasPage.tsx`, `styleRegistry.tsx`, `constants.ts`, four `styles/*` modules, `src/scrapbook/fixtures/sampleItems.ts`.
-- Models/data: `src/types/index.ts`, `src/data/mock.ts`.
-- Components/styles: `src/components/`, `src/utils/`, `src/index.css`, `src/screens/*/*.css`.
-- Product/design instructions: `CLAUDE.md`, `docs/scrapbook-canvas-spec.md`; reference exports and assets: `references/`.
-- Environment and validation: `package.json`, `vite.config.ts`, `tsconfig*.json`, `eslint.config.js`, build/lint/test results recorded above.
-- Available history: recent `git log` entries; current `git status` noted above.
-
-**Confidence:** High for current routes, code-level wiring, available files, scripts, and test/build results. Medium for product intent where it is inferred from designs and copy rather than explicit requirements. Pixel-level fidelity, runtime behavior across browsers/devices, third-party preview availability, production deployment, and actual user experience could not be verified here. No account/backend behavior exists to validate. The report uses “intended” where support comes from design references/specification and “implemented” where source code demonstrates the behavior.
-
-## 16. Quick Reference
-
-### Product summary in five sentences
-
-This is a scrapbook prototype built around memories represented as postal-style keepsakes. A Home screen presents a hand-drawn friend Library and invite section. A Journal screen displays fixture memories in a torn-paper monthly canvas, with three other canvas styles available as previews. Reusable stamp, note, voice, and link cards have custom visuals and interactions. The interface is much further along than its underlying product data, account, invitation, and authoring functionality.
-
-### At a glance
-
-- **Stack:** React 19, TypeScript 6, Vite 8, React Router 7, CSS, Vitest, ESLint.
-- **Important directories:** `src/screens`, `src/components`, `src/scrapbook/canvas`, `src/scrapbook/fixtures`, `src/gallery`, `src/data`, `src/utils`, `references`, `docs`.
-- **Screens:** Gallery; AppShell (Home and Journal tabs); Home/Library; torn-strata canvas. Theme spreads, envelopes lip and paper wheel exist as previews.
-- **Major components:** Library, ScreenShell, HomeBottomNavigation, InviteSection, ScrapbookCanvasPage, ScrapbookItem, AddFab, Stamp, Note, VoicePostcard, ParcelTag, FlipCard, ItemBack, Decor.
-- **Core data:** `ScrapItem` discriminated union for card components; separate `SampleItemBase`/`MkResult` canvas fixture model.
-- **Status:** Interactive front-end prototype; no backend/auth or durable scrapbook content.
-- **Top outstanding tasks:** Real data model and persistence; friend selection/page navigation; add flow; invitation behavior; canonical item model; accessibility/integration validation.
-- **Commands:** `npm install`, `npm run dev`, `npm run build`, `npm run lint`, `npm test`, `npm run preview`.
-- **Critical files:** `CLAUDE.md`, `docs/scrapbook-canvas-spec.md`, `src/main.tsx`, `src/gallery/registry.tsx`, `src/screens/AppShell/AppShell.tsx`, `src/screens/CanvasScreen/CanvasScreen.tsx`, `src/scrapbook/canvas/ScrapbookCanvasPage.tsx`, `src/types/index.ts`.
+- **Product route:** `/#/screens/app`; **gallery:** `/#/`.
+- **Active orchestration:** `src/screens/AppShell/AppShell.tsx`.
+- **Current state:** integrated local prototype; no backend/auth/sync.
+- **Core implemented flows:** Home/book navigation, 4 compose modes, IndexedDB save/load, 4 canvas presentations, mailbox placeholder, profile UI, BOOP picker.
+- **Biggest gap:** dynamic memories are not placed/revealed inside style-native canvas content.
+- **Validation:** build passed with large-chunk warning; lint failed at `HomeScreen.tsx:24`; 16 tests passed.
+- **Audit commit:** `3600f9cd7a3603490dbdd709d0ac25def17b1847`.
+- **Report:** `CODEBASE_STATE_REPORT.md`.

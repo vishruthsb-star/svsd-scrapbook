@@ -1,19 +1,16 @@
-/* Faithful port of references/scrapbook-header.html.
-   Frame 13 (118:1744) — 354 x 61. */
-
+/* Faithful port of references/scrapbook-header.html. Frame 13 — 354 x 61. */
 .scrapbook-header {
-  width: 354px;
-  height: 61px;
+  box-sizing: border-box;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
+  height: 61px;
   padding: 8px 8px 8px 16px;
-
   background: #ffffff;
   border: 0.5px solid #ececec;
   border-radius: 360px;
-
-  /* 5 stacked Figma drop shadows, all rgb(143,143,143), spread 0. Top layer first. */
   box-shadow:
     0px 7px 7.5px rgba(143, 143, 143, 0.1),
     0px 27px 13.5px rgba(143, 143, 143, 0.09),
@@ -23,7 +20,7 @@
 }
 
 .scrapbook-header-back {
-  flex: none;
+  flex-shrink: 0;
   width: 24px;
   height: 24px;
   padding: 0;
@@ -32,30 +29,33 @@
   cursor: pointer;
 }
 
-/* co-arrow-left-q49 — 24 x 24 */
 .scrapbook-header-icon {
+  display: block;
   width: 24px;
   height: 24px;
-  flex: none;
-  display: block;
   overflow: visible;
 }
 
-/* "vishruth's scrapbook" — Inter Regular 16 / 150%, tracking -3% */
 .scrapbook-header-title {
+  position: absolute;
+  left: 50%;
+  max-width: calc(100% - 136px);
   margin: 0;
-  font-family: var(--font-inter);
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 1.5;
-  letter-spacing: -0.48px;
+  overflow: hidden;
   color: #464646;
+  font-family: var(--font-inter);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: -0.48px;
+  text-align: center;
+  text-overflow: ellipsis;
   white-space: nowrap;
-  flex: none;
+  transform: translateX(-50%);
 }
 
 .scrapbook-header-profile-trigger,
-.scrapbook-header-avatar-button {
+.scrapbook-header-cover-button {
   border: 0;
   padding: 0;
   background: transparent;
@@ -63,27 +63,38 @@
 }
 
 .scrapbook-header-profile-trigger:focus-visible,
-.scrapbook-header-avatar-button:focus-visible {
+.scrapbook-header-cover-button:focus-visible {
   outline: 2px solid #111111;
   outline-offset: 3px;
 }
 
-.scrapbook-header-avatar-button {
+/* Rectangle 4 — 44 x 44, fully rounded. The fallback remains visible if an image
+   is unavailable, so the profile entry point never disappears. */
+.scrapbook-header__cover {
   display: block;
   width: 44px;
   height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 0;
   border-radius: 50%;
-}
-
-/* Rectangle 4 — 44 x 44, fully rounded. Gradient is the reference's placeholder fill;
-   an <img> swaps in with object-fit: cover when avatarSrc is given. */
-.scrapbook-header-avatar {
-  width: 44px;
-  height: 44px;
-  flex: none;
-  border-radius: 360px;
-  object-fit: cover;
+  padding: 0;
   background:
     radial-gradient(60% 50% at 62% 30%, #b9a58f 0%, rgba(185, 165, 143, 0) 70%),
     linear-gradient(165deg, #46556e 0%, #7a5f50 55%, #1e1b20 100%);
+}
+
+.scrapbook-header__cover img,
+.scrapbook-header__cover > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.scrapbook-header__cover img {
+  object-fit: cover;
+  object-position: center;
 }

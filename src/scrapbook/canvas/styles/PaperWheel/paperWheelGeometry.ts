@@ -1,6 +1,9 @@
-import type { MkResult, SampleItemAttach, SampleItemId } from '@/scrapbook/fixtures/sampleItems';
+import type { MkResult, SampleItemAttach, SampleItemId, SampleItemType } from '@/scrapbook/fixtures/sampleItems';
 import { IDS, IT, mk } from '@/scrapbook/fixtures/sampleItems';
 import { rng } from '../../rng';
+import type { PlacedMemory } from '@/scrapbook/placement';
+import type { PlacedBoopStamp } from '@/scrapbook/boopStamps';
+import { elementSize, isBoopStamp, packElements, rotatedBounds, wheelMonthForElement } from '@/scrapbook/placement/dynamicLayout';
 
 /**
  * Frame 1e-paper ("paper wheel") data/algorithm, ported verbatim from the
@@ -90,12 +93,16 @@ export function torn(c: number, R: number, seed: number, spiky: boolean): string
   return 'M' + pts.join('L') + 'Z';
 }
 
-export interface WheelItem extends Omit<MkResult, 'x' | 'y'> {
+export interface WheelItem extends Omit<MkResult, 'id' | 'x' | 'y' | 'type'> {
+  id: string;
+  type: SampleItemType | 'boop';
   x: number;
   y: number;
   op: number;
   tf: string;
   pe: 'auto' | 'none';
+  memory?: PlacedMemory;
+  boop?: PlacedBoopStamp;
 }
 
 export interface WheelMonth {
@@ -144,7 +151,7 @@ export interface WheelResult {
  * `<dc-import name="WheelPhone" material="paper" radius=... rise=...>` call, which omits
  * `fab` entirely.
  */
-export function buildWheel(di: number, ddx: number, frameH: number): WheelResult {
+export function buildWheel(di: number, ddx: number, frameH: number, frameW = 390, memories: readonly PlacedMemory[] = [], boopStamps: readonly PlacedBoopStamp[] = [], measuredHeights: Record<string, number> = {}): WheelResult {
   const wt = frameH - RISE;
   const cy = wt + OUTER_R;
 
@@ -175,7 +182,24 @@ export function buildWheel(di: number, ddx: number, frameH: number): WheelResult
     return { ...merged, x, y, op: vis ? 1 : 0, tf: vis ? 'translateY(0px)' : 'translateY(24px)', pe: vis ? 'auto' : 'none' };
   });
 
-  const hasM = (mm: number) => IDS.some((id) => IT[id].m === mm);
+  const fixtureBounds = items.filter((item) => item.op === 1).map((item) => rotatedBounds(item.x, item.y, item.w, item.h, item.rot));
+  const dynamicItems: WheelItem[] = packElements([...memories, ...boopStamps].filter((element) => wheelMonthForElement(element) === m), frameW, 220, fixtureBounds, measuredHeights, .82).map((placed) => {
+    const element = placed.element;
+    const [w, h] = elementSize(element, measuredHeights[element.id]);
+    if (isBoopStamp(element)) return {
+      id: element.id, type: 'boop', date: '', year: '', from: '', hand: 0, m, rot: placed.rot, z: placed.z, w, h, hint: '', x: placed.x, y: placed.y, op: 1, tf: 'translateY(0px)', pe: 'auto', boop: element,
+    };
+    const date = new Date(element.createdAt);
+    return {
+      id: element.id, type: element.kind, text: element.text,
+      date: date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }), year: String(date.getFullYear()),
+      src: element.src, ratio: element.ratio, from: element.authorId,
+      hand: 0, m, rot: placed.rot, z: placed.z, w: w * placed.z, h: h * placed.z, hint: '',
+      x: placed.x, y: placed.y, op: 1, tf: 'translateY(0px)', pe: 'auto', memory: element,
+    };
+  });
+
+  const hasM = (mm: number) => IDS.some((id) => IT[id].m === mm) || [...memories, ...boopStamps].some((element) => wheelMonthForElement(element) === mm);
   const qH = Math.max(80, Math.min(200, availB - 236));
   const qTop = Math.round((220 + availB) / 2 - qH / 2);
 
@@ -212,7 +236,7 @@ export function buildWheel(di: number, ddx: number, frameH: number): WheelResult
     qTop,
     qH,
     qHi: qH - 6,
-    items,
+    items: [...items, ...dynamicItems],
     months,
     wt,
     cy,

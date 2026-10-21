@@ -29,12 +29,12 @@
 .home-section-label { margin: 0; font-family: var(--font-condensed); font-size: 14.5px; font-weight: 400; line-height: 1.5; letter-spacing: .8px; color: #A75D48; }
 .home-scrapbook-section .scrapbook-cover { width: min(100%, 360px); margin-top: 26px; }
 
-.home-people-section { margin-top: 36px; }
+.home-people-section { margin-top: 68px; }
 .home-people-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin: 24px 0 0; font-family: var(--font-inter); font-size: 16px; font-weight: 400; line-height: 1.5; letter-spacing: -.32px; }
 .home-people-copy p { margin: 0; }
 .home-people-copy p:first-child { color: #989898; }
 .home-people-copy p:last-child { color: #000; }
-.home-library-wrap { width: 100%; display: flex; justify-content: center; align-items: flex-start; overflow: visible; margin-top: 40px; }
+.home-library-wrap { width: 100%; display: flex; justify-content: center; align-items: flex-start; overflow: visible; margin-top: 16px; }
 .home-library-scale { transform-origin: top center; }
 
 .home-invite-wrap { width: calc(100% + 56px); margin: 0 -28px; padding-bottom: 120px; background: #faf7f0; }
@@ -43,5 +43,5 @@
   .home-screen-shell { --safe-side: 22px; }
   .home-grid-region::before { left: -22px; width: 100vw; }
   .home-invite-wrap { width: calc(100% + 44px); margin: 0 -22px; }
-  .home-people-section { margin-top: 54px; }
+  .home-people-section { margin-top: 86px; }
 }

@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ScrapbookItem } from '@/components/ScrapbookItem';
 import { ThemeNavigation } from '@/components/ThemeNavigation';
 import type { ThemeNavigationValue } from '@/components/ThemeNavigation';
@@ -7,6 +7,12 @@ import { mk } from '@/scrapbook/fixtures/sampleItems';
 import { hash } from '../../itemSeed';
 import './ThemeSpreads.css';
 import { THEME_PANELS } from './themeSpreadsData';
+import { packThemeMemories } from './themeSpreadsGeometry';
+import type { PlacedMemory } from '@/scrapbook/placement';
+import { revealInScroller, useTargetReveal } from '../../revealTarget';
+import type { PlacedBoopStamp } from '@/scrapbook/boopStamps';
+import { BoopStamp } from '@/components/BoopFab';
+import { isBoopStamp, targetIdForElement, themeForElement } from '@/scrapbook/placement/dynamicLayout';
 
 export interface ThemeSpreadsProps {
   view: 'own' | 'visitor';
@@ -15,6 +21,10 @@ export interface ThemeSpreadsProps {
   frameW: number;
   frameH: number;
   designX0: number;
+  items?: PlacedMemory[];
+  boopStamps?: PlacedBoopStamp[];
+  scrollTargetId?: string | null;
+  onScrollTargetHandled?: (id: string) => void;
 }
 
 /**
@@ -96,12 +106,18 @@ function MeasuredBlock({
  * (item heights are content-driven — see envelopesLipGeometry.ts's identical note on
  * Stamp/Note/etc. — not a fixed per-type guess), via `MeasuredBlock` / a ref on the nav.
  */
-export default function ThemeSpreads({ view, headerDelta, ownerName, frameW, frameH, designX0 }: ThemeSpreadsProps) {
+export default function ThemeSpreads({ view, headerDelta, ownerName, frameW, frameH, designX0, items = [], boopStamps = [], scrollTargetId, onScrollTargetHandled }: ThemeSpreadsProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
+  const panelScrollRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [active, setActive] = useState(0);
   const [navHeight, setNavHeight] = useState(0);
   const [panelBottoms, setPanelBottoms] = useState<Record<string, Record<string, number>>>({});
+  const [measuredHeights, setMeasuredHeights] = useState<Record<string, number>>({});
+  const targetPanel = scrollTargetId ? [...items, ...boopStamps].find((item) => targetIdForElement(item) === scrollTargetId) : undefined;
+  const targetIndex = targetPanel ? THEME_PANELS.findIndex((panel) => panel.id === themeForElement(targetPanel)) : -1;
+
+  const packedByPanel = useMemo(() => Object.fromEntries(THEME_PANELS.map((panel) => [panel.id, packThemeMemories(panel, items, boopStamps, frameW, designX0, measuredHeights)])), [boopStamps, designX0, frameW, items, measuredHeights]);
 
   useLayoutEffect(() => {
     const el = navRef.current;
@@ -123,6 +139,24 @@ export default function ThemeSpreads({ view, headerDelta, ownerName, frameW, fra
     setActive(index);
   };
 
+  useLayoutEffect(() => {
+    if (targetIndex < 0) return;
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    // This is an insertion-driven activation; use an immediate snap so the nested panel is
+    // genuinely active before its DOM target is measured. Manual tab changes stay smooth.
+    scroller.scrollTo({ left: targetIndex * frameW, behavior: 'auto' });
+    setActive(targetIndex);
+  }, [frameW, targetIndex]);
+
+  const reveal = useCallback((target: HTMLElement) => {
+    if (targetIndex < 0) return;
+    const scroller = panelScrollRefs.current[THEME_PANELS[targetIndex].id];
+    if (scroller) revealInScroller(scroller, target, 138, THEME_NAV_BOTTOM + navHeight + 16);
+  }, [navHeight, targetIndex]);
+  const targetReady = targetIndex < 0 || active === targetIndex;
+  useTargetReveal({ targetId: scrollTargetId, ready: targetReady, rootRef: scrollerRef, findRoot: () => targetIndex >= 0 ? panelScrollRefs.current[THEME_PANELS[targetIndex].id] : null, reveal, onHandled: onScrollTargetHandled });
+
   const handleScroll = () => {
     const el = scrollerRef.current;
     if (!el) return;
@@ -139,7 +173,7 @@ export default function ThemeSpreads({ view, headerDelta, ownerName, frameW, fra
 
           return (
             <div key={panel.id} className="theme-spreads-panel" style={{ width: frameW, height: frameH }}>
-              <div className="theme-spreads-panel-scroll" style={{ touchAction: 'pan-x pan-y' }}>
+              <div ref={(element) => { panelScrollRefs.current[panel.id] = element; }} className="theme-spreads-panel-scroll" style={{ touchAction: 'pan-x pan-y' }}>
                 <div className="theme-spreads-panel-inner" style={{ height: panelContentH }}>
                   <svg className="theme-spreads-panel-grid" width={frameW} height={panelContentH}>
                     <rect width={frameW} height={panelContentH} fill="url(#sd-grid)" />
@@ -224,6 +258,31 @@ export default function ThemeSpreads({ view, headerDelta, ownerName, frameW, fra
                             zoom={it.z}
                             seed={hash(it.id)}
                           />
+                        </MeasuredBlock>
+                      );
+                    })}
+                    {packedByPanel[panel.id].map((placed) => {
+                      const element = placed.element;
+                      const isBoop = isBoopStamp(element);
+                      const date = new Date(element.createdAt);
+                      return (
+                        <MeasuredBlock
+                          key={element.id}
+                          blockId={element.id}
+                          onBottomMeasured={(id, bottom) => handleBottomMeasured(panel.id, id, bottom)}
+                          className="theme-spreads-item theme-spreads-item--created"
+                          style={{ left: placed.x, top: placed.y, width: isBoop ? element.width : undefined, transform: isBoop ? `rotate(${placed.rot}deg)` : undefined }}
+                        >
+                          <div
+                            data-scrapbook-item-id={targetIdForElement(element)}
+                            ref={(element) => {
+                              if (!element || element.offsetHeight <= 0) return;
+                              const height = element.offsetHeight / placed.z;
+                              setMeasuredHeights((previous) => previous[placed.element.id] === height ? previous : { ...previous, [placed.element.id]: height });
+                            }}
+                          >
+                            {isBoop ? <BoopStamp stampKey={element.stampKey} recipientName={element.recipientName} className="canvas-boop-stamp" /> : <ScrapbookItem id={element.id} type={element.kind} text={element.text} date={date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} year={String(date.getFullYear())} src={element.kind === 'voice' ? undefined : element.src} audioSrc={element.kind === 'voice' ? element.src : undefined} url={element.url} ratio={element.ratio} from={element.authorId} owner={ownerName} view={view} rot={placed.rot} zoom={placed.z} seed={element.seed} />}
+                          </div>
                         </MeasuredBlock>
                       );
                     })}

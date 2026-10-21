@@ -1,13 +1,14 @@
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { Header } from '@/components/Header';
 import { InviteSection } from '@/components/InviteSection';
 import { Library } from '@/components/Library';
 import { ScrapbookCover } from '@/components/ScrapbookCover';
 import { HandDrawnDivider } from '@/components/HandDrawnDivider';
-import { LIBRARY_ACTIVE_INDEX, LIBRARY_PEOPLE, OWNER_HANDLE, OWNER_NAME } from '@/data/mock';
+import { LIBRARY_ACTIVE_INDEX, LIBRARY_PEOPLE, OWNER_HANDLE, OWNER_NAME, SCRAPBOOK_COVERS } from '@/data/mock';
 import './HomeScreen.css';
 
 export interface HomeScreenProps {
+  coverImages?: Record<string, string>;
   selectedPerson?: number;
   onSelectPerson?: (index: number) => void;
   onOpenOwnScrapbook?: () => void;
@@ -15,19 +16,26 @@ export interface HomeScreenProps {
   onOpenMailbox?: () => void;
 }
 
-export default function HomeScreen({ selectedPerson, onSelectPerson, onOpenOwnScrapbook, onOpenPersonScrapbook, onOpenMailbox }: HomeScreenProps) {
+export default function HomeScreen({ coverImages = {}, selectedPerson, onSelectPerson, onOpenOwnScrapbook, onOpenPersonScrapbook, onOpenMailbox }: HomeScreenProps) {
   const libraryWrapRef = useRef<HTMLDivElement>(null);
   const libraryScaleRef = useRef<HTMLDivElement>(null);
   const coverNavigationTimerRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
   const coverNavigationPendingRef = useRef(false);
   const openOwnScrapbookRef = useRef(onOpenOwnScrapbook);
-  openOwnScrapbookRef.current = onOpenOwnScrapbook;
+  const libraryPeople = useMemo(
+    () => LIBRARY_PEOPLE.map((person) => ({ ...person, coverImage: coverImages[person.name] ?? person.coverImage })),
+    [coverImages],
+  );
 
   useEffect(() => () => {
     if (coverNavigationTimerRef.current !== null) window.clearTimeout(coverNavigationTimerRef.current);
     coverNavigationTimerRef.current = null;
     coverNavigationPendingRef.current = false;
   }, []);
+
+  useEffect(() => {
+    openOwnScrapbookRef.current = onOpenOwnScrapbook;
+  }, [onOpenOwnScrapbook]);
 
   const openOwnScrapbookAfterCoverAnimation = () => {
     if (coverNavigationPendingRef.current) return;
@@ -76,14 +84,14 @@ export default function HomeScreen({ selectedPerson, onSelectPerson, onOpenOwnSc
         <Header ownerName={OWNER_NAME} onSendClick={onOpenMailbox} />
         <section className="home-scrapbook-section" aria-labelledby="home-scrapbook-heading">
           <div className="home-section-heading"><p id="home-scrapbook-heading" className="home-section-label">01 · YOUR SCRAPBOOK</p><HandDrawnDivider seed={101} /></div>
-          <ScrapbookCover onClick={openOwnScrapbookAfterCoverAnimation} />
+          <ScrapbookCover coverImage={coverImages[OWNER_HANDLE] ?? SCRAPBOOK_COVERS[OWNER_HANDLE]} onClick={openOwnScrapbookAfterCoverAnimation} />
         </section>
         <section className="home-people-section" aria-labelledby="home-people-heading">
           <div className="home-section-heading"><p id="home-people-heading" className="home-section-label">02 · PEOPLE IN YOUR FOLDER</p><HandDrawnDivider seed={202} /></div>
           <div className="home-people-copy"><p>who’s been on your mind?</p><p>your collection of scrapbooks</p></div>
           <div className="home-library-wrap" ref={libraryWrapRef}>
             <div className="home-library-scale" ref={libraryScaleRef}>
-              <Library people={LIBRARY_PEOPLE} selected={selectedPerson} defaultSelected={LIBRARY_ACTIVE_INDEX} onSelect={onSelectPerson} onOpen={onOpenPersonScrapbook} />
+              <Library people={libraryPeople} selected={selectedPerson} defaultSelected={LIBRARY_ACTIVE_INDEX} onSelect={onSelectPerson} onOpen={onOpenPersonScrapbook} />
             </div>
           </div>
         </section>

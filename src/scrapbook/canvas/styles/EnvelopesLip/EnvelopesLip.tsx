@@ -5,7 +5,12 @@ import { ScrapbookItem } from '@/components/ScrapbookItem';
 import { hash } from '../../itemSeed';
 import './EnvelopesLip.css';
 import type { LipItem } from './envelopesLipGeometry';
-import { buildEnvelopes } from './envelopesLipGeometry';
+import { buildEnvelopes, envelopePageForMemory } from './envelopesLipGeometry';
+import type { PlacedMemory } from '@/scrapbook/placement';
+import { revealInScroller, useTargetReveal } from '../../revealTarget';
+import type { PlacedBoopStamp } from '@/scrapbook/boopStamps';
+import { BoopStamp } from '@/components/BoopFab';
+import { targetIdForElement } from '@/scrapbook/placement/dynamicLayout';
 
 export interface EnvelopesLipProps {
   view: 'own' | 'visitor';
@@ -14,6 +19,10 @@ export interface EnvelopesLipProps {
   frameW: number;
   frameH: number;
   designX0: number;
+  items?: PlacedMemory[];
+  boopStamps?: PlacedBoopStamp[];
+  scrollTargetId?: string | null;
+  onScrollTargetHandled?: (id: string) => void;
 }
 
 /**
@@ -65,9 +74,16 @@ function LipItemSlot({
         transition: `left 420ms cubic-bezier(.2,.8,.2,1) ${it.delay}ms, top 420ms cubic-bezier(.2,.8,.2,1) ${it.delay}ms, opacity 200ms`,
       }}
     >
-      {children}
+      <div onClick={(event) => event.stopPropagation()}>{children}</div>
     </div>
   );
+}
+
+function LipScrapbookItem({ it, ownerName, view }: { it: LipItem; ownerName: string; view: 'own' | 'visitor' }) {
+  if (it.boop) return <div style={{ width: it.boop.width, transform: `rotate(${it.rot}deg)` }}><BoopStamp stampKey={it.boop.stampKey} recipientName={it.boop.recipientName} className="canvas-boop-stamp" /></div>;
+  const memory = it.memory;
+  if (memory) return <ScrapbookItem id={memory.id} type={memory.kind} text={memory.text} date={it.date} year={it.year} src={memory.kind === 'voice' ? undefined : memory.src} audioSrc={memory.kind === 'voice' ? memory.src : undefined} url={memory.url} ratio={memory.ratio} from={memory.authorId} owner={ownerName} view={view} rot={it.rot} zoom={it.z} seed={memory.seed} />;
+  return <ScrapbookItem id={it.id} type={it.type} text={it.text} label={it.label} city={it.city} date={it.date} year={it.year} denom={it.denom} dur={it.dur} src={it.src} ratio={it.ratio} from={it.from} owner={ownerName} view={view} attach={it.attach} rot={it.rot} zoom={it.z} seed={hash(it.id)} />;
 }
 
 /**
@@ -90,11 +106,22 @@ function LipItemSlot({
  * own internal AddFab used to hide itself via `hidden={{envOpen}}`; this page doesn't wire
  * that at all, so ours never fades.
  */
-export default function EnvelopesLip({ view, headerDelta, ownerName, frameW, frameH, designX0 }: EnvelopesLipProps) {
+export default function EnvelopesLip({ view, headerDelta, ownerName, frameW, frameH, designX0, items = [], boopStamps = [], scrollTargetId, onScrollTargetHandled }: EnvelopesLipProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [openIndex, setOpenIndex] = useState(-1);
   const [measuredH, setMeasuredH] = useState<Record<string, number>>({});
   const [rotatedDeltas, setRotatedDeltas] = useState<Record<string, number>>({});
+  const [pages, setPages] = useState<Record<number, number>>({});
+  const [appliedTarget, setAppliedTarget] = useState<string | null>(null);
+  const targetMemory = scrollTargetId ? [...items, ...boopStamps].find((item) => targetIdForElement(item) === scrollTargetId) : undefined;
+  const targetLocation = targetMemory ? envelopePageForMemory(targetMemory, items, boopStamps) : undefined;
+  const targetEnvelopeIndex = targetLocation?.envelopeIndex;
+  const targetPage = targetLocation?.page;
+  if (scrollTargetId && targetLocation && appliedTarget !== scrollTargetId) {
+    setAppliedTarget(scrollTargetId);
+    if (pages[targetLocation.envelopeIndex] !== targetLocation.page) setPages({ ...pages, [targetLocation.envelopeIndex]: targetLocation.page });
+    if (openIndex !== targetLocation.envelopeIndex) setOpenIndex(targetLocation.envelopeIndex);
+  } else if (!scrollTargetId && appliedTarget !== null) setAppliedTarget(null);
 
   const handleHeightMeasured = useCallback((id: string, h: number) => {
     setMeasuredH((prev) => (prev[id] === h ? prev : { ...prev, [id]: h }));
@@ -103,14 +130,27 @@ export default function EnvelopesLip({ view, headerDelta, ownerName, frameW, fra
     setRotatedDeltas((prev) => (prev[id] === delta ? prev : { ...prev, [id]: delta }));
   }, []);
 
-  const { envs, innerH } = buildEnvelopes(openIndex, headerDelta, frameH, measuredH, rotatedDeltas);
+  const { envs, innerH } = buildEnvelopes(openIndex, headerDelta, frameH, measuredH, rotatedDeltas, items, boopStamps, pages);
   const any = openIndex >= 0;
 
   const toggle = (i: number) => {
     const open = openIndex === i;
     if (!open) scrollerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!open) setPages((current) => ({ ...current, [i]: 0 }));
     setOpenIndex(open ? -1 : i);
   };
+
+  useLayoutEffect(() => {
+    if (targetEnvelopeIndex === undefined) return;
+    scrollerRef.current?.scrollTo({ top: 0, behavior: 'auto' });
+  }, [targetEnvelopeIndex, targetPage]);
+
+  const reveal = useCallback((target: HTMLElement) => {
+    const scroller = scrollerRef.current;
+    if (scroller) revealInScroller(scroller, target, 138, 110);
+  }, []);
+  const targetReady = !targetLocation || (openIndex === targetLocation.envelopeIndex && (pages[targetLocation.envelopeIndex] ?? 0) === targetLocation.page);
+  useTargetReveal({ targetId: scrollTargetId, ready: targetReady, rootRef: scrollerRef, reveal, onHandled: onScrollTargetHandled });
 
   return (
     <div className="envelopes-lip-root">
@@ -153,30 +193,7 @@ export default function EnvelopesLip({ view, headerDelta, ownerName, frameW, fra
                 </g>
               </svg>
 
-              {ev.items.map((it) => (
-                <LipItemSlot key={it.id} it={it} onHeightMeasured={handleHeightMeasured} onRotatedTopMeasured={handleRotatedTopMeasured}>
-                  <ScrapbookItem
-                    id={it.id}
-                    type={it.type}
-                    text={it.text}
-                    label={it.label}
-                    city={it.city}
-                    date={it.date}
-                    year={it.year}
-                    denom={it.denom}
-                    dur={it.dur}
-                    src={it.src}
-                    ratio={it.ratio}
-                    from={it.from}
-                    owner={ownerName}
-                    view={view}
-                    attach={it.attach}
-                    rot={it.rot}
-                    zoom={it.z}
-                    seed={hash(it.id)}
-                  />
-                </LipItemSlot>
-              ))}
+              {ev.items.map((it) => <LipItemSlot key={it.id} it={it} onHeightMeasured={handleHeightMeasured} onRotatedTopMeasured={handleRotatedTopMeasured}><div data-scrapbook-item-id={it.memory || it.boop ? targetIdForElement(it.boop ?? it.memory!) : undefined}><LipScrapbookItem it={it} ownerName={ownerName} view={view} /></div></LipItemSlot>)}
 
               {/* Always-visible pocket: one ink line, thumb notch, small label holder. */}
               <svg className="envelopes-lip-pocket" width="330" height="196">
@@ -194,6 +211,13 @@ export default function EnvelopesLip({ view, headerDelta, ownerName, frameW, fra
                 </svg>
                 <div className="envelopes-lip-label-text">{ev.label}</div>
               </div>
+              {openIndex === i && ev.pageCount > 1 && (
+                <div className="envelopes-lip-pages" onClick={(event) => event.stopPropagation()}>
+                  <button type="button" disabled={ev.page === 0} onClick={() => setPages((current) => ({ ...current, [i]: Math.max(0, ev.page - 1) }))}>previous</button>
+                  <span>{ev.page + 1} / {ev.pageCount}</span>
+                  <button type="button" disabled={ev.page === ev.pageCount - 1} onClick={() => setPages((current) => ({ ...current, [i]: Math.min(ev.pageCount - 1, ev.page + 1) }))}>next</button>
+                </div>
+              )}
             </div>
           ))}
         </div>

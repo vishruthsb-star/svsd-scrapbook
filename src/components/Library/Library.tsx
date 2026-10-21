@@ -144,7 +144,8 @@ export default function Library({
                       <path d={g.bodyD} style={{ fill: 'var(--lib-paper)', strokeWidth: cfg.stroke }} />
                       <path d={g.pshadowD} style={{ fill: 'var(--lib-ink)', stroke: 'none' }} />
                       {/* the cover: one full-width hatched panel, no inner rectangles — swap this fill for real media later */}
-                      <path d={g.frameD} style={{ fill: cfg.preview === 'shaded' ? hatchFill : 'var(--lib-paper)', strokeWidth: cfg.stroke * 0.75 }} />
+                      {p.coverImage && <image href={p.coverImage} x={g.frameX} y={g.frameY} width={g.frameW} height={g.frameH} preserveAspectRatio="xMidYMid slice" />}
+                      <path d={g.frameD} style={{ fill: p.coverImage ? 'transparent' : cfg.preview === 'shaded' ? hatchFill : 'var(--lib-paper)', strokeWidth: cfg.stroke * 0.75 }} />
                     </g>
                   </svg>
 

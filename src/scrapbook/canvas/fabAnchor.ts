@@ -7,6 +7,11 @@ export interface FabAnchorPoint {
   y: number;
 }
 
+/** Center a pill whose right edge sits on the canvas safe-area boundary. */
+export function rightSafeCenter(frameW: number, pillW: number): number {
+  return frameW - SAFE.side - pillW / 2;
+}
+
 /**
  * The AddFab pill's center point, derived from the add-button working rectangle (the
  * Volume 1 SPEC OVERRIDES: `left = SAFE.side`, `right = frameW - SAFE.side`, `bottom =
@@ -40,5 +45,5 @@ export function fabAnchor(
     return { x: (left + right) / 2, y: bottom - pillH / 2 };
   }
 
-  return { x: right - pillW / 2, y: top + pillH / 2 };
+  return { x: rightSafeCenter(frameW, pillW), y: top + pillH / 2 };
 }

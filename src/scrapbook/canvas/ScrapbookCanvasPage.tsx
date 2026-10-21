@@ -14,7 +14,7 @@ import { OWNER_HANDLE } from '@/data/mock';
 import './ScrapbookCanvasPage.css';
 import { DESIGN_W, FAB_PILL_HEIGHT, HEADER_REF_BOTTOM, SAFE } from './constants';
 import type { FabPlacement } from './fabAnchor';
-import { fabAnchor } from './fabAnchor';
+import { fabAnchor, rightSafeCenter } from './fabAnchor';
 import { PRODUCTION_FAB_LAYOUT } from './fabLayoutConfig';
 import type { CanvasStyle } from './styleRegistry';
 import { CANVAS_STYLE_FAB_PLACEMENT, CANVAS_STYLES } from './styleRegistry';
@@ -39,6 +39,7 @@ export interface ScrapbookCanvasPageProps {
   boopStamps?: PlacedBoopStamp[];
   onBoopSelect?: (key: BoopStampKey, position: { x: number; y: number }) => void;
   scrollTargetId?: string | null;
+  onScrollTargetHandled?: (id: string) => void;
   onBoopOpenChange?: (open: boolean) => void;
 }
 
@@ -119,6 +120,7 @@ export default function ScrapbookCanvasPage({
   boopStamps = [],
   onBoopSelect,
   scrollTargetId,
+  onScrollTargetHandled,
   onBoopOpenChange,
   items = [],
 }: ScrapbookCanvasPageProps) {
@@ -169,6 +171,12 @@ export default function ScrapbookCanvasPage({
   const boopVerticalGap = addFabPoint
     ? addFabPoint.y - FAB_PILL_HEIGHT / 2 - (SAFE.top + headerHeight!)
     : PRODUCTION_FAB_LAYOUT.boopButton.verticalGap;
+  const boopPoint = addFabPoint && frame
+    ? {
+        x: rightSafeCenter(frame.w, PRODUCTION_FAB_LAYOUT.boopButton.width),
+        y: addFabPoint.y + FAB_PILL_HEIGHT / 2 + boopVerticalGap + PRODUCTION_FAB_LAYOUT.boopButton.height / 2,
+      }
+    : null;
 
   return (
     <ScreenShell variant="canvas">
@@ -178,7 +186,7 @@ export default function ScrapbookCanvasPage({
           {headerDelta !== null &&
             designX0 !== null &&
             frame !== null &&
-            CANVAS_STYLES[style]({ view, headerDelta, ownerName, frameW: frame.w, frameH: frame.h, designX0, items, boopStamps, scrollTargetId })}
+            CANVAS_STYLES[style]({ view, headerDelta, ownerName, frameW: frame.w, frameH: frame.h, designX0, items, boopStamps, scrollTargetId, onScrollTargetHandled })}
         </div>
         <div ref={headerWrapRef} className="scrapbook-canvas-page-header">
           <ScrapbookHeader {...headerProps} />
@@ -186,6 +194,9 @@ export default function ScrapbookCanvasPage({
         {view === 'visitor' && needsPillWidth && pillWidth === null && <FabPillWidthProbe onMeasured={setPillWidth} />}
         {view === 'visitor' && fabReady && (
           <AddFab
+            /* The imperative engine reads x/y/frame dimensions at construction; remount only
+             * when the measured canvas changes so its right edge continues to follow SAFE.side. */
+            key={`${frame!.w}-${frame!.h}-${fabPlacement}`}
             ref={addFabRef}
             placement={fabPlacement}
             frameW={frame!.w}
@@ -199,11 +210,11 @@ export default function ScrapbookCanvasPage({
             y={addFabPoint!.y}
           />
         )}
-        {view === 'visitor' && fabReady && fabPlacement === 'tr' && (
+        {view === 'visitor' && fabReady && fabPlacement === 'tr' && boopPoint && (
           <BoopFab
             recipientName={ownerName}
-            x={addFabPoint!.x + PRODUCTION_FAB_LAYOUT.boopButton.horizontalOffset}
-            y={addFabPoint!.y + FAB_PILL_HEIGHT / 2 + boopVerticalGap + PRODUCTION_FAB_LAYOUT.boopButton.height / 2}
+            x={boopPoint.x}
+            y={boopPoint.y}
             open={boopOpen}
             onOpen={() => { addFabRef.current?.close(); setBoopOpen(true); onBoopOpenChange?.(true); }}
             onClose={() => { setBoopOpen(false); onBoopOpenChange?.(false); }}

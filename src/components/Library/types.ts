@@ -1,5 +1,6 @@
 export interface LibraryPerson {
   name: string;
+  coverImage?: string;
   /** which third of the card the tab sits in — keeps the left/middle/right stagger */
   col: 0 | 1 | 2;
   unread?: boolean;
@@ -48,7 +49,7 @@ export interface LibraryConfig {
 
 /** Final values chosen in the harness — the component's actual defaults (not the harness's own exploratory defaults). */
 export const DEFAULT_LIBRARY_CONFIG: LibraryConfig = {
-  quality: 39,
+  quality: 77,
   grain: 0.05,
   stroke: 1.85,
   font: 'condensed',
@@ -73,22 +74,22 @@ export const DEFAULT_LIBRARY_CONFIG: LibraryConfig = {
   bounce: 0.1,
   curve: 'ios',
   stagger: 0,
-  press: 0.93,
-  pressMs: 55,
+  press: 0.97,
+  pressMs: 80,
   lift: 2,
-  liftShadow: 0.08,
+  liftShadow: 0.28,
   fillDelay: 150,
-  fillMs: 120,
+  fillMs: 150,
   motion: 'auto',
 };
 
 export const DEFAULT_LIBRARY_PEOPLE: LibraryPerson[] = [
-  { name: 'maya', col: 2, unread: true },
-  { name: 'priya', col: 1 },
-  { name: 'jun', col: 0 },
-  { name: 'theo', col: 2, unread: true },
-  { name: 'ana', col: 0 },
-  { name: 'sam', col: 1 },
+  { name: 'maya', col: 2, unread: true, coverImage: '/album-covers/maya.jpg' },
+  { name: 'priya', col: 1, coverImage: '/album-covers/priya.jpg' },
+  { name: 'jun', col: 0, coverImage: '/album-covers/jun.jpg' },
+  { name: 'theo', col: 2, unread: true, coverImage: '/album-covers/theo.jpg' },
+  { name: 'ana', col: 0, coverImage: '/album-covers/ana.jpg' },
+  { name: 'sam', col: 1, coverImage: '/album-covers/sam.jpg' },
 ];
 
 export const DEFAULT_SELECTED_INDEX = 2; // jun

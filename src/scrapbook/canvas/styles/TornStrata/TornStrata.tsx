@@ -1,10 +1,12 @@
-import { useLayoutEffect, useMemo, useRef } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ScrapbookItem } from '@/components/ScrapbookItem';
 import './TornStrata.css';
 import { buildStrata, hash, strataPageHeight } from './tornStrataGeometry';
 import type { PlacedMemory } from '@/scrapbook/placement';
 import { BoopStamp } from '@/components/BoopFab';
 import type { PlacedBoopStamp } from '@/scrapbook/boopStamps';
+import { revealInScroller, useTargetReveal } from '../../revealTarget';
+import { boopTargetId } from '@/scrapbook/placement/dynamicLayout';
 
 export interface TornStrataProps {
   view: 'own' | 'visitor';
@@ -16,6 +18,7 @@ export interface TornStrataProps {
   items?: PlacedMemory[];
   boopStamps?: PlacedBoopStamp[];
   scrollTargetId?: string | null;
+  onScrollTargetHandled?: (id: string) => void;
 }
 
 /**
@@ -30,29 +33,34 @@ export interface TornStrataProps {
  * offset by `designX0` so it lands in the same position relative to the reference's
  * 390-wide design box, centered within the real (possibly wider) frame.
  */
-export default function TornStrata({ view, headerDelta, ownerName, frameW, designX0, items = [], boopStamps = [], scrollTargetId }: TornStrataProps) {
-  const { strata, acc } = useMemo(() => buildStrata(headerDelta, frameW, items, boopStamps), [headerDelta, frameW, items, boopStamps]);
-  const sH = strataPageHeight(acc, view);
+export default function TornStrata({ view, headerDelta, ownerName, frameW, designX0, items = [], boopStamps = [], scrollTargetId, onScrollTargetHandled }: TornStrataProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const lastTargetRef = useRef<string | null>(null);
+  const [measuredHeights, setMeasuredHeights] = useState<Record<string, number>>({});
+  const { strata, acc } = useMemo(() => buildStrata(headerDelta, frameW, items, boopStamps, measuredHeights), [headerDelta, frameW, items, boopStamps, measuredHeights]);
+  const sH = strataPageHeight(acc, view);
 
   useLayoutEffect(() => {
-    if (!scrollTargetId || scrollTargetId === lastTargetRef.current) return;
-    lastTargetRef.current = scrollTargetId;
-    const frame = requestAnimationFrame(() => {
-      const scroller = scrollRef.current;
-      const target = scroller?.querySelector<HTMLElement>(`[data-scrapbook-item-id="${scrollTargetId}"]`);
-      if (!scroller || !target) return;
-      const viewport = scroller.getBoundingClientRect();
-      const item = target.getBoundingClientRect();
-      const topSafe = viewport.top + 138;
-      const bottomSafe = viewport.bottom - 108;
-      if (item.top >= topSafe && item.bottom <= bottomSafe) return;
-      const targetTop = Math.max(0, scroller.scrollTop + item.top - viewport.top - (scroller.clientHeight - item.height) / 2 + 16);
-      scroller.scrollTo({ top: targetTop, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [scrollTargetId, sH]);
+    const scroller = scrollRef.current;
+    if (!scroller || typeof ResizeObserver === 'undefined') return;
+    const measure = () => {
+      const next: Record<string, number> = {};
+      scroller.querySelectorAll<HTMLElement>('[data-scrapbook-item-id]').forEach((element) => {
+        const id = element.dataset.scrapbookItemId;
+        if (id && element.offsetHeight > 0) next[id] = element.offsetHeight / .84;
+      });
+      setMeasuredHeights((previous) => Object.keys(next).every((id) => previous[id] === next[id]) && Object.keys(previous).every((id) => id in next) ? previous : next);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    scroller.querySelectorAll<HTMLElement>('[data-scrapbook-item-id]').forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, [items, sH]);
+
+  const reveal = useCallback((target: HTMLElement) => {
+    const scroller = scrollRef.current;
+    if (scroller) revealInScroller(scroller, target, 138, 108);
+  }, []);
+  useTargetReveal({ targetId: scrollTargetId, rootRef: scrollRef, reveal, onHandled: onScrollTargetHandled });
 
   return (
     <div className="torn-strata-root">
@@ -126,7 +134,7 @@ export default function TornStrata({ view, headerDelta, ownerName, frameW, desig
                   />
                 </div>;
               })}
-              {strip.boopStamps.map(({ stamp, x, y }) => <div key={stamp.id} data-scrapbook-item-id={stamp.id} className="torn-strata-boop" style={{ left: x + designX0, top: y, width: stamp.width, transform: `rotate(${stamp.rotation}deg)` }}><BoopStamp stampKey={stamp.stampKey} recipientName={stamp.recipientName} /></div>)}
+              {strip.boopStamps.map(({ stamp, x, y }) => <div key={stamp.id} data-scrapbook-item-id={boopTargetId(stamp.id)} className="torn-strata-boop" style={{ left: x + designX0, top: y, width: stamp.width, transform: `rotate(${stamp.rotation}deg)` }}><BoopStamp stampKey={stamp.stampKey} recipientName={stamp.recipientName} /></div>)}
             </div>
           ))}
         </div>

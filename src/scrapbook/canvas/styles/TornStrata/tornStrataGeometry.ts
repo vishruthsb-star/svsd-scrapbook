@@ -6,6 +6,7 @@ import { rng } from '../../rng';
 import type { PlacedMemory } from '@/scrapbook/placement';
 import type { PlacedBoopStamp } from '@/scrapbook/boopStamps';
 import { findCompactPlacement } from '@/scrapbook/placement/compactPlacement';
+import { dynamicRotation, memorySize, rotatedBounds, stableHash } from '@/scrapbook/placement/dynamicLayout';
 
 export { hash, rng };
 
@@ -156,51 +157,19 @@ function labelOrder(label: string): number {
   return year * 12 + monthIndex;
 }
 
-function naturalSize(memory: PlacedMemory): [number, number] {
-  if (memory.kind === 'stamp') {
-    const ratio = Math.max(.5, Math.min(2, memory.ratio ?? 1));
-    const captionLines = Math.max(0, Math.ceil((memory.text?.length ?? 0) / 19));
-    return [150, 122 / ratio + 32 + captionLines * 18];
-  }
-  if (memory.kind === 'note') return [200, Math.max(170, 50 + Math.ceil((memory.text?.length ?? 0) / 20) * 30)];
-  if (memory.kind === 'voice') return [230, 146];
-  return [124, Math.max(158, 116 + Math.ceil((memory.text?.length ?? 0) / 13) * 15)];
-}
-
-function mixedSeed(value: string): number {
-  let seed = hash(value) >>> 0;
-  seed ^= seed >>> 16;
-  seed = Math.imul(seed, 0x45d9f3b) >>> 0;
-  seed ^= seed >>> 16;
-  return seed >>> 0;
-}
-
-function dynamicRotation(id: string): number {
-  const value = mixedSeed(id) / 0xffffffff;
-  const rotation = -5 + value * 10;
-  return Math.abs(rotation) < .7 ? (rotation < 0 ? -.7 : .7) : Number(rotation.toFixed(2));
-}
-
 interface Bounds { x: number; y: number; w: number; h: number; }
 
-function rotatedBounds(x: number, y: number, width: number, height: number, rotation: number): Bounds {
-  const radians = Math.abs(rotation) * Math.PI / 180;
-  const w = Math.abs(width * Math.cos(radians)) + Math.abs(height * Math.sin(radians));
-  const h = Math.abs(width * Math.sin(radians)) + Math.abs(height * Math.cos(radians));
-  return { x: x - (w - width) / 2, y: y - (h - height) / 2, w, h };
-}
-
 /** Deterministic, rotation-aware packing below the reference fixtures in each strip. */
-export function packDynamicStrataItems(memories: PlacedMemory[], startY: number, frameW: number, initialOccupied: Bounds[] = []): DynamicStrataItem[] {
+export function packDynamicStrataItems(memories: PlacedMemory[], startY: number, frameW: number, initialOccupied: Bounds[] = [], measuredHeights: Record<string, number> = {}): DynamicStrataItem[] {
   const occupied: Bounds[] = [...initialOccupied];
   return [...memories].sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id)).map((memory) => {
     const z = .84;
-    const [naturalW, naturalH] = naturalSize(memory);
+    const [naturalW, naturalH] = memorySize(memory, measuredHeights[memory.id]);
     const width = naturalW * z;
     const height = naturalH * z;
     const rotation = dynamicRotation(memory.id);
     const footprint = rotatedBounds(0, 0, width, height, rotation);
-    const placed = findCompactPlacement({ frameWidth: frameW, startY, item: { w: footprint.w, h: footprint.h }, occupied, seed: mixedSeed(memory.id) });
+    const placed = findCompactPlacement({ frameWidth: frameW, startY, item: { w: footprint.w, h: footprint.h }, occupied, seed: stableHash(memory.id) });
     occupied.push({ x: placed.x, y: placed.y, w: footprint.w, h: footprint.h });
     return { memory, x: Math.round(placed.x + (footprint.w - width) / 2), y: Math.round(placed.y + (footprint.h - height) / 2), rot: rotation, z };
   });
@@ -223,7 +192,7 @@ export function packDynamicStrataItems(memories: PlacedMemory[], startY: number,
  * them. `top` pixel offsets are computed BEFORE the reverse, in the original (newest-first)
  * ST order, so OCT 2026 still sits at `top: 0`. Do not sort/re-derive this order.
  */
-export function buildStrata(headerDelta: number, frameW: number, memories: PlacedMemory[] = [], boopStamps: PlacedBoopStamp[] = []): { strata: StrataStrip[]; acc: number } {
+export function buildStrata(headerDelta: number, frameW: number, memories: PlacedMemory[] = [], boopStamps: PlacedBoopStamp[] = [], measuredHeights: Record<string, number> = {}): { strata: StrataStrip[]; acc: number } {
   const byLabel = new Map<string, PlacedMemory[]>();
   for (const memory of memories) {
     const label = memoryLabel(memory);
@@ -248,11 +217,11 @@ export function buildStrata(headerDelta: number, frameW: number, memories: Place
     const fixtureBounds = items.map((item) => rotatedBounds(item.x ?? 0, item.y, item.w, item.h, item.rot));
     // Start below the month label, not below every fixture: the shared placer can now use
     // genuine side gaps between the authored objects before it grows the paper vertically.
-    const dynamicItems = packDynamicStrataItems(byLabel.get(s.label) ?? [], pad + 64, frameW, fixtureBounds);
-    const dynamicBottom = dynamicItems.reduce((bottom, item) => Math.max(bottom, item.y + naturalSize(item.memory)[1] * item.z + 24), fixtureBottom);
+    const dynamicItems = packDynamicStrataItems(byLabel.get(s.label) ?? [], pad + 64, frameW, fixtureBounds, measuredHeights);
+    const dynamicBottom = dynamicItems.reduce((bottom, item) => Math.max(bottom, item.y + memorySize(item.memory, measuredHeights[item.memory.id])[1] * item.z + 24), fixtureBottom);
     const occupied = [
       ...fixtureBounds,
-      ...dynamicItems.map((item) => { const [w, h] = naturalSize(item.memory); return rotatedBounds(item.x, item.y, w * item.z, h * item.z, item.rot); }),
+      ...dynamicItems.map((item) => { const [w, h] = memorySize(item.memory, measuredHeights[item.memory.id]); return rotatedBounds(item.x, item.y, w * item.z, h * item.z, item.rot); }),
     ];
     const boopStamps = [...(boopsByLabel.get(s.label) ?? [])].sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id)).map((stamp) => {
       const footprint = rotatedBounds(0, 0, stamp.width, stamp.width, stamp.rotation);

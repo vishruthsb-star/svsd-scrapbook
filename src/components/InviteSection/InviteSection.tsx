@@ -121,8 +121,8 @@ export default function InviteSection({ handle = 'vishruth', onInvite }: InviteS
           <g style={{ filter: buttonFilter }}>
             <path
               d="M70 3 C120 1 132 18 130 32 C128 50 100 58 64 57 C24 56 3 46 3 30 C3 12 30 4 78 6"
-              fill="#494444"
-              stroke="#494444"
+              fill="#151515"
+              stroke="#151515"
               strokeWidth={2}
               strokeLinecap="round"
               vectorEffect="non-scaling-stroke"

@@ -1,14 +1,17 @@
+import { useEffect, useState } from 'react';
 import './ScrapbookHeader.css';
 
 /**
  * Faithful port of references/scrapbook-header.html (Figma node 118:1744, "Frame 13").
- * 354x61 pill: back-arrow icon, title, 44x44 avatar (falls back to a gradient placeholder
- * when no avatarSrc is given).
+ * 354x61 pill: back-arrow icon, title, 44x44 scrapbook cover (falls back to the
+ * reference gradient when no usable cover source is given).
  */
 export interface ScrapbookHeaderProps {
   /** Defaults to the reference copy exactly, including the curly apostrophe. */
   title?: string;
-  /** Profile photo URL. When omitted, the avatar renders the reference's gradient placeholder. */
+  /** Album-cover URL for the scrapbook currently being viewed. */
+  coverSrc?: string;
+  /** @deprecated Use coverSrc. Kept for existing isolated consumers. */
   avatarSrc?: string;
   onBack?: () => void;
   /** Opens the scrapbook's profile/settings screen from either identity affordance. */
@@ -17,10 +20,21 @@ export interface ScrapbookHeaderProps {
 
 export default function ScrapbookHeader({
   title = 'vishruth’s scrapbook',
+  coverSrc,
   avatarSrc,
   onBack,
   onProfileOpen,
 }: ScrapbookHeaderProps) {
+  const imageSrc = coverSrc ?? avatarSrc;
+  const [imageFailed, setImageFailed] = useState(false);
+
+  // A profile edit can replace a failed source; let the cover slot attempt the new image.
+  useEffect(() => setImageFailed(false), [imageSrc]);
+
+  const cover = imageSrc && !imageFailed
+    ? <img src={imageSrc} alt="" onError={() => setImageFailed(true)} />
+    : <span aria-hidden="true" />;
+
   return (
     <header className="scrapbook-header">
       <button
@@ -45,10 +59,14 @@ export default function ScrapbookHeader({
         </button>
       ) : <p className="scrapbook-header-title">{title}</p>}
       {onProfileOpen ? (
-        <button type="button" className="scrapbook-header-avatar-button" aria-label="Open scrapbook profile" onClick={onProfileOpen}>
-          {avatarSrc ? <img className="scrapbook-header-avatar" src={avatarSrc} alt="" /> : <span className="scrapbook-header-avatar" aria-hidden="true" />}
+        <button type="button" className="scrapbook-header__cover scrapbook-header-cover-button" aria-label="Open scrapbook profile" onClick={onProfileOpen}>
+          {cover}
         </button>
-      ) : avatarSrc ? <img className="scrapbook-header-avatar" src={avatarSrc} alt="Profile photo" /> : <div className="scrapbook-header-avatar" role="img" aria-label="Profile photo" />}
+      ) : (
+        <div className="scrapbook-header__cover" role="img" aria-label="Scrapbook cover">
+          {cover}
+        </div>
+      )}
     </header>
   );
 }

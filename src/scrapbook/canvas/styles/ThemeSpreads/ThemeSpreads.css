@@ -128,6 +128,12 @@
   position: absolute;
 }
 
+.canvas-boop-stamp {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .theme-spreads-nav {
   position: absolute;
   left: 0;

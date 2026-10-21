@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { ScreenShell } from '@/components/ScreenShell';
 import HomeScreen from './HomeScreen';
 
-export interface HomeScreenShellProps { selectedPerson?: number; onSelectPerson?: (index: number) => void; onOpenOwnScrapbook?: () => void; onOpenPersonScrapbook?: (index: number) => void; onOpenMailbox?: () => void; }
+export interface HomeScreenShellProps { selectedPerson?: number; coverImages?: Record<string, string>; onSelectPerson?: (index: number) => void; onOpenOwnScrapbook?: () => void; onOpenPersonScrapbook?: (index: number) => void; onOpenMailbox?: () => void; }
 
 export default function HomeScreenShell(props: HomeScreenShellProps) {
   const scrollRef = useRef<HTMLDivElement>(null);

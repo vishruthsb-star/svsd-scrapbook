@@ -1,16 +1,17 @@
 import type { ReactNode, TransitionEvent } from 'react';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { SAMPLE_IMAGE_SRCS } from '@/scrapbook/fixtures/sampleItems';
 import CanvasScreen from '@/screens/CanvasScreen/CanvasScreen';
 import ComposeMemoryScreen from '@/screens/ComposeMemoryScreen/ComposeMemoryScreen';
 import type { ComposeKind, ComposedMemory } from '@/screens/ComposeMemoryScreen/ComposeMemoryScreen';
 import type { AddFabKind } from '@/components/AddFab';
-import { LIBRARY_ACTIVE_INDEX, LIBRARY_PEOPLE, OWNER_NAME } from '@/data/mock';
+import { LIBRARY_ACTIVE_INDEX, LIBRARY_PEOPLE, OWNER_NAME, SCRAPBOOK_COVERS } from '@/data/mock';
 import type { PlacedMemory } from '@/scrapbook/placement';
 import { loadMemories, saveMemory } from '@/scrapbook/persistence/localScrapbookStore';
 import HomeScreenShell from '@/screens/HomeScreen/HomeScreenShell';
 import { decodeImages } from '@/utils/decodeImages';
 import { loadBoopStamps, saveBoopStamps } from '@/scrapbook/boopStamps';
+import { boopTargetId } from '@/scrapbook/placement/dynamicLayout';
 import type { PlacedBoopStamp, BoopStampKey } from '@/scrapbook/boopStamps';
 import MailboxScreen from '@/screens/MailboxScreen/MailboxScreen';
 import type { MailboxNotification } from '@/data/mailboxNotifications';
@@ -144,9 +145,13 @@ export default function AppShell() {
   const [, setBoopPickerOpen] = useState(false);
   const savingRef = useRef(false);
   const coverUrlsRef = useRef<Record<string, string>>({});
-  const recipientName = openedScrapbook === 'own' ? OWNER_NAME.toLowerCase() : openedScrapbook ?? LIBRARY_PEOPLE[selectedPerson].name;
+  // Folder selection is a Home-only interaction. Keep the permanently mounted, hidden
+  // canvas bound to a stable recipient until a scrapbook is actually opened; otherwise
+  // every tab click needlessly rebuilds the canvas's heavyweight SVG layout.
+  const recipientName = openedScrapbook === 'own' ? OWNER_NAME.toLowerCase() : openedScrapbook ?? LIBRARY_PEOPLE[LIBRARY_ACTIVE_INDEX].name;
   const recipient = { name: recipientName };
   const scrapbookId = `library:${recipient.name}`;
+  const coverImage = coverImages[recipient.name] ?? SCRAPBOOK_COVERS[recipient.name];
   const presentation = presentations[scrapbookId] ?? loadPresentation(scrapbookId);
   const visibleContributors = contributors[scrapbookId] ?? PROFILE_CONTRIBUTORS;
 
@@ -169,29 +174,31 @@ export default function AppShell() {
     Object.values(coverUrlsRef.current).forEach((url) => URL.revokeObjectURL(url));
   }, []);
 
-  const openOwnScrapbook = () => {
+  const openOwnScrapbook = useCallback(() => {
     window.history.pushState({ scrapbookScreen: true, scrapbookId: 'own' }, '');
     setOpenedScrapbook('own');
-  };
-  const openPersonScrapbook = (index: number) => {
+  }, []);
+  const openPersonScrapbook = useCallback((index: number) => {
     setSelectedPerson(index);
     window.history.pushState({ scrapbookScreen: true, scrapbookId: `library:${LIBRARY_PEOPLE[index].name}` }, '');
     setOpenedScrapbook(LIBRARY_PEOPLE[index].name);
-  };
-  const returnHome = () => {
+  }, []);
+  const returnHome = useCallback(() => {
     if (window.history.state?.scrapbookScreen) window.history.back();
     else setOpenedScrapbook(null);
-  };
-  const openProfile = () => {
+  }, []);
+  const openProfile = useCallback(() => {
     if (!openedScrapbook) return;
     window.history.pushState({ scrapbookProfile: true, scrapbookId: openedScrapbook }, '');
     setProfileOpen(true);
-  };
+  }, [openedScrapbook]);
   const closeProfile = () => {
     if (window.history.state?.scrapbookProfile) window.history.back();
     else setProfileOpen(false);
   };
   const selectPresentation = (next: ScrapbookPresentation) => {
+    // An insertion reveal belongs to the canvas where it was made; do not replay it after a presentation switch.
+    setScrollTargetId(null);
     setPresentations((current) => ({ ...current, [scrapbookId]: next }));
     try { window.localStorage.setItem(presentationStorageKey(scrapbookId), next); } catch { /* Storage is optional in the prototype. */ }
   };
@@ -211,11 +218,11 @@ export default function AppShell() {
     });
   };
   const updateCoverImage = (file: File) => {
-    const previous = coverUrlsRef.current[scrapbookId];
+    const previous = coverUrlsRef.current[recipient.name];
     if (previous) URL.revokeObjectURL(previous);
     const next = URL.createObjectURL(file);
-    coverUrlsRef.current[scrapbookId] = next;
-    setCoverImages((current) => ({ ...current, [scrapbookId]: next }));
+    coverUrlsRef.current[recipient.name] = next;
+    setCoverImages((current) => ({ ...current, [recipient.name]: next }));
   };
   const openMailbox = () => {
     window.history.pushState({ mailboxScreen: true }, '');
@@ -248,11 +255,11 @@ export default function AppShell() {
     return () => { cancelled = true; };
   }, [recipient.name]);
 
-  const openCompose = (kind: AddFabKind) => {
+  const openCompose = useCallback((kind: AddFabKind) => {
     if (composeKind) return;
     window.history.pushState({ scrapbookCompose: true, scrapbookId: `library:${recipient.name}` }, '');
     setComposeKind(kind);
-  };
+  }, [composeKind, recipient.name]);
   const closeCompose = () => {
     if (window.history.state?.scrapbookCompose) window.history.back();
     else setComposeKind(null);
@@ -275,12 +282,24 @@ export default function AppShell() {
       window.alert("Couldn't save this memory. Please try again.");
     } finally { savingRef.current = false; }
   };
-  const addBoopStamp = (stampKey: BoopStampKey, position: { x: number; y: number }) => {
+  const addBoopStamp = useCallback((stampKey: BoopStampKey, position: { x: number; y: number }) => {
     const id = typeof crypto?.randomUUID === 'function' ? crypto.randomUUID() : `boop-${Date.now()}-${boopStamps.length}`;
     const stamp: PlacedBoopStamp = { id, stampKey, scrapbookId: `library:${recipient.name}`, recipientName: recipient.name, x: position.x, y: position.y, width: 136, rotation: ((boopStamps.length * 5) % 11) - 5, createdAt: new Date().toISOString() };
     setBoopStamps((current) => { const next = [...current, stamp]; saveBoopStamps(next); return next; });
-    setScrollTargetId(stamp.id);
-  };
+    setScrollTargetId(boopTargetId(stamp.id));
+  }, [boopStamps.length, recipient.name]);
+
+  const canvasItems = useMemo(
+    () => createdItems.filter((item) => item.recipientId === recipient.name),
+    [createdItems, recipient.name],
+  );
+  const canvasBoopStamps = useMemo(
+    () => boopStamps.filter((stamp) => stamp.scrapbookId === `library:${recipient.name}`),
+    [boopStamps, recipient.name],
+  );
+  const handleScrollTargetHandled = useCallback((id: string) => {
+    setScrollTargetId((current) => current === id ? null : current);
+  }, []);
 
   // Pre-decode the canvas screen's photos while Home is still showing, so the first switch
   // to Journal doesn't stall on JPEG decode (the canvas panel is mounted from the start but
@@ -293,7 +312,7 @@ export default function AppShell() {
   return (
     <div className="app-shell-root">
       <ScreenPanel active={openedScrapbook === null && !mailboxOpen && !invitationOpen} id="panel-home" labelledBy="home-screen" className="app-shell-home">
-        <HomeScreenShell selectedPerson={selectedPerson} onSelectPerson={setSelectedPerson} onOpenOwnScrapbook={openOwnScrapbook} onOpenPersonScrapbook={openPersonScrapbook} onOpenMailbox={openMailbox} />
+        <HomeScreenShell selectedPerson={selectedPerson} coverImages={coverImages} onSelectPerson={setSelectedPerson} onOpenOwnScrapbook={openOwnScrapbook} onOpenPersonScrapbook={openPersonScrapbook} onOpenMailbox={openMailbox} />
       </ScreenPanel>
       <ScreenPanel active={mailboxOpen} id="panel-mailbox" labelledBy="mailbox-screen" className="app-shell-home">
         <MailboxScreen onBack={returnFromMailbox} onOpenNotification={openMailboxNotification} />
@@ -302,10 +321,10 @@ export default function AppShell() {
         <InvitationScreen inviterName="varun" onBack={() => window.history.back()} />
       </ScreenPanel>
       <ScreenPanel active={openedScrapbook !== null && !profileOpen} id="panel-scrapbook" labelledBy="scrapbook-screen" className="app-shell-canvas">
-        <CanvasScreen recipientName={recipient.name} style={PRESENTATION_TO_CANVAS_STYLE[presentation]} onBack={returnHome} onProfileOpen={openProfile} onAddSelect={openCompose} items={createdItems.filter((item) => item.recipientId === recipient.name)} boopStamps={boopStamps.filter((stamp) => stamp.scrapbookId === `library:${recipient.name}`)} onBoopSelect={addBoopStamp} scrollTargetId={scrollTargetId} onBoopOpenChange={setBoopPickerOpen} />
+        <CanvasScreen recipientName={recipient.name} coverImage={coverImage} style={PRESENTATION_TO_CANVAS_STYLE[presentation]} onBack={returnHome} onProfileOpen={openProfile} onAddSelect={openCompose} items={canvasItems} boopStamps={canvasBoopStamps} onBoopSelect={addBoopStamp} scrollTargetId={scrollTargetId} onScrollTargetHandled={handleScrollTargetHandled} onBoopOpenChange={setBoopPickerOpen} />
       </ScreenPanel>
       <ScreenPanel active={openedScrapbook !== null && profileOpen} id="panel-scrapbook-profile" labelledBy="scrapbook-profile-screen" className="app-shell-profile">
-        <ScrapbookProfileScreen ownerName={recipient.name} presentation={presentation} contributors={visibleContributors} coverImage={coverImages[scrapbookId]} onBack={closeProfile} onPresentationChange={selectPresentation} onContributorRemove={removeContributor} onInvite={inviteContributor} onCoverFileChange={updateCoverImage} />
+        <ScrapbookProfileScreen ownerName={recipient.name} presentation={presentation} contributors={visibleContributors} coverImage={coverImage} onBack={closeProfile} onPresentationChange={selectPresentation} onContributorRemove={removeContributor} onInvite={inviteContributor} onCoverFileChange={updateCoverImage} />
       </ScreenPanel>
       {composeKind && (
         <div className="app-shell-compose" role="dialog" aria-modal="true" aria-label={`Compose memory for ${recipient.name}`}>
