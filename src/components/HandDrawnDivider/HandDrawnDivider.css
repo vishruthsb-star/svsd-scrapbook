@@ -1,0 +1,2 @@
+.hand-drawn-divider { display: block; width: 100%; height: 5px; overflow: visible; }
+.hand-drawn-divider path { fill: none; stroke: #534e4e; stroke-width: 1px; stroke-dasharray: 4 4; stroke-linecap: butt; vector-effect: non-scaling-stroke; }

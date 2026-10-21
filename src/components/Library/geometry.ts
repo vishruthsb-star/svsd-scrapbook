@@ -222,7 +222,9 @@ export function buildDrawerGeometry(cfg: LibraryConfig): DrawerGeometry {
   const hw = FRONT_WIDTH / 2 + cfg.overhang,
     lip = cfg.lip,
     inset = lip * 0.9,
-    H = 420,
+    // The root is BELT + lip + crop tall, so the drawer face must use the same authored
+    // visible height rather than extending hundreds of pixels beyond its own bounds.
+    H = cfg.crop,
     cv = (cfg.converge / 100) * H;
   const d = shape(
     [

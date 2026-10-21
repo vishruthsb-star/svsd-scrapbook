@@ -1,19 +1,21 @@
 import type { ReactNode, TransitionEvent } from 'react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import HomeBottomNavigation from '@/components/HomeBottomNavigation/HomeBottomNavigation';
-import type { HomeBottomNavigationValue } from '@/components/HomeBottomNavigation/HomeBottomNavigation';
 import { SAMPLE_IMAGE_SRCS } from '@/scrapbook/fixtures/sampleItems';
 import CanvasScreen from '@/screens/CanvasScreen/CanvasScreen';
 import ComposeMemoryScreen from '@/screens/ComposeMemoryScreen/ComposeMemoryScreen';
 import type { ComposeKind, ComposedMemory } from '@/screens/ComposeMemoryScreen/ComposeMemoryScreen';
 import type { AddFabKind } from '@/components/AddFab';
-import { LIBRARY_ACTIVE_INDEX, LIBRARY_PEOPLE } from '@/data/mock';
+import { LIBRARY_ACTIVE_INDEX, LIBRARY_PEOPLE, OWNER_NAME } from '@/data/mock';
 import type { PlacedMemory } from '@/scrapbook/placement';
 import { loadMemories, saveMemory } from '@/scrapbook/persistence/localScrapbookStore';
 import HomeScreenShell from '@/screens/HomeScreen/HomeScreenShell';
 import { decodeImages } from '@/utils/decodeImages';
 import { loadBoopStamps, saveBoopStamps } from '@/scrapbook/boopStamps';
 import type { PlacedBoopStamp, BoopStampKey } from '@/scrapbook/boopStamps';
+import MailboxScreen from '@/screens/MailboxScreen/MailboxScreen';
+import type { MailboxNotification } from '@/data/mailboxNotifications';
+import { MAILBOX_PROTOTYPE_ITEMS } from '@/data/mailboxNotifications';
+import InvitationScreen from '@/screens/InvitationScreen/InvitationScreen';
 import './AppShell.css';
 
 function prefersReducedMotion(): boolean {
@@ -111,26 +113,70 @@ function ScreenPanel({ active, id, labelledBy, className, children }: ScreenPane
 }
 
 export default function AppShell() {
-  const [navValue, setNavValue] = useState<HomeBottomNavigationValue>('home');
+  const [openedScrapbook, setOpenedScrapbook] = useState<string | null>(null);
+  const [mailboxOpen, setMailboxOpen] = useState(false);
+  const [invitationOpen, setInvitationOpen] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState(LIBRARY_ACTIVE_INDEX);
   const [composeKind, setComposeKind] = useState<ComposeKind | null>(null);
   const [createdItems, setCreatedItems] = useState<PlacedMemory[]>([]);
   const [boopStamps, setBoopStamps] = useState<PlacedBoopStamp[]>(() => loadBoopStamps());
   const [scrollTargetId, setScrollTargetId] = useState<string | null>(null);
-  const [boopPickerOpen, setBoopPickerOpen] = useState(false);
+  const [, setBoopPickerOpen] = useState(false);
   const savingRef = useRef(false);
-  const recipient = LIBRARY_PEOPLE[selectedPerson];
+  const recipientName = openedScrapbook === 'own' ? OWNER_NAME.toLowerCase() : openedScrapbook ?? LIBRARY_PEOPLE[selectedPerson].name;
+  const recipient = { name: recipientName };
 
   useEffect(() => {
-    const onPopState = () => setComposeKind(null);
+    const onPopState = (event: PopStateEvent) => {
+      setComposeKind(null);
+      setOpenedScrapbook(null);
+      setMailboxOpen(event.state?.mailboxScreen === true);
+      setInvitationOpen(event.state?.invitationScreen === true);
+    };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
+  const openOwnScrapbook = () => {
+    window.history.pushState({ scrapbookScreen: true, scrapbookId: 'own' }, '');
+    setOpenedScrapbook('own');
+  };
+  const openPersonScrapbook = (index: number) => {
+    setSelectedPerson(index);
+    window.history.pushState({ scrapbookScreen: true, scrapbookId: `library:${LIBRARY_PEOPLE[index].name}` }, '');
+    setOpenedScrapbook(LIBRARY_PEOPLE[index].name);
+  };
+  const returnHome = () => {
+    if (window.history.state?.scrapbookScreen) window.history.back();
+    else setOpenedScrapbook(null);
+  };
+  const openMailbox = () => {
+    window.history.pushState({ mailboxScreen: true }, '');
+    setMailboxOpen(true);
+  };
+  const returnFromMailbox = () => {
+    if (window.history.state?.mailboxScreen) window.history.back();
+    else setMailboxOpen(false);
+  };
+  const openMailboxNotification = (notification: MailboxNotification) => {
+    if (notification.target.kind === 'invitation') {
+      window.history.pushState({ invitationScreen: true }, '');
+      setMailboxOpen(false);
+      setInvitationOpen(true);
+      return;
+    }
+    const owner = notification.target.scrapbookOwnerId;
+    const itemId = notification.target.kind === 'scrapbook-item' ? notification.target.itemId : null;
+    window.history.pushState({ scrapbookScreen: true, returnTo: 'mailbox', scrapbookId: owner }, '');
+    setScrollTargetId(itemId);
+    setMailboxOpen(false);
+    setOpenedScrapbook(owner === OWNER_NAME.toLowerCase() ? 'own' : owner);
+  };
+
   useEffect(() => {
     let cancelled = false;
     loadMemories(recipient.name).then((items) => {
-      if (!cancelled) setCreatedItems(items);
+      if (!cancelled) setCreatedItems([...MAILBOX_PROTOTYPE_ITEMS.filter((item) => item.recipientId === recipient.name), ...items]);
     }).catch((error: unknown) => console.warn('Could not restore scrapbook memories', error));
     return () => { cancelled = true; };
   }, [recipient.name]);
@@ -179,15 +225,18 @@ export default function AppShell() {
 
   return (
     <div className="app-shell-root">
-      <ScreenPanel active={navValue === 'home'} id="panel-home" labelledBy="tab-home" className="app-shell-home">
-        <HomeScreenShell selectedPerson={selectedPerson} onSelectPerson={setSelectedPerson} />
+      <ScreenPanel active={openedScrapbook === null && !mailboxOpen && !invitationOpen} id="panel-home" labelledBy="home-screen" className="app-shell-home">
+        <HomeScreenShell selectedPerson={selectedPerson} onSelectPerson={setSelectedPerson} onOpenOwnScrapbook={openOwnScrapbook} onOpenPersonScrapbook={openPersonScrapbook} onOpenMailbox={openMailbox} />
       </ScreenPanel>
-      <ScreenPanel active={navValue === 'journal'} id="panel-journal" labelledBy="tab-journal" className="app-shell-canvas">
-        <CanvasScreen recipientName={recipient.name} onAddSelect={openCompose} items={createdItems.filter((item) => item.recipientId === recipient.name)} boopStamps={boopStamps.filter((stamp) => stamp.scrapbookId === `library:${recipient.name}`)} onBoopSelect={addBoopStamp} scrollTargetId={scrollTargetId} onBoopOpenChange={setBoopPickerOpen} />
+      <ScreenPanel active={mailboxOpen} id="panel-mailbox" labelledBy="mailbox-screen" className="app-shell-home">
+        <MailboxScreen onBack={returnFromMailbox} onOpenNotification={openMailboxNotification} />
       </ScreenPanel>
-      {!composeKind && !boopPickerOpen && <nav className="app-shell-nav-overlay">
-        <HomeBottomNavigation value={navValue} onChange={setNavValue} />
-      </nav>}
+      <ScreenPanel active={invitationOpen} id="panel-invitation" labelledBy="invitation-screen" className="app-shell-home">
+        <InvitationScreen inviterName="varun" onBack={() => window.history.back()} />
+      </ScreenPanel>
+      <ScreenPanel active={openedScrapbook !== null} id="panel-scrapbook" labelledBy="scrapbook-screen" className="app-shell-canvas">
+        <CanvasScreen recipientName={recipient.name} onBack={returnHome} onAddSelect={openCompose} items={createdItems.filter((item) => item.recipientId === recipient.name)} boopStamps={boopStamps.filter((stamp) => stamp.scrapbookId === `library:${recipient.name}`)} onBoopSelect={addBoopStamp} scrollTargetId={scrollTargetId} onBoopOpenChange={setBoopPickerOpen} />
+      </ScreenPanel>
       {composeKind && (
         <div className="app-shell-compose" role="dialog" aria-modal="true" aria-label={`Compose memory for ${recipient.name}`}>
           <ComposeMemoryScreen kind={composeKind} recipientName={recipient.name} onClose={closeCompose} onComplete={completeCompose} showDevTabs={false} />

@@ -18,7 +18,7 @@ export interface LibraryProps {
   selected?: number;
   defaultSelected?: number;
   onSelect?: (index: number) => void;
-  /** fires when the already-selected tab, or the open folder's cover, is tapped */
+  /** fires when the currently open folder's cover is tapped */
   onOpen?: (index: number) => void;
   config?: Partial<LibraryConfig>;
   className?: string;
@@ -63,14 +63,11 @@ export default function Library({
     (i: number) => {
       const wasSelected = i === selRef.current;
       goTo(i, { press: true });
-      if (wasSelected) {
-        onOpen?.(i);
-        return;
-      }
+      if (wasSelected) return;
       if (!isControlled) setInternalSel(i);
       onSelect?.(i);
     },
-    [goTo, selRef, isControlled, onSelect, onOpen],
+    [goTo, selRef, isControlled, onSelect],
   );
 
   const handleCoverClick = useCallback(

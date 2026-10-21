@@ -93,6 +93,7 @@
   animation: torn-strata-arrive 420ms ease-out both;
 }
 
+
 .torn-strata-boop { position: absolute; z-index: 12; }
 .torn-strata-boop svg { display: block; width: 100%; height: auto; }
 

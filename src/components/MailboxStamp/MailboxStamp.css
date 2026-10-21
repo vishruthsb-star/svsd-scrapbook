@@ -1,0 +1,3 @@
+.mailbox-stamp { position: relative; display: block; width: 60px; height: 68px; flex: 0 0 60px; }
+.mailbox-stamp svg { display: block; overflow: visible; }
+.mailbox-stamp-dot { position: absolute; top: -5px; right: -5px; width: 11px; height: 11px; background: #D8422C; }

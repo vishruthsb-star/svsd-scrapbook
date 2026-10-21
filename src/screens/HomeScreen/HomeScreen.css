@@ -1,45 +1,47 @@
-.home-root {
-  --home-gap-header-library: 44px;
-  /* Reduced from the Figma-matched 32px to 16px — still a clear, deliberate gap off the
-     folder drawer, but frees 16px that's needed lower in the stack: the HomeBottomNavigation
-     overlay (mounted at the app-shell level, see AppShell.css) sits in the bottom 93px of
-     the frame (40px offset + its own 53px height), and without this the invite caption's
-     second line ran 19px behind it. See InviteSection.css's margin-top/--invite-gap-text for
-     the rest of the 35px this reclaims. */
-  --home-gap-library-invite: 16px;
-
-  display: flex;
-  flex-direction: column;
+/* Image-derived Home composition: the reference is a 402px design frame. */
+.home-screen-shell { --safe-top: 40px; --safe-side: 28px; }
+/* These bands mask foreground UI, but recreate only the scrolling paper behind it. */
+.home-screen-shell .screenshell-band-top,
+.home-screen-shell .screenshell-band-bottom { background-color: #faf7f0; background-image: none; }
+.home-screen-shell .home-safe-band--grid {
+  background-image: linear-gradient(rgba(17,17,17,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(17,17,17,.07) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: 0 var(--home-grid-offset-y, 0px);
 }
 
-.home-scrapbook-section { margin-top: 28px; overflow: visible; }
-.home-section-label { margin: 0 0 12px; font-family: var(--font-condensed); font-size: 13px; font-weight: 500; letter-spacing: .14em; color: #111111; }
-.home-scrapbook-section .scrapbook-cover { width: min(100%, 360px); }
-.home-people-label { margin-top: 34px; margin-bottom: 0; }
-
-.home-library-wrap {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  /* must not be the flex default (stretch) — stretch would make the scaled child's reset
-     height:'' resolve to this wrap's own (JS-managed, already-scaled) height instead of
-     Library's true natural content height, corrupting every re-measure after the first. */
-  align-items: flex-start;
-  overflow: hidden;
-  /* InviteSection's own SVG line art overshoots slightly beyond the folder's drawn box,
-     measured in-browser via getBoundingClientRect and folded into this margin so the
-     *visible* gap to the header — not just the box gap — is 44px. */
-  margin-top: 16px;
+.home-root { display: flex; flex-direction: column; width: 100%; background: #faf7f0; }
+.home-grid-region { position: relative; padding-bottom: 14px; isolation: isolate; }
+.home-grid-region::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: -40px;
+  left: -28px;
+  width: 100vw;
+  height: calc(100% + 54px);
+  background-color: #faf7f0;
+  background-image: linear-gradient(rgba(17,17,17,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(17,17,17,.07) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
-.home-library-scale {
-  transform-origin: top center;
-}
+.home-scrapbook-section { margin-top: 44px; }
+.home-section-heading { display: flex; flex-direction: column; gap: 8px; }
+.home-section-label { margin: 0; font-family: var(--font-condensed); font-size: 14.5px; font-weight: 400; line-height: 1.5; letter-spacing: .8px; color: #d8422a; }
+.home-scrapbook-section .scrapbook-cover { width: min(100%, 360px); margin-top: 26px; }
 
-.home-invite-wrap {
-  width: 100%;
-  /* InviteSection has 56px of its own top padding before its first visible pixel (the
-     flower doodle); subtract it here so the visible gap from Library's bottom edge is
-     16px (--home-gap-library-invite). */
-  margin-top: calc(var(--home-gap-library-invite) - 56px);
+.home-people-section { margin-top: 36px; }
+.home-people-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin: 24px 0 0; font-family: var(--font-inter); font-size: 16px; font-weight: 400; line-height: 1.5; letter-spacing: -.32px; }
+.home-people-copy p { margin: 0; }
+.home-people-copy p:first-child { color: #989898; }
+.home-people-copy p:last-child { color: #000; }
+.home-library-wrap { width: 100%; display: flex; justify-content: center; align-items: flex-start; overflow: visible; margin-top: 40px; }
+.home-library-scale { transform-origin: top center; }
+
+.home-invite-wrap { width: calc(100% + 56px); margin: 0 -28px; padding-bottom: 120px; background: #faf7f0; }
+
+@media (max-width: 360px) {
+  .home-screen-shell { --safe-side: 22px; }
+  .home-grid-region::before { left: -22px; width: 100vw; }
+  .home-invite-wrap { width: calc(100% + 44px); margin: 0 -22px; }
+  .home-people-section { margin-top: 54px; }
 }

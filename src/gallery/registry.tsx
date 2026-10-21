@@ -7,6 +7,7 @@ import VoicePostcard from '@/components/VoicePostcard';
 import { AddFab } from '@/components/AddFab';
 import { BoopFab } from '@/components/BoopFab';
 import { Header } from '@/components/Header';
+import { HandDrawnDivider } from '@/components/HandDrawnDivider';
 import { HomeBottomNavigation } from '@/components/HomeBottomNavigation';
 import { InviteSection } from '@/components/InviteSection';
 import { Library } from '@/components/Library';
@@ -20,6 +21,8 @@ import { LIBRARY_ACTIVE_INDEX, LIBRARY_PEOPLE, OWNER_HANDLE, OWNER_NAME } from '
 import ScrapbookStylePreview from './ScrapbookStylePreview';
 import ScrapbookFabLayoutLab from './harnesses/ScrapbookFabLayoutLab';
 import ComposeMemoryScreen from '@/screens/ComposeMemoryScreen/ComposeMemoryScreen';
+import MailboxScreen from '@/screens/MailboxScreen/MailboxScreen';
+import MailboxStamp from '@/components/MailboxStamp/MailboxStamp';
 import { DecorPreview, FlipCardPreview, ItemBackPreview, PillButtonPreview, RemoveButtonPreview, ScrapbookItemPreview } from './ComponentGalleryPreviews';
 
 export type GalleryKind = 'screen' | 'component';
@@ -36,9 +39,16 @@ export const SCREENS: GalleryEntry[] = [
   {
     kind: 'screen',
     id: 'app',
-    title: 'App (Home + Canvas with Nav)',
-    description: 'The full app shell with nav switching between Home and Canvas/Journal screens.',
+    title: 'App (Home + Scrapbook)',
+    description: 'The active HomeScreenV2 flow with direct scrapbook navigation.',
     render: () => <AppShell />,
+  },
+  {
+    kind: 'screen',
+    id: 'mailbox',
+    title: 'Mailbox',
+    description: 'Approved 2A mailbox notification screen with keyboard-operable rows.',
+    render: () => <MailboxScreen onBack={() => undefined} onOpenNotification={() => undefined} />,
   },
 ];
 
@@ -49,6 +59,20 @@ function BoopGalleryPreview() {
 }
 
 export const COMPONENTS: GalleryEntry[] = [
+  {
+    kind: 'component',
+    id: 'mailbox-stamp',
+    title: 'Mailbox stamp',
+    description: 'Perforated notification stamp with the original 2A icon geometry and unread state.',
+    render: () => <MailboxStamp type="photo" fill="#F2C94C" tilt={1.5} unread />,
+  },
+  {
+    kind: 'component',
+    id: 'hand-drawn-divider',
+    title: 'Hand-drawn divider',
+    description: 'A deterministic, subtly wobbled 4px dash / 4px gap section divider.',
+    render: () => <div style={{ width: 346 }}><HandDrawnDivider seed={101} /></div>,
+  },
   {
     kind: 'component',
     id: 'pill-button',
@@ -109,7 +133,7 @@ export const COMPONENTS: GalleryEntry[] = [
     kind: 'component',
     id: 'header',
     title: 'Header',
-    description: 'The "welcome to / {name}\'s Library" title row with the send button.',
+    description: 'The c/o correspondence masthead with the send button.',
     render: () => <Header ownerName={OWNER_NAME} />,
   },
   {
