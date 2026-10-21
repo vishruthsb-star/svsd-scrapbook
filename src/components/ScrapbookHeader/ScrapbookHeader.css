@@ -54,6 +54,27 @@
   flex: none;
 }
 
+.scrapbook-header-profile-trigger,
+.scrapbook-header-avatar-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.scrapbook-header-profile-trigger:focus-visible,
+.scrapbook-header-avatar-button:focus-visible {
+  outline: 2px solid #111111;
+  outline-offset: 3px;
+}
+
+.scrapbook-header-avatar-button {
+  display: block;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
 /* Rectangle 4 — 44 x 44, fully rounded. Gradient is the reference's placeholder fill;
    an <img> swaps in with object-fit: cover when avatarSrc is given. */
 .scrapbook-header-avatar {

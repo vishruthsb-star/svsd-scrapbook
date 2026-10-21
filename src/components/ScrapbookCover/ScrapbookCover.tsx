@@ -86,7 +86,7 @@ export default function ScrapbookCover({
             <g key={String(transform)} ref={(element) => { pages.current[index] = element; }} className="scrapbook-cover-layer" transform={String(transform)}><rect x={Number(x)} y={Number(y)} width="268" height="330" fill={String(fill)} stroke="#111111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></g>
           ))}
           <g ref={loose} className="scrapbook-cover-layer">
-            <g transform="rotate(-9 320 330)"><path d="M300 300 L346 300 L346 372 L300 372 Z" fill="#D8422C" stroke="#111111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M300 312 L346 312" stroke="#111111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></g>
+            <g transform="rotate(-9 320 330)"><path d="M300 300 L346 300 L346 372 L300 372 Z" fill="#A75D48" stroke="#111111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M300 312 L346 312" stroke="#111111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></g>
             <g transform="rotate(-8 46 325)"><rect x="14" y="300" width="64" height="50" fill="#FAF7F0" stroke="#111111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></g>
             {[['M22 318 L66 318'], ['M22 327 L58 327'], ['M22 336 L50 336'], ['M22 345 L66 345']].map(([d]) => <path key={d} d={d} stroke="#111111" strokeWidth="1.4" strokeLinecap="round" fill="none" transform="rotate(-8 22 318)" />)}
           </g>

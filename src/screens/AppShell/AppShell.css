@@ -82,3 +82,7 @@
   inset: 0;
   z-index: 300;
 }
+
+.app-shell-profile {
+  background: #faf7f0;
+}

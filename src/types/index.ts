@@ -138,3 +138,16 @@ export interface TagScrapItem extends ScrapItemCommon {
 }
 
 export type ScrapItem = StampScrapItem | NoteScrapItem | VoiceScrapItem | TagScrapItem;
+
+/** The four user-facing ways a scrapbook can be presented. */
+export type ScrapbookPresentation = 'canvas' | 'wheel' | 'envelope' | 'cover';
+
+export type ScrapbookPermission = 'owner' | 'can write' | 'can look';
+
+export interface ScrapbookContributor {
+  id: string;
+  name: string;
+  permission: ScrapbookPermission;
+  fill: string;
+  rotation: number;
+}

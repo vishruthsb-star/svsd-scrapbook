@@ -1,0 +1,32 @@
+.scrapbook-profile-defs { position: absolute; width: 0; height: 0; }
+.scrapbook-profile-shell { background: #FAF7F0; }
+.scrapbook-profile { min-height: 100%; box-sizing: border-box; padding: 0 4px 28px; color: #111111; background: #FAF7F0; }
+.scrapbook-profile-back { display: flex; align-items: center; gap: 6px; height: 44px; margin: 0; padding: 0; border: 0; background: transparent; color: #111111; font-family: var(--font-inter); font-size: 18px; font-weight: 400; letter-spacing: -0.36px; cursor: pointer; }
+.scrapbook-profile-back-icon { display: grid; width: 44px; height: 44px; margin-left: -10px; place-items: center; }
+.scrapbook-profile-back:focus-visible, .scrapbook-profile-edit:focus-visible, .scrapbook-profile-option:focus-visible, .scrapbook-profile-remove:focus-visible, .scrapbook-profile-invite:focus-visible { outline: 2px solid #111111; outline-offset: 3px; }
+.scrapbook-profile-cover-wrap { display: flex; justify-content: center; margin-top: 40px; }
+.scrapbook-profile-cover { position: relative; width: 240px; height: 240px; transform: rotate(3deg); }
+.scrapbook-profile-cover > svg { position: relative; z-index: 1; display: block; overflow: visible; }
+.scrapbook-profile-cover-image { position: absolute; z-index: 0; inset: 16px; width: 208px; height: 208px; object-fit: cover; }
+.scrapbook-profile-tape { position: absolute; z-index: 2; top: -14px; left: 78px; width: 90px; height: 28px; transform: rotate(-4deg); }
+.scrapbook-profile-edit { position: absolute; z-index: 3; right: -18px; bottom: -18px; display: grid; width: 56px; height: 56px; padding: 0; place-items: center; border: 0; background: #FAF7F0; cursor: pointer; }
+.scrapbook-profile-edit > svg:first-child { position: absolute; inset: 0; overflow: visible; }
+.scrapbook-profile-pencil { position: relative; overflow: visible; }
+.scrapbook-profile h1 { margin: 36px 0 0; color: #111111; font-family: var(--font-inter); font-size: 20px; font-weight: 400; line-height: 1.2; letter-spacing: -0.4px; text-align: center; }
+.scrapbook-profile-section { margin-top: 32px; }
+.scrapbook-profile-section h2 { margin: 0; color: #111111; font-family: var(--font-condensed); font-size: 11px; font-weight: 500; letter-spacing: .14em; line-height: 1.2; text-transform: uppercase; }
+.scrapbook-profile-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+.scrapbook-profile-option, .scrapbook-profile-invite { position: relative; display: flex; min-height: 56px; align-items: center; justify-content: center; padding: 0; border: 0; background: transparent; color: #111111; font-family: var(--font-hand); font-size: 17px; font-weight: 300; cursor: pointer; }
+.scrapbook-profile-option[aria-pressed="true"] { font-weight: 400; }
+.scrapbook-profile-option > svg, .scrapbook-profile-person > svg, .scrapbook-profile-invite > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.scrapbook-profile-option span { position: relative; padding: 0 6px; background: #FAF7F0; }
+.scrapbook-profile-permissions { margin-top: 36px; }
+.scrapbook-profile-people { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
+.scrapbook-profile-person { position: relative; display: flex; min-height: 52px; align-items: center; gap: 12px; box-sizing: border-box; padding: 6px 6px 6px 14px; transform: rotate(var(--profile-rotation)); }
+.scrapbook-profile-person-name { position: relative; flex: 1; font-family: var(--font-hand); font-size: 19px; line-height: 1.1; }
+.scrapbook-profile-person-role { position: relative; font-family: var(--font-condensed); font-size: 11px; font-weight: 400; letter-spacing: .14em; line-height: 1.1; text-transform: uppercase; white-space: nowrap; }
+.scrapbook-profile-remove { position: relative; display: grid; width: 44px; height: 44px; flex: none; padding: 0; place-items: center; border: 0; background: transparent; cursor: pointer; }
+.scrapbook-profile-remove svg { overflow: visible; }
+.scrapbook-profile-invite { width: 100%; min-height: 52px; margin-top: 6px; font-size: 19px; }
+.scrapbook-profile-invite span { position: relative; }
+@media (prefers-reduced-motion: reduce) { .scrapbook-profile-cover, .scrapbook-profile-person { transform: none; } }

@@ -16,10 +16,26 @@ import MailboxScreen from '@/screens/MailboxScreen/MailboxScreen';
 import type { MailboxNotification } from '@/data/mailboxNotifications';
 import { MAILBOX_PROTOTYPE_ITEMS } from '@/data/mailboxNotifications';
 import InvitationScreen from '@/screens/InvitationScreen/InvitationScreen';
+import { ScrapbookProfileScreen } from '@/screens/ScrapbookProfileScreen';
+import { isScrapbookPresentation, PRESENTATION_TO_CANVAS_STYLE, PROFILE_CONTRIBUTORS } from '@/data/scrapbookProfile';
+import type { ScrapbookContributor, ScrapbookPresentation } from '@/types';
 import './AppShell.css';
 
 function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+}
+
+function presentationStorageKey(scrapbookId: string) {
+  return `scrapbook-profile:${scrapbookId}:presentation`;
+}
+
+function loadPresentation(scrapbookId: string): ScrapbookPresentation {
+  try {
+    const saved = window.localStorage.getItem(presentationStorageKey(scrapbookId));
+    return isScrapbookPresentation(saved) ? saved : 'canvas';
+  } catch {
+    return 'canvas';
+  }
 }
 
 interface ScreenPanelProps {
@@ -114,6 +130,7 @@ function ScreenPanel({ active, id, labelledBy, className, children }: ScreenPane
 
 export default function AppShell() {
   const [openedScrapbook, setOpenedScrapbook] = useState<string | null>(null);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [mailboxOpen, setMailboxOpen] = useState(false);
   const [invitationOpen, setInvitationOpen] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState(LIBRARY_ACTIVE_INDEX);
@@ -121,20 +138,35 @@ export default function AppShell() {
   const [createdItems, setCreatedItems] = useState<PlacedMemory[]>([]);
   const [boopStamps, setBoopStamps] = useState<PlacedBoopStamp[]>(() => loadBoopStamps());
   const [scrollTargetId, setScrollTargetId] = useState<string | null>(null);
+  const [presentations, setPresentations] = useState<Record<string, ScrapbookPresentation>>({});
+  const [contributors, setContributors] = useState<Record<string, readonly ScrapbookContributor[]>>({});
+  const [coverImages, setCoverImages] = useState<Record<string, string>>({});
   const [, setBoopPickerOpen] = useState(false);
   const savingRef = useRef(false);
+  const coverUrlsRef = useRef<Record<string, string>>({});
   const recipientName = openedScrapbook === 'own' ? OWNER_NAME.toLowerCase() : openedScrapbook ?? LIBRARY_PEOPLE[selectedPerson].name;
   const recipient = { name: recipientName };
+  const scrapbookId = `library:${recipient.name}`;
+  const presentation = presentations[scrapbookId] ?? loadPresentation(scrapbookId);
+  const visibleContributors = contributors[scrapbookId] ?? PROFILE_CONTRIBUTORS;
 
   useEffect(() => {
     const onPopState = (event: PopStateEvent) => {
       setComposeKind(null);
-      setOpenedScrapbook(null);
+      setProfileOpen(false);
+      if (event.state?.scrapbookScreen) {
+        const id = event.state.scrapbookId as string | undefined;
+        setOpenedScrapbook(id === 'own' ? 'own' : id?.replace(/^library:/, '') ?? null);
+      } else setOpenedScrapbook(null);
       setMailboxOpen(event.state?.mailboxScreen === true);
       setInvitationOpen(event.state?.invitationScreen === true);
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  useEffect(() => () => {
+    Object.values(coverUrlsRef.current).forEach((url) => URL.revokeObjectURL(url));
   }, []);
 
   const openOwnScrapbook = () => {
@@ -149,6 +181,41 @@ export default function AppShell() {
   const returnHome = () => {
     if (window.history.state?.scrapbookScreen) window.history.back();
     else setOpenedScrapbook(null);
+  };
+  const openProfile = () => {
+    if (!openedScrapbook) return;
+    window.history.pushState({ scrapbookProfile: true, scrapbookId: openedScrapbook }, '');
+    setProfileOpen(true);
+  };
+  const closeProfile = () => {
+    if (window.history.state?.scrapbookProfile) window.history.back();
+    else setProfileOpen(false);
+  };
+  const selectPresentation = (next: ScrapbookPresentation) => {
+    setPresentations((current) => ({ ...current, [scrapbookId]: next }));
+    try { window.localStorage.setItem(presentationStorageKey(scrapbookId), next); } catch { /* Storage is optional in the prototype. */ }
+  };
+  const removeContributor = (id: string) => {
+    setContributors((current) => ({ ...current, [scrapbookId]: (current[scrapbookId] ?? PROFILE_CONTRIBUTORS).filter((person) => person.id !== id || person.permission === 'owner') }));
+  };
+  const inviteContributor = () => {
+    const enteredName = window.prompt('Add a local demo participant');
+    const name = enteredName?.trim().toLowerCase();
+    if (!name) return;
+    setContributors((current) => {
+      const existing = current[scrapbookId] ?? PROFILE_CONTRIBUTORS;
+      if (existing.some((person) => person.name === name)) return current;
+      const colors = ['#C9D9F4', '#F6E3B4', '#D6C9F0', '#C5E8D9'];
+      const next: ScrapbookContributor = { id: `local-${Date.now()}`, name, permission: 'can write', fill: colors[existing.length % colors.length], rotation: existing.length % 2 === 0 ? 1 : -1 };
+      return { ...current, [scrapbookId]: [...existing, next] };
+    });
+  };
+  const updateCoverImage = (file: File) => {
+    const previous = coverUrlsRef.current[scrapbookId];
+    if (previous) URL.revokeObjectURL(previous);
+    const next = URL.createObjectURL(file);
+    coverUrlsRef.current[scrapbookId] = next;
+    setCoverImages((current) => ({ ...current, [scrapbookId]: next }));
   };
   const openMailbox = () => {
     window.history.pushState({ mailboxScreen: true }, '');
@@ -234,8 +301,11 @@ export default function AppShell() {
       <ScreenPanel active={invitationOpen} id="panel-invitation" labelledBy="invitation-screen" className="app-shell-home">
         <InvitationScreen inviterName="varun" onBack={() => window.history.back()} />
       </ScreenPanel>
-      <ScreenPanel active={openedScrapbook !== null} id="panel-scrapbook" labelledBy="scrapbook-screen" className="app-shell-canvas">
-        <CanvasScreen recipientName={recipient.name} onBack={returnHome} onAddSelect={openCompose} items={createdItems.filter((item) => item.recipientId === recipient.name)} boopStamps={boopStamps.filter((stamp) => stamp.scrapbookId === `library:${recipient.name}`)} onBoopSelect={addBoopStamp} scrollTargetId={scrollTargetId} onBoopOpenChange={setBoopPickerOpen} />
+      <ScreenPanel active={openedScrapbook !== null && !profileOpen} id="panel-scrapbook" labelledBy="scrapbook-screen" className="app-shell-canvas">
+        <CanvasScreen recipientName={recipient.name} style={PRESENTATION_TO_CANVAS_STYLE[presentation]} onBack={returnHome} onProfileOpen={openProfile} onAddSelect={openCompose} items={createdItems.filter((item) => item.recipientId === recipient.name)} boopStamps={boopStamps.filter((stamp) => stamp.scrapbookId === `library:${recipient.name}`)} onBoopSelect={addBoopStamp} scrollTargetId={scrollTargetId} onBoopOpenChange={setBoopPickerOpen} />
+      </ScreenPanel>
+      <ScreenPanel active={openedScrapbook !== null && profileOpen} id="panel-scrapbook-profile" labelledBy="scrapbook-profile-screen" className="app-shell-profile">
+        <ScrapbookProfileScreen ownerName={recipient.name} presentation={presentation} contributors={visibleContributors} coverImage={coverImages[scrapbookId]} onBack={closeProfile} onPresentationChange={selectPresentation} onContributorRemove={removeContributor} onInvite={inviteContributor} onCoverFileChange={updateCoverImage} />
       </ScreenPanel>
       {composeKind && (
         <div className="app-shell-compose" role="dialog" aria-modal="true" aria-label={`Compose memory for ${recipient.name}`}>

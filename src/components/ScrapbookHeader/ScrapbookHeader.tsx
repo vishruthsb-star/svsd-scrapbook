@@ -11,12 +11,15 @@ export interface ScrapbookHeaderProps {
   /** Profile photo URL. When omitted, the avatar renders the reference's gradient placeholder. */
   avatarSrc?: string;
   onBack?: () => void;
+  /** Opens the scrapbook's profile/settings screen from either identity affordance. */
+  onProfileOpen?: () => void;
 }
 
 export default function ScrapbookHeader({
   title = 'vishruth’s scrapbook',
   avatarSrc,
   onBack,
+  onProfileOpen,
 }: ScrapbookHeaderProps) {
   return (
     <header className="scrapbook-header">
@@ -36,12 +39,16 @@ export default function ScrapbookHeader({
           />
         </svg>
       </button>
-      <p className="scrapbook-header-title">{title}</p>
-      {avatarSrc ? (
-        <img className="scrapbook-header-avatar" src={avatarSrc} alt="Profile photo" />
-      ) : (
-        <div className="scrapbook-header-avatar" role="img" aria-label="Profile photo" />
-      )}
+      {onProfileOpen ? (
+        <button type="button" className="scrapbook-header-title scrapbook-header-profile-trigger" onClick={onProfileOpen}>
+          {title}
+        </button>
+      ) : <p className="scrapbook-header-title">{title}</p>}
+      {onProfileOpen ? (
+        <button type="button" className="scrapbook-header-avatar-button" aria-label="Open scrapbook profile" onClick={onProfileOpen}>
+          {avatarSrc ? <img className="scrapbook-header-avatar" src={avatarSrc} alt="" /> : <span className="scrapbook-header-avatar" aria-hidden="true" />}
+        </button>
+      ) : avatarSrc ? <img className="scrapbook-header-avatar" src={avatarSrc} alt="Profile photo" /> : <div className="scrapbook-header-avatar" role="img" aria-label="Profile photo" />}
     </header>
   );
 }

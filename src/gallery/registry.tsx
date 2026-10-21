@@ -24,6 +24,9 @@ import ComposeMemoryScreen from '@/screens/ComposeMemoryScreen/ComposeMemoryScre
 import MailboxScreen from '@/screens/MailboxScreen/MailboxScreen';
 import MailboxStamp from '@/components/MailboxStamp/MailboxStamp';
 import { DecorPreview, FlipCardPreview, ItemBackPreview, PillButtonPreview, RemoveButtonPreview, ScrapbookItemPreview } from './ComponentGalleryPreviews';
+import { ScrapbookProfileScreen } from '@/screens/ScrapbookProfileScreen';
+import { PROFILE_CONTRIBUTORS } from '@/data/scrapbookProfile';
+import type { ScrapbookContributor, ScrapbookPresentation } from '@/types';
 
 export type GalleryKind = 'screen' | 'component';
 
@@ -33,6 +36,13 @@ export interface GalleryEntry {
   title: string;
   description: string;
   render: () => ReactNode;
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+function ScrapbookProfileGalleryPreview() {
+  const [presentation, setPresentation] = useState<ScrapbookPresentation>('canvas');
+  const [contributors, setContributors] = useState<readonly ScrapbookContributor[]>(PROFILE_CONTRIBUTORS);
+  return <ScrapbookProfileScreen presentation={presentation} contributors={contributors} onBack={() => undefined} onPresentationChange={setPresentation} onContributorRemove={(id) => setContributors((current) => current.filter((person) => person.id !== id))} onInvite={() => setContributors((current) => current.some((person) => person.id === 'gallery-invite') ? current : [...current, { id: 'gallery-invite', name: 'friend', permission: 'can write', fill: '#C9D9F4', rotation: 1 }])} onCoverFileChange={() => undefined} />;
 }
 
 export const SCREENS: GalleryEntry[] = [
@@ -49,6 +59,13 @@ export const SCREENS: GalleryEntry[] = [
     title: 'Mailbox',
     description: 'Approved 2A mailbox notification screen with keyboard-operable rows.',
     render: () => <MailboxScreen onBack={() => undefined} onOpenNotification={() => undefined} />,
+  },
+  {
+    kind: 'screen',
+    id: 'scrapbook-profile',
+    title: 'Scrapbook profile',
+    description: 'Approved 1D paper profile screen. Toggle layouts, remove contributors, and test the local invite control.',
+    render: () => <ScrapbookProfileGalleryPreview />,
   },
 ];
 
