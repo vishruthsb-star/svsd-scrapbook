@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import IphoneFrame from './IphoneFrame';
 import ShowcaseControls from './ShowcaseControls';
+import { downloadMp4, ShowcaseRecorder } from './recording';
+import type { RecordingPhase } from './recording';
 import './IphoneShowcase.css';
 
 const DEVICE = { width: 360, height: (360 * 656) / 322 } as const;
@@ -33,6 +35,12 @@ export default function IphoneShowcase() {
   const [viewport, setViewport] = useState(viewportSize);
   const [preferences, setPreferences] = useState(loadPreferences);
   const [controlsOpen, setControlsOpen] = useState(false);
+  const [recordingPhase, setRecordingPhase] = useState<RecordingPhase>('idle');
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [recordingError, setRecordingError] = useState<string | null>(null);
+  const [recordingBlob, setRecordingBlob] = useState<Blob | null>(null);
+  const recorderRef = useRef<ShowcaseRecorder | null>(null);
+  const startedAtRef = useRef(0);
 
   useEffect(() => {
     const updateViewport = () => setViewport(viewportSize());
@@ -45,6 +53,44 @@ export default function IphoneShowcase() {
       window.visualViewport?.removeEventListener('resize', updateViewport);
     };
   }, []);
+
+  useEffect(() => {
+    if (recordingPhase !== 'recording') return;
+    const timer = window.setInterval(() => setElapsedSeconds(Math.floor((Date.now() - startedAtRef.current) / 1000)), 250);
+    return () => window.clearInterval(timer);
+  }, [recordingPhase]);
+
+  useEffect(() => () => recorderRef.current?.cancel(), []);
+
+  const startRecording = async () => {
+    if (recordingPhase === 'preparing' || recordingPhase === 'recording' || recordingPhase === 'stopping' || recordingPhase === 'encoding') return;
+    setRecordingError(null); setRecordingBlob(null); setElapsedSeconds(0); setRecordingPhase('preparing');
+    const stage = window.open(`${import.meta.env.BASE_URL}#/capture`, 'scrapbook-recording-stage', 'popup=yes,width=1235,height=2600');
+    if (!stage) { setRecordingPhase('error'); setRecordingError('The recording window was blocked. Allow pop-ups for this site, then try again.'); return; }
+    try {
+      const recorder = new ShowcaseRecorder();
+      recorderRef.current = recorder;
+      await recorder.start();
+      startedAtRef.current = Date.now();
+      setRecordingPhase('recording');
+    } catch (error) {
+      recorderRef.current?.cancel(); recorderRef.current = null; stage.close();
+      setRecordingPhase('error'); setRecordingError(error instanceof Error ? error.message : 'Could not start tab capture.');
+    }
+  };
+  const stopRecording = async () => {
+    const recorder = recorderRef.current;
+    if (!recorder || recordingPhase !== 'recording') return;
+    setRecordingPhase('stopping');
+    try {
+      setRecordingPhase('encoding');
+      const blob = await recorder.stop();
+      recorderRef.current = null; setRecordingBlob(blob); setRecordingPhase('ready'); downloadMp4(blob);
+      const channel = new BroadcastChannel('scrapbook-showcase-recording'); channel.postMessage({ type: 'stop' }); channel.close();
+    } catch (error) {
+      recorderRef.current = null; setRecordingPhase('error'); setRecordingError(error instanceof Error ? error.message : 'MP4 encoding failed.');
+    }
+  };
 
   useEffect(() => {
     try { window.localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences)); } catch { /* Storage is optional. */ }
@@ -83,6 +129,12 @@ export default function IphoneShowcase() {
         onAutoFit={() => setPreferences((current) => ({ ...current, mode: 'auto' }))}
         onScaleChange={(manualScale) => setPreferences({ mode: 'manual', manualScale })}
         onReset={() => setPreferences({ mode: 'auto', manualScale: 1 })}
+        recordingPhase={recordingPhase}
+        elapsedSeconds={elapsedSeconds}
+        recordingError={recordingError}
+        onRecord={() => { void startRecording(); }}
+        onStop={() => { void stopRecording(); }}
+        onDownload={() => { if (recordingBlob) downloadMp4(recordingBlob); }}
       />
     </main>
   );

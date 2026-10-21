@@ -9,9 +9,15 @@ interface ShowcaseControlsProps {
   onAutoFit: () => void;
   onScaleChange: (scale: number) => void;
   onReset: () => void;
+  recordingPhase: import('./recording').RecordingPhase;
+  elapsedSeconds: number;
+  recordingError: string | null;
+  onRecord: () => void;
+  onStop: () => void;
+  onDownload: () => void;
 }
 
-export default function ShowcaseControls({ autoFit, scale, open, onOpenChange, onAutoFit, onScaleChange, onReset }: ShowcaseControlsProps) {
+export default function ShowcaseControls({ autoFit, scale, open, onOpenChange, onAutoFit, onScaleChange, onReset, recordingPhase, elapsedSeconds, recordingError, onRecord, onStop, onDownload }: ShowcaseControlsProps) {
   const panelId = useId();
 
   useEffect(() => {
@@ -45,8 +51,20 @@ export default function ShowcaseControls({ autoFit, scale, open, onOpenChange, o
             <button type="button" onClick={onAutoFit} disabled={autoFit}>Auto Fit</button>
             <button type="button" onClick={onReset}>Reset</button>
           </div>
+          <div className="showcase-controls__recording">
+            <strong>Recording</strong>
+            <span>Resolution: 1206 × 2532</span>
+            <span>Frame Rate: 60 FPS</span>
+            {recordingPhase === 'idle' && <button className="showcase-controls__record" type="button" onClick={onRecord}>● Record</button>}
+            {recordingPhase === 'preparing' && <span>Preparing capture tab…</span>}
+            {recordingPhase === 'recording' && <><span className="showcase-controls__live">● REC&nbsp;&nbsp; {formatElapsed(elapsedSeconds)}</span><button type="button" onClick={onStop}>■ Stop Recording</button></>}
+            {(recordingPhase === 'stopping' || recordingPhase === 'encoding') && <span>Processing recording…</span>}
+            {recordingPhase === 'ready' && <><span>Recording ready</span><button type="button" onClick={onDownload}>Download MP4</button></>}
+            {recordingPhase === 'error' && <><span className="showcase-controls__error">{recordingError}</span><button type="button" onClick={onRecord}>Try again</button></>}
+          </div>
         </section>
       )}
+      {recordingPhase === 'recording' && <button type="button" className="showcase-controls__recording-badge" onClick={onStop}>● REC {formatElapsed(elapsedSeconds)} · Stop</button>}
       <button
         className="showcase-controls__toggle"
         type="button"
@@ -61,4 +79,8 @@ export default function ShowcaseControls({ autoFit, scale, open, onOpenChange, o
       </button>
     </div>
   );
+}
+
+function formatElapsed(seconds: number) {
+  return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
 }

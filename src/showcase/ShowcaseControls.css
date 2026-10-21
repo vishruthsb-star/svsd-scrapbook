@@ -68,6 +68,21 @@
   gap: 8px;
 }
 
+.showcase-controls__recording {
+  display: grid;
+  gap: 7px;
+  padding-top: 12px;
+  border-top: 1px solid #d0d0d0;
+  color: #111;
+  font: 500 12px/1.25 var(--font-inter, sans-serif);
+}
+
+.showcase-controls__recording strong { font-size: 13px; }
+.showcase-controls__recording span { color: #555; }
+.showcase-controls__recording .showcase-controls__live, .showcase-controls__recording .showcase-controls__error { color: #b42318; }
+.showcase-controls__record { color: #b42318 !important; border-color: #b42318 !important; }
+.showcase-controls__recording-badge { padding: 8px 10px; border: 1px solid #b42318; border-radius: 999px; color: #b42318; background: #fff; font: 600 12px/1 var(--font-inter, sans-serif); cursor: pointer; }
+
 .showcase-controls__actions button {
   min-height: 32px;
   padding: 0 9px;

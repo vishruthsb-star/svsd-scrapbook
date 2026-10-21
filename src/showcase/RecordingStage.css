@@ -1,0 +1,3 @@
+html:has(.recording-stage), body:has(.recording-stage), #root:has(.recording-stage) { width: 100%; min-width: 1206px; min-height: 2532px; margin: 0; overflow: hidden; background: #faf7f0; }
+.recording-stage { width: 1206px; height: 2532px; overflow: hidden; background: #faf7f0; }
+.recording-stage iframe { display: block; width: 402px; height: 844px; border: 0; transform: scale(3); transform-origin: top left; }
