@@ -25,10 +25,10 @@ function assets(): ReferenceAssets {
   return cachedAssets;
 }
 
-export function BoopStamp({ stampKey, recipientName, className }: { stampKey: BoopStampKey; recipientName: string; className?: string }) {
+export function BoopStamp({ stampKey, senderName, className }: { stampKey: BoopStampKey; senderName: string; className?: string }) {
   const rawId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const id = `boop-${rawId}`;
-  const stamp = useMemo(() => assets().stamps(recipientName, id).find((entry) => entry.key === stampKey), [recipientName, id, stampKey]);
+  const stamp = useMemo(() => assets().stamps(senderName, id).find((entry) => entry.key === stampKey), [senderName, id, stampKey]);
   const svgRef = useRef<SVGSVGElement>(null);
   useEffect(() => {
     const fit = () => svgRef.current?.querySelectorAll<SVGTextElement>('text[data-fit]').forEach((node) => {
@@ -43,16 +43,16 @@ export function BoopStamp({ stampKey, recipientName, className }: { stampKey: Bo
   return <svg ref={svgRef} className={className} viewBox="0 0 300 300" aria-label={stamp.label} role="img" dangerouslySetInnerHTML={{ __html: `<defs>${assets().defs(id)}</defs>${stamp.inner}` }} />;
 }
 
-export interface BoopFabProps { recipientName: string; x: number; y: number; open: boolean; onOpen: () => void; onClose: () => void; onSelect: (key: BoopStampKey) => void; disabled?: boolean; /** Preview-only visual overrides; production callers omit these. */ buttonStyle?: CSSProperties; markStyle?: CSSProperties; }
+export interface BoopFabProps { senderName: string; x: number; y: number; open: boolean; onOpen: () => void; onClose: () => void; onSelect: (key: BoopStampKey) => void; disabled?: boolean; /** Preview-only visual overrides; production callers omit these. */ buttonStyle?: CSSProperties; markStyle?: CSSProperties; }
 
-export default function BoopFab({ recipientName, x, y, open, onOpen, onClose, onSelect, disabled = false, buttonStyle, markStyle }: BoopFabProps) {
+export default function BoopFab({ senderName, x, y, open, onOpen, onClose, onSelect, disabled = false, buttonStyle, markStyle }: BoopFabProps) {
   const rawId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const id = `boop-picker-${rawId}`;
   const buttonRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const [picked, setPicked] = useState<BoopStampKey | null>(null);
   if (!open && picked) setPicked(null);
-  const list = useMemo(() => assets().stamps(recipientName, id), [recipientName, id]);
+  const list = useMemo(() => assets().stamps(senderName, id), [senderName, id]);
   useEffect(() => { if (!open) buttonRef.current?.focus({ preventScroll: true }); else window.setTimeout(() => closeRef.current?.focus({ preventScroll: true }), 60); }, [open]);
   useEffect(() => { const escape = (e: KeyboardEvent) => { if (open && e.key === 'Escape') onClose(); }; window.addEventListener('keydown', escape); return () => window.removeEventListener('keydown', escape); }, [open, onClose]);
   const choose = (key: BoopStampKey) => { if (!open || picked) return; setPicked(key); onSelect(key); window.setTimeout(onClose, 460); };
@@ -62,7 +62,7 @@ export default function BoopFab({ recipientName, x, y, open, onOpen, onClose, on
     <div className="boopfab__veil" />
     <div className="boopfab__sheet" role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-hidden={!open}>
       <div className="boopfab__head"><div className="boopfab__heading"><span className="boopfab__title" id={`${id}-title`}>Send a boop</span><span className="boopfab__count">10 stamps</span></div><button ref={closeRef} className="boopfab__close" type="button" aria-label="Close stamp picker" onClick={onClose} dangerouslySetInnerHTML={{ __html: a.CLOSE_ICON(`${id}-icon`) }} /></div>
-      <div className="boopfab__scroll"><div className="boopfab__grid">{list.map((stamp, index) => <button key={stamp.key} type="button" className={`boopfab__stamp${picked === stamp.key ? ' boopfab__stamp--picked' : ''}`} style={{ '--d': Math.min(index, 5) } as React.CSSProperties} aria-label={stamp.label} onClick={() => choose(stamp.key)}><span className="boopfab__card"><BoopStamp stampKey={stamp.key} recipientName={recipientName} /></span></button>)}</div></div>
+      <div className="boopfab__scroll"><div className="boopfab__grid">{list.map((stamp, index) => <button key={stamp.key} type="button" className={`boopfab__stamp${picked === stamp.key ? ' boopfab__stamp--picked' : ''}`} style={{ '--d': Math.min(index, 5) } as React.CSSProperties} aria-label={stamp.label} onClick={() => choose(stamp.key)}><span className="boopfab__card"><BoopStamp stampKey={stamp.key} senderName={senderName} /></span></button>)}</div></div>
     </div>
     <button ref={buttonRef} className="boopfab__pill" type="button" aria-label="Open stamps" aria-haspopup="dialog" aria-expanded={open} aria-disabled={disabled || undefined} tabIndex={disabled ? -1 : undefined} style={{ left: x, top: y, ...buttonStyle }} onClick={() => { if (!disabled) onOpen(); }}><span className="boopfab__mark-wrap" style={markStyle} dangerouslySetInnerHTML={{ __html: a.BOOP_SVG }} /></button>
   </div>;

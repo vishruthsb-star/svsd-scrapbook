@@ -12,17 +12,17 @@ export type MailboxTarget =
   | { kind: 'invitation'; invitationId: string; inviterId: string; scrapbookOwnerId: string };
 
 export interface MailboxNotification {
-  id: string; type: MailboxNotificationType; senderId: string; senderName: string;
+  id: string; type: MailboxNotificationType; senderId: string; senderName: string; recipientBookId: string;
   text: string; createdAt: string; read: boolean; tilt: number; target: MailboxTarget;
 }
 
 export const MAILBOX_NOTIFICATIONS: readonly MailboxNotification[] = [
-  { id: 'mail-invite-varun', type: 'invitation', senderId: 'varun', senderName: 'varun', text: 'sent you an invite to join his book', createdAt: '2026-10-20T21:14:00Z', read: false, tilt: -2, target: { kind: 'invitation', invitationId: 'invite-varun-book', inviterId: 'varun', scrapbookOwnerId: 'varun' } },
-  { id: 'mail-photo-varun', type: 'photo', senderId: 'varun', senderName: 'varun', text: 'added a photo to your scrapbook', createdAt: '2026-10-20T21:02:00Z', read: false, tilt: 1.5, target: { kind: 'scrapbook-item', scrapbookOwnerId: 'varun', itemId: 'mail-varun-photo' } },
-  { id: 'mail-note-maya', type: 'note', senderId: 'maya', senderName: 'maya', text: 'left you a note', createdAt: '2026-10-18T12:00:00Z', read: true, tilt: -1, target: { kind: 'scrapbook-item', scrapbookOwnerId: 'maya', itemId: 'mail-maya-note' } },
-  { id: 'mail-voice-jun', type: 'voice', senderId: 'jun', senderName: 'jun', text: 'sent you a voice postcard', createdAt: '2026-10-17T12:00:00Z', read: true, tilt: 2.5, target: { kind: 'scrapbook-item', scrapbookOwnerId: 'jun', itemId: 'mail-jun-voice' } },
-  { id: 'mail-link-theo', type: 'link', senderId: 'theo', senderName: 'theo', text: 'tagged a link for you', createdAt: '2026-10-15T12:00:00Z', read: true, tilt: -2.5, target: { kind: 'scrapbook-item', scrapbookOwnerId: 'theo', itemId: 'mail-theo-link' } },
-  { id: 'mail-joined-ana', type: 'joined', senderId: 'ana', senderName: 'ana', text: 'joined your scrapbook', createdAt: '2026-10-12T12:00:00Z', read: true, tilt: 1, target: { kind: 'scrapbook', scrapbookOwnerId: 'vishruth' } },
+  { id: 'mail-invite-varun', type: 'invitation', senderId: 'varun', senderName: 'varun', recipientBookId: 'varun', text: 'sent you an invite to join his book', createdAt: '2026-10-20T21:14:00Z', read: false, tilt: -2, target: { kind: 'invitation', invitationId: 'invite-varun-book', inviterId: 'varun', scrapbookOwnerId: 'varun' } },
+  { id: 'mail-photo-varun', type: 'photo', senderId: 'varun', senderName: 'varun', recipientBookId: 'vishruth', text: 'added a photo to your scrapbook', createdAt: '2026-10-20T21:02:00Z', read: false, tilt: 1.5, target: { kind: 'scrapbook-item', scrapbookOwnerId: 'vishruth', itemId: 'default:vishruth-varun-photo' } },
+  { id: 'mail-note-maya', type: 'note', senderId: 'maya', senderName: 'maya', recipientBookId: 'vishruth', text: 'left you a note', createdAt: '2026-10-18T12:00:00Z', read: true, tilt: -1, target: { kind: 'scrapbook-item', scrapbookOwnerId: 'vishruth', itemId: 'default:vishruth-home' } },
+  { id: 'mail-voice-jun', type: 'voice', senderId: 'jun', senderName: 'jun', recipientBookId: 'vishruth', text: 'sent you a voice postcard', createdAt: '2026-10-17T12:00:00Z', read: true, tilt: 2.5, target: { kind: 'scrapbook-item', scrapbookOwnerId: 'vishruth', itemId: 'default:vishruth-jun-voice' } },
+  { id: 'mail-link-theo', type: 'link', senderId: 'theo', senderName: 'theo', recipientBookId: 'vishruth', text: 'tagged a link for you', createdAt: '2026-10-15T12:00:00Z', read: true, tilt: -2.5, target: { kind: 'scrapbook-item', scrapbookOwnerId: 'vishruth', itemId: 'default:vishruth-recipe' } },
+  { id: 'mail-joined-cal', type: 'joined', senderId: 'cal', senderName: 'cal', recipientBookId: 'vishruth', text: 'joined your scrapbook', createdAt: '2026-10-12T12:00:00Z', read: true, tilt: 1, target: { kind: 'scrapbook', scrapbookOwnerId: 'vishruth' } },
 ];
 
 /** Explicit, stable artifacts for the mailbox prototype; kept separate from the source fixtures. */

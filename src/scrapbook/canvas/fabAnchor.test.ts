@@ -8,8 +8,8 @@ const FRAME_H = 844;
 
 describe('fabAnchor', () => {
   it('bottom-center: pill bottom at the frame bottom safe edge, centered horizontally', () => {
-    // bottom = 844 - SAFE.bottom(32) = 812; y = 812 - 52/2 = 786. x = (24 + 366)/2 = 195.
-    expect(fabAnchor('bc', 120, PILL_H, HEADER_HEIGHT, FRAME_W, FRAME_H)).toEqual({ x: 195, y: 786 });
+    // bottom = 844 - SAFE.bottom(34) = 810; y = 810 - 52/2 = 784. x = (24 + 366)/2 = 195.
+    expect(fabAnchor('bc', 120, PILL_H, HEADER_HEIGHT, FRAME_W, FRAME_H)).toEqual({ x: 195, y: 784 });
   });
 
   it('top-right: pill top at safe-top + header + 20, right edge at frameW - SAFE.side, honoring the measured pill width', () => {

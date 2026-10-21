@@ -3,7 +3,7 @@ import { mk } from '@/scrapbook/fixtures/sampleItems';
 import { SAFE } from '../../constants';
 import type { PlacedMemory } from '@/scrapbook/placement';
 import type { PlacedBoopStamp } from '@/scrapbook/boopStamps';
-import { envelopeForElement, memorySize, sortMemories } from '@/scrapbook/placement/dynamicLayout';
+import { envelopeForElement, memorySize, resolveDistinctRotation, sortMemories } from '@/scrapbook/placement/dynamicLayout';
 
 /**
  * Frame 1f-4 ("pocket lip") data/algorithm, ported verbatim from
@@ -49,11 +49,12 @@ const SLOT: { x: number; rot: number }[] = [
   { x: 228, rot: 2 },
 ];
 
-/** Verbatim from the reference's `SE` — 3 seasons/envelopes. */
+/** Four envelope groups. The list is the source of truth for the natural scroll height. */
 const SE: [string, SampleItemId[]][] = [
   ['AUTUMN ’26', ['beer', 'quiet', 'leh', 'film', 'v1']],
   ['SUMMER ’26', ['beach', 'dog', 'buses', 'soup', 'v2', 'anyway']],
   ['WINTER ’25', ['snow']],
+  ['SPRING ’26', []],
 ];
 
 const OY_BASE = 616;
@@ -98,17 +99,17 @@ export interface LipEnvelope {
 
 interface EnvelopeEntry { id: string; fixtureId?: SampleItemId; memory?: PlacedMemory; boop?: PlacedBoopStamp; }
 
-function entriesForEnvelope(index: number, memories: readonly PlacedMemory[], boopStamps: readonly PlacedBoopStamp[]): EnvelopeEntry[] {
-  const fixtures: EnvelopeEntry[] = SE[index][1].map((fixtureId) => ({ id: fixtureId, fixtureId }));
+function entriesForEnvelope(index: number, memories: readonly PlacedMemory[], boopStamps: readonly PlacedBoopStamp[], includeFixtures = true): EnvelopeEntry[] {
+  const fixtures: EnvelopeEntry[] = includeFixtures ? SE[index][1].map((fixtureId) => ({ id: fixtureId, fixtureId })) : [];
   const dynamic: EnvelopeEntry[] = sortMemories(memories.filter((memory) => envelopeForElement(memory) === index)).map((memory) => ({ id: memory.id, memory }));
   const boops: EnvelopeEntry[] = [...boopStamps].filter((stamp) => envelopeForElement(stamp) === index).sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id)).map((boop) => ({ id: boop.id, boop }));
   const dynamicEntries = [...dynamic, ...boops].sort((a, b) => (a.memory?.createdAt ?? a.boop?.createdAt ?? '').localeCompare(b.memory?.createdAt ?? b.boop?.createdAt ?? '') || a.id.localeCompare(b.id));
   return [...fixtures, ...dynamicEntries];
 }
 
-export function envelopePageForMemory(memory: PlacedMemory | PlacedBoopStamp, memories: readonly PlacedMemory[], boopStamps: readonly PlacedBoopStamp[] = []): { envelopeIndex: number; page: number } {
+export function envelopePageForMemory(memory: PlacedMemory | PlacedBoopStamp, memories: readonly PlacedMemory[], boopStamps: readonly PlacedBoopStamp[] = [], includeFixtures = true): { envelopeIndex: number; page: number } {
   const envelopeIndex = envelopeForElement(memory);
-  const position = entriesForEnvelope(envelopeIndex, memories, boopStamps).findIndex((entry) => entry.id === memory.id);
+  const position = entriesForEnvelope(envelopeIndex, memories, boopStamps, includeFixtures).findIndex((entry) => entry.id === memory.id);
   return { envelopeIndex, page: Math.max(0, Math.floor(position / FAN.length)) };
 }
 
@@ -172,6 +173,7 @@ export function buildEnvelopes(
   memories: readonly PlacedMemory[] = [],
   boopStamps: readonly PlacedBoopStamp[] = [],
   pages: Record<number, number> = {},
+  includeFixtures = true,
 ): { envs: LipEnvelope[]; innerH: number } {
   const top0 = TOP0_BASE + headerDelta;
   const OY = OY_BASE + headerDelta;
@@ -187,13 +189,15 @@ export function buildEnvelopes(
     op: number;
   }
   const built = SE.map(([label], index) => {
-    const entries = entriesForEnvelope(index, memories, boopStamps);
+    const entries = entriesForEnvelope(index, memories, boopStamps, includeFixtures);
     let footprintTop = POCKET_TOP;
+    const closedRotations: number[] = [];
     const closedItems: ClosedSlot[] = entries.slice(0, 4).map((entry, k) => {
       const x = SLOT[k].x;
       const h = entryHeight(entry, measuredHeights);
       const y = Math.round(132 - h);
-      const rot = SLOT[k].rot;
+      const rot = resolveDistinctRotation(entry.id, closedRotations, entry.boop ? entry.boop.rotation : SLOT[k].rot);
+      closedRotations.push(rot);
       const delta = rotatedTopDeltas[entry.id] ?? 0;
       footprintTop = Math.min(footprintTop, y + delta);
       return { x, y, rot, op: 1 };
@@ -221,15 +225,19 @@ export function buildEnvelopes(
   const envs: LipEnvelope[] = built.map((b, i) => {
     const open = openIndex === i;
     const visibleEntries = open ? b.entries.slice(b.page * FAN.length, b.page * FAN.length + FAN.length) : b.entries.slice(0, 4);
+    const visibleRotations: number[] = [];
     const items: LipItem[] = visibleEntries.map((entry, k) => {
       if (open) {
         const f = FAN[k];
         const x = f.x - 30;
         const y = f.y - OY;
-        return itemFromEntry(entry, x, y, entry.boop ? entry.boop.rotation : f.rot, entry.boop ? 1 : .7, 1, k * 30, true);
+        const rot = resolveDistinctRotation(entry.id, visibleRotations, entry.boop ? entry.boop.rotation : f.rot);
+        visibleRotations.push(rot);
+        return itemFromEntry(entry, x, y, rot, entry.boop ? 1 : .7, 1, k * 30, true);
       }
       const slot = b.closedItems[k];
-      return itemFromEntry(entry, slot.x, slot.y, entry.boop ? entry.boop.rotation : slot.rot, entry.boop ? 1 : .7, slot.op, k * 30, false);
+      visibleRotations.push(slot.rot);
+      return itemFromEntry(entry, slot.x, slot.y, slot.rot, entry.boop ? 1 : .7, slot.op, k * 30, false);
     });
     return {
       label: b.label,

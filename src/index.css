@@ -19,7 +19,7 @@
      an individual screen. --screen-bg is the one place the app's paper background color is
      declared as a CSS variable; components that hardcode this hex predate this token. */
   --safe-top: 62px;
-  --safe-bottom: 32px;
+  --safe-bottom: 34px;
   --safe-side: 24px;
   --screen-bg: #faf7f0;
   /* The Figma frame width every mobile screen is designed at (node 125:1841's parent frame) —

@@ -5,9 +5,10 @@ import { findCompactPlacement } from './compactPlacement';
 export const THEME_IDS = ['late-nights', 'laughing', 'trips', 'songs'] as const;
 export type ThemeId = (typeof THEME_IDS)[number];
 
-export const ENVELOPE_COUNT = 3;
-/** Prototype policy: persisted dynamic content is always projected into the authored Winter envelope. */
+export const ENVELOPE_COUNT = 4;
+/** Legacy fixture constant; new records use timestamp-based seasonal membership. */
 export const WINTER_ENVELOPE_INDEX = 2;
+/** Prototype policy: persisted dynamic content is always projected into the authored Winter envelope. */
 
 export interface LayoutBounds { x: number; y: number; w: number; h: number; }
 export type CanvasDynamicElement = PlacedMemory | PlacedBoopStamp;
@@ -40,15 +41,18 @@ export function themeForMemory(memory: PlacedMemory): ThemeId {
     : THEME_IDS[stableHash(memory.id) % THEME_IDS.length];
 }
 
-/** The three existing envelopes have no persisted membership field, so this stable ID hash is the presentation fallback. */
+/** Seasonal envelope membership derived from the authored timestamp. */
 export function envelopeForMemory(memory: PlacedMemory): number {
-  void memory;
-  return WINTER_ENVELOPE_INDEX;
+  const month = new Date(memory.createdAt).getUTCMonth();
+  if (Number.isNaN(month)) return 2;
+  if (month >= 8 && month <= 10) return 0; // autumn
+  if (month >= 5 && month <= 7) return 1; // summer
+  if (month === 11 || month <= 1) return 2; // winter
+  return 3; // spring
 }
 
 export function envelopeForElement(element: CanvasDynamicElement): number {
-  void element;
-  return WINTER_ENVELOPE_INDEX;
+  return envelopeForMemory({ createdAt: element.createdAt } as PlacedMemory);
 }
 
 export function themeForElement(element: CanvasDynamicElement): ThemeId {
@@ -86,6 +90,40 @@ export function dynamicRotation(id: string): number {
   return Math.abs(rotation) < .7 ? (rotation < 0 ? -.7 : .7) : Number(rotation.toFixed(2));
 }
 
+/**
+ * A deliberately broad, but still readable, set of scrapbook tilts.  Layouts resolve an
+ * element against rotations already used in its local cluster, rather than independently
+ * hashing every element into the same narrow range.
+ */
+const ROTATION_PALETTE = [-7, 6.5, -4.5, 4, -2.5, 2, -1, 1, 7.5, -6, 3, -3.5, 0];
+const MIN_ROTATION_SEPARATION = 1.25;
+
+/**
+ * Stable local rotation selection. `usedRotations` should contain the elements which are
+ * visually grouped with this one. The preferred value keeps authored/boop tilts whenever
+ * they are sufficiently distinct, otherwise a deterministic palette alternative is used.
+ */
+export function resolveDistinctRotation(id: string, usedRotations: readonly number[], preferred?: number): number {
+  const candidates = preferred === undefined
+    ? ROTATION_PALETTE.map((_, index) => ROTATION_PALETTE[(stableHash(id) + index) % ROTATION_PALETTE.length])
+    : [preferred, ...ROTATION_PALETTE.map((_, index) => ROTATION_PALETTE[(stableHash(id) + index) % ROTATION_PALETTE.length])];
+  const isDistinct = (angle: number) => usedRotations.every((used) => Math.abs(angle - used) >= MIN_ROTATION_SEPARATION);
+  const separated = candidates.find(isDistinct);
+  if (separated !== undefined) return separated;
+  const unused = candidates.find((angle) => !usedRotations.includes(angle));
+  if (unused !== undefined) return unused;
+  const leastCrowded = candidates.reduce((best, angle) => {
+    const nearest = Math.min(...usedRotations.map((used) => Math.abs(angle - used)));
+    const bestNearest = Math.min(...usedRotations.map((used) => Math.abs(best - used)));
+    return nearest > bestNearest ? angle : best;
+  });
+  // Dense generated clusters can exhaust the palette. Preserve the hard no-duplicate
+  // guarantee with a small deterministic nudge, still inside a readable tilt range.
+  let overflow = Number((leastCrowded + ((stableHash(id) % 9) + 1) / 10).toFixed(2));
+  while (usedRotations.includes(overflow)) overflow = Number((overflow + .1).toFixed(2));
+  return overflow;
+}
+
 export function elementRotation(element: CanvasDynamicElement): number {
   return isBoopStamp(element) ? element.rotation : dynamicRotation(element.id);
 }
@@ -104,14 +142,16 @@ export function packElements(
   fixtureBounds: readonly LayoutBounds[] = [],
   measuredHeights: Record<string, number> = {},
   zoom = .84,
+  fixtureRotations: readonly number[] = [],
 ): PackedElement[] {
   const occupied = [...fixtureBounds];
+  const usedRotations = [...fixtureRotations];
   return [...elements].sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id)).map((element) => {
     const [naturalW, naturalH] = elementSize(element, measuredHeights[element.id]);
     const itemZoom = isBoopStamp(element) ? 1 : zoom;
     const width = naturalW * itemZoom;
     const height = naturalH * itemZoom;
-    const rot = elementRotation(element);
+    const rot = resolveDistinctRotation(element.id, usedRotations, isBoopStamp(element) ? element.rotation : undefined);
     const footprint = rotatedBounds(0, 0, width, height, rot);
     const placed = findCompactPlacement({
       frameWidth,
@@ -121,6 +161,7 @@ export function packElements(
       seed: stableHash(element.id),
     });
     occupied.push({ x: placed.x, y: placed.y, w: footprint.w, h: footprint.h });
+    usedRotations.push(rot);
     return { element, x: Math.round(placed.x + (footprint.w - width) / 2), y: Math.round(placed.y + (footprint.h - height) / 2), rot, z: itemZoom };
   });
 }

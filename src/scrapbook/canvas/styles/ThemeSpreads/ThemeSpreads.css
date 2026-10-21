@@ -144,7 +144,9 @@
      moved above that 93px footprint plus a 16px gap instead (--theme-nav-bottom, set
      inline by ThemeSpreads.tsx so the panel-height scroll formula can't drift from this).
      Kept visible (not hidden) because it's this style's only way to switch theme panels. */
-  bottom: var(--theme-nav-bottom, 109px);
+  /* Fixed to the canvas viewport. Use whichever is larger: the design token or a
+     device-provided bottom inset, without double-applying them. */
+  bottom: max(var(--theme-nav-bottom, var(--safe-bottom)), env(safe-area-inset-bottom, 0px));
   display: flex;
   justify-content: center;
   z-index: 20;

@@ -38,10 +38,18 @@
 .home-library-scale { transform-origin: top center; }
 
 .home-invite-wrap { width: calc(100% + 56px); margin: 0 -28px; padding-bottom: 120px; background: #faf7f0; }
+.home-bottom-dot-texture {
+  width: calc(100% + 56px);
+  height: 200px;
+  margin: -60px -28px 0;
+  background-image: radial-gradient(circle, rgba(205, 187, 145, .78) 1px, transparent 1.1px);
+  background-size: 17px 14px;
+}
 
 @media (max-width: 360px) {
   .home-screen-shell { --safe-side: 22px; }
   .home-grid-region::before { left: -22px; width: 100vw; }
-  .home-invite-wrap { width: calc(100% + 44px); margin: 0 -22px; }
+  .home-invite-wrap,
+  .home-bottom-dot-texture { width: calc(100% + 44px); margin-left: -22px; margin-right: -22px; }
   .home-people-section { margin-top: 86px; }
 }

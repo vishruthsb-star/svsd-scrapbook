@@ -4,10 +4,13 @@ import type { PlacedBoopStamp } from '@/scrapbook/boopStamps';
 import { packElements, rotatedBounds, themeForElement } from '@/scrapbook/placement/dynamicLayout';
 import type { ThemePanelDef } from './themeSpreadsData';
 
-export function packThemeMemories(panel: ThemePanelDef, memories: readonly PlacedMemory[], boopStamps: readonly PlacedBoopStamp[], frameW: number, designX0: number, measuredHeights: Record<string, number>) {
-  const fixtures = panel.items.map(([id, placement]) => {
+export function packThemeMemories(panel: ThemePanelDef, memories: readonly PlacedMemory[], boopStamps: readonly PlacedBoopStamp[], frameW: number, designX0: number, measuredHeights: Record<string, number>, includeFixtures = true) {
+  const fixtures = (includeFixtures ? panel.items : []).map(([id, placement]) => {
     const item = mk(id, placement);
     return rotatedBounds((item.x ?? 0) + designX0, item.y ?? 0, item.w, item.h, item.rot);
   });
-  return packElements([...memories, ...boopStamps].filter((element) => themeForElement(element) === panel.id), frameW, 204, fixtures, measuredHeights);
+  return packElements(
+    [...memories, ...boopStamps].filter((element) => themeForElement(element) === panel.id),
+    frameW, 204, fixtures, measuredHeights, .84, panel.items.map(([, placement]) => placement.rot ?? 0),
+  );
 }

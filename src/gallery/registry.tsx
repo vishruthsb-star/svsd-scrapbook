@@ -27,6 +27,7 @@ import { DecorPreview, FlipCardPreview, ItemBackPreview, PillButtonPreview, Remo
 import { ScrapbookProfileScreen } from '@/screens/ScrapbookProfileScreen';
 import { PROFILE_CONTRIBUTORS } from '@/data/scrapbookProfile';
 import type { ScrapbookContributor, ScrapbookPresentation } from '@/types';
+import { deriveScrapbookPermissions } from '@/scrapbook/permissions';
 
 export type GalleryKind = 'screen' | 'component';
 
@@ -39,10 +40,10 @@ export interface GalleryEntry {
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-function ScrapbookProfileGalleryPreview() {
+function ScrapbookProfileGalleryPreview({ viewer = false }: { viewer?: boolean }) {
   const [presentation, setPresentation] = useState<ScrapbookPresentation>('canvas');
   const [contributors, setContributors] = useState<readonly ScrapbookContributor[]>(PROFILE_CONTRIBUTORS);
-  return <ScrapbookProfileScreen presentation={presentation} contributors={contributors} onBack={() => undefined} onPresentationChange={setPresentation} onContributorRemove={(id) => setContributors((current) => current.filter((person) => person.id !== id))} onInvite={() => setContributors((current) => current.some((person) => person.id === 'gallery-invite') ? current : [...current, { id: 'gallery-invite', name: 'friend', permission: 'can write', fill: '#C9D9F4', rotation: 1 }])} onCoverFileChange={() => undefined} />;
+  return <ScrapbookProfileScreen ownerName={viewer ? 'maya' : 'vishruth'} presentation={presentation} contributors={contributors} permissions={deriveScrapbookPermissions('vishruth', viewer ? 'maya' : 'vishruth')} onBack={() => undefined} onPresentationChange={setPresentation} onContributorRemove={(id) => setContributors((current) => current.filter((person) => person.id !== id))} onInvite={() => setContributors((current) => current.some((person) => person.id === 'gallery-invite') ? current : [...current, { id: 'gallery-invite', name: 'friend', permission: 'can write', fill: '#C9D9F4', rotation: 1 }])} onCoverFileChange={() => undefined} />;
 }
 
 export const SCREENS: GalleryEntry[] = [
@@ -62,17 +63,22 @@ export const SCREENS: GalleryEntry[] = [
   },
   {
     kind: 'screen',
-    id: 'scrapbook-profile',
-    title: 'Scrapbook profile',
-    description: 'Approved 1D paper profile screen. Toggle layouts, remove contributors, and test the local invite control.',
+    id: 'scrapbook-profile-owner',
+    title: 'Scrapbook Profile: Owner',
+    description: 'Editable profile with cover, presentation, contributor, and invite controls.',
     render: () => <ScrapbookProfileGalleryPreview />,
+  },
+  {
+    kind: 'screen', id: 'scrapbook-profile-viewer', title: 'Scrapbook Profile: Viewer',
+    description: 'Read-only profile variant with the shared cover and contributor strips.',
+    render: () => <ScrapbookProfileGalleryPreview viewer />,
   },
 ];
 
 // eslint-disable-next-line react-refresh/only-export-components
 function BoopGalleryPreview() {
   const [open, setOpen] = useState(false);
-  return <div style={{ position: 'relative', width: 390, height: 844, background: '#e9e2d3', overflow: 'hidden' }}><BoopFab recipientName="Vishruth" x={316} y={190} open={open} onOpen={() => setOpen(true)} onClose={() => setOpen(false)} onSelect={() => undefined} /></div>;
+  return <div style={{ position: 'relative', width: 390, height: 844, background: '#e9e2d3', overflow: 'hidden' }}><BoopFab senderName="Priya" x={316} y={190} open={open} onOpen={() => setOpen(true)} onClose={() => setOpen(false)} onSelect={() => undefined} /></div>;
 }
 
 export const COMPONENTS: GalleryEntry[] = [

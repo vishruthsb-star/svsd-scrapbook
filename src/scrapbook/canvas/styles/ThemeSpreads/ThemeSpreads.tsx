@@ -13,6 +13,7 @@ import { revealInScroller, useTargetReveal } from '../../revealTarget';
 import type { PlacedBoopStamp } from '@/scrapbook/boopStamps';
 import { BoopStamp } from '@/components/BoopFab';
 import { isBoopStamp, targetIdForElement, themeForElement } from '@/scrapbook/placement/dynamicLayout';
+import { SAFE } from '../../constants';
 
 export interface ThemeSpreadsProps {
   view: 'own' | 'visitor';
@@ -25,17 +26,16 @@ export interface ThemeSpreadsProps {
   boopStamps?: PlacedBoopStamp[];
   scrollTargetId?: string | null;
   onScrollTargetHandled?: (id: string) => void;
+  onRemoveItem?: (id: string) => void;
 }
 
 /**
  * Distance from the frame bottom to this style's own ThemeNavigation (ThemeSpreads.css's
- * `.theme-spreads-nav`). Was `var(--safe-bottom)` (32px) until the app-shell-level
- * HomeBottomNavigation (AppShell.css, mounted above every screen incl. this one at
- * bottom:40px, 53px tall) landed directly on top of it — moved above that 93px footprint
- * plus a 16px gap. Shared with the CSS file via the `--theme-nav-bottom` custom property set
- * below, and with the panel-height formula below, so the two can't drift apart.
+ * `.theme-spreads-nav`). It is the canvas design's bottom safe-area token; the CSS rule
+ * also honors a larger real device inset. It is shared with the panel-height formula below
+ * so the reserved clearance cannot drift from the fixed navigation position.
  */
-const THEME_NAV_BOTTOM = 109;
+const THEME_NAV_BOTTOM = SAFE.bottom;
 
 /**
  * Wraps one piece of a panel's hand-placed content (an item, or a static extra like
@@ -106,7 +106,7 @@ function MeasuredBlock({
  * (item heights are content-driven — see envelopesLipGeometry.ts's identical note on
  * Stamp/Note/etc. — not a fixed per-type guess), via `MeasuredBlock` / a ref on the nav.
  */
-export default function ThemeSpreads({ view, headerDelta, ownerName, frameW, frameH, designX0, items = [], boopStamps = [], scrollTargetId, onScrollTargetHandled }: ThemeSpreadsProps) {
+export default function ThemeSpreads({ view, headerDelta, ownerName, frameW, frameH, designX0, items = [], boopStamps = [], scrollTargetId, onScrollTargetHandled, onRemoveItem }: ThemeSpreadsProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
   const panelScrollRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -117,7 +117,8 @@ export default function ThemeSpreads({ view, headerDelta, ownerName, frameW, fra
   const targetPanel = scrollTargetId ? [...items, ...boopStamps].find((item) => targetIdForElement(item) === scrollTargetId) : undefined;
   const targetIndex = targetPanel ? THEME_PANELS.findIndex((panel) => panel.id === themeForElement(targetPanel)) : -1;
 
-  const packedByPanel = useMemo(() => Object.fromEntries(THEME_PANELS.map((panel) => [panel.id, packThemeMemories(panel, items, boopStamps, frameW, designX0, measuredHeights)])), [boopStamps, designX0, frameW, items, measuredHeights]);
+  const includeFixtures = items.length === 0 && boopStamps.length === 0;
+  const packedByPanel = useMemo(() => Object.fromEntries(THEME_PANELS.map((panel) => [panel.id, packThemeMemories(panel, items, boopStamps, frameW, designX0, measuredHeights, includeFixtures)])), [boopStamps, designX0, frameW, includeFixtures, items, measuredHeights]);
 
   useLayoutEffect(() => {
     const el = navRef.current;
@@ -228,7 +229,7 @@ export default function ThemeSpreads({ view, headerDelta, ownerName, frameW, fra
                         put these on
                       </MeasuredBlock>
                     )}
-                    {panel.items.map(([id, placement]) => {
+                    {includeFixtures && panel.items.map(([id, placement]) => {
                       const it = mk(id, placement);
                       return (
                         <MeasuredBlock
@@ -281,7 +282,7 @@ export default function ThemeSpreads({ view, headerDelta, ownerName, frameW, fra
                               setMeasuredHeights((previous) => previous[placed.element.id] === height ? previous : { ...previous, [placed.element.id]: height });
                             }}
                           >
-                            {isBoop ? <BoopStamp stampKey={element.stampKey} recipientName={element.recipientName} className="canvas-boop-stamp" /> : <ScrapbookItem id={element.id} type={element.kind} text={element.text} date={date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} year={String(date.getFullYear())} src={element.kind === 'voice' ? undefined : element.src} audioSrc={element.kind === 'voice' ? element.src : undefined} url={element.url} ratio={element.ratio} from={element.authorId} owner={ownerName} view={view} rot={placed.rot} zoom={placed.z} seed={element.seed} />}
+                            {isBoop ? <BoopStamp stampKey={element.stampDesignId} senderName={element.senderId} className="canvas-boop-stamp" /> : <ScrapbookItem id={element.id} type={element.kind} text={element.text} date={date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} year={String(date.getFullYear())} src={element.kind === 'voice' ? undefined : element.src} audioSrc={element.kind === 'voice' ? element.src : undefined} url={element.url} ratio={element.ratio} from={element.authorId} owner={ownerName} view={view} rot={placed.rot} zoom={placed.z} seed={element.seed} onRemove={view === 'own' ? onRemoveItem : undefined} />}
                           </div>
                         </MeasuredBlock>
                       );

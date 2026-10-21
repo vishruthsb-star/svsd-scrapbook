@@ -23,6 +23,14 @@ export const PROFILE_CONTRIBUTORS: readonly ScrapbookContributor[] = [
   { id: 'ana', name: 'ana', permission: 'can write', fill: '#C5E8D9', rotation: -1.2 },
 ];
 
+/** Create a book-scoped fixture list without sharing an owner's contributor record. */
+export function profileContributorsFor(ownerId: string): readonly ScrapbookContributor[] {
+  const normalizedOwner = ownerId.toLowerCase();
+  const withoutOwner = PROFILE_CONTRIBUTORS.filter((person) => person.id !== 'owner' && person.id !== normalizedOwner);
+  const owner = PROFILE_CONTRIBUTORS.find((person) => person.id === 'owner')!;
+  return [{ ...owner, id: normalizedOwner, name: normalizedOwner }, ...withoutOwner];
+}
+
 export function isScrapbookPresentation(value: string | null): value is ScrapbookPresentation {
   return value !== null && SCRAPBOOK_PRESENTATIONS.some((presentation) => presentation === value);
 }

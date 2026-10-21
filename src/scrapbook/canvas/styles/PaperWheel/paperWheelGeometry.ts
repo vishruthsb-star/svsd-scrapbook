@@ -151,7 +151,7 @@ export interface WheelResult {
  * `<dc-import name="WheelPhone" material="paper" radius=... rise=...>` call, which omits
  * `fab` entirely.
  */
-export function buildWheel(di: number, ddx: number, frameH: number, frameW = 390, memories: readonly PlacedMemory[] = [], boopStamps: readonly PlacedBoopStamp[] = [], measuredHeights: Record<string, number> = {}): WheelResult {
+export function buildWheel(di: number, ddx: number, frameH: number, frameW = 390, memories: readonly PlacedMemory[] = [], boopStamps: readonly PlacedBoopStamp[] = [], measuredHeights: Record<string, number> = {}, includeFixtures = true): WheelResult {
   const wt = frameH - RISE;
   const cy = wt + OUTER_R;
 
@@ -167,7 +167,7 @@ export function buildWheel(di: number, ddx: number, frameH: number, frameW = 390
     fit[mm] = Math.max(fit[mm] ?? 0, d.y + baseH * d.z);
   });
 
-  const items: WheelItem[] = IDS.map((id) => {
+  const items: WheelItem[] = (includeFixtures ? IDS : []).map((id) => {
     const b = IT[id];
     const d = DP[id];
     const base = mk(id, { z: 1 });
@@ -183,7 +183,11 @@ export function buildWheel(di: number, ddx: number, frameH: number, frameW = 390
   });
 
   const fixtureBounds = items.filter((item) => item.op === 1).map((item) => rotatedBounds(item.x, item.y, item.w, item.h, item.rot));
-  const dynamicItems: WheelItem[] = packElements([...memories, ...boopStamps].filter((element) => wheelMonthForElement(element) === m), frameW, 220, fixtureBounds, measuredHeights, .82).map((placed) => {
+  const dynamicItems: WheelItem[] = packElements(
+    [...memories, ...boopStamps].filter((element) => wheelMonthForElement(element) === m),
+    frameW, 220, fixtureBounds, measuredHeights, .82,
+    items.filter((item) => item.op === 1).map((item) => item.rot),
+  ).map((placed) => {
     const element = placed.element;
     const [w, h] = elementSize(element, measuredHeights[element.id]);
     if (isBoopStamp(element)) return {

@@ -135,7 +135,7 @@ export default function ScrapbookFabLayoutLab() {
           <ScrapbookCanvasPage style="torn-strata" view="own" />
           <AddFab ref={addRef} className="fab-lab-addfab" placement="tr" frameW={390} frameH={844}
             cornerRadius={0} x={addPosition.x} y={addPosition.y} zIndex={200} onOpen={() => setOpen(false)} />
-          <BoopFab recipientName="Vishruth" x={boopPosition.x} y={boopPosition.y} open={open}
+          <BoopFab senderName="Priya" x={boopPosition.x} y={boopPosition.y} open={open}
             onOpen={() => { addRef.current?.close(); setOpen(true); }} onClose={() => setOpen(false)} onSelect={() => undefined}
             buttonStyle={{ width: values.width, height: values.height, overflow: 'visible' }} markStyle={logoStyle} />
           {guides && (

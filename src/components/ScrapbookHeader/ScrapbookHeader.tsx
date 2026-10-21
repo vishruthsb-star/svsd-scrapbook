@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './ScrapbookHeader.css';
 
 /**
@@ -18,6 +18,11 @@ export interface ScrapbookHeaderProps {
   onProfileOpen?: () => void;
 }
 
+function CoverImage({ src }: { src?: string }) {
+  const [failed, setFailed] = useState(false);
+  return src && !failed ? <img src={src} alt="" onError={() => setFailed(true)} /> : <span aria-hidden="true" />;
+}
+
 export default function ScrapbookHeader({
   title = 'vishruth’s scrapbook',
   coverSrc,
@@ -26,14 +31,8 @@ export default function ScrapbookHeader({
   onProfileOpen,
 }: ScrapbookHeaderProps) {
   const imageSrc = coverSrc ?? avatarSrc;
-  const [imageFailed, setImageFailed] = useState(false);
-
-  // A profile edit can replace a failed source; let the cover slot attempt the new image.
-  useEffect(() => setImageFailed(false), [imageSrc]);
-
-  const cover = imageSrc && !imageFailed
-    ? <img src={imageSrc} alt="" onError={() => setImageFailed(true)} />
-    : <span aria-hidden="true" />;
+  // A keyed child retries independently whenever a profile edit swaps the source.
+  const cover = <CoverImage key={imageSrc ?? 'fallback'} src={imageSrc} />;
 
   return (
     <header className="scrapbook-header">

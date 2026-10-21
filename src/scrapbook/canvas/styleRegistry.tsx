@@ -27,6 +27,7 @@ export interface CanvasStyleProps {
   scrollTargetId?: string | null;
   /** A style calls this once its bounded DOM-target request has completed. */
   onScrollTargetHandled?: (id: string) => void;
+  onRemoveItem?: (id: string) => void;
 }
 
 /**

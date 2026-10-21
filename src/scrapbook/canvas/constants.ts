@@ -7,7 +7,7 @@
  * JS math (fabAnchor, header delta, per-style layout) stays in lockstep with the CSS
  * without duplicating the numbers by hand if index.css ever changes.
  */
-export const SAFE = { top: 62, bottom: 32, side: 24 } as const;
+export const SAFE = { top: 62, bottom: 34, side: 24 } as const;
 
 /**
  * The reference's fixed 390-wide design-coordinate system (every hand-placed x/y in

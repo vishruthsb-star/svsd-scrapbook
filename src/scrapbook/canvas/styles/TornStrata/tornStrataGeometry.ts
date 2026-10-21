@@ -6,7 +6,7 @@ import { rng } from '../../rng';
 import type { PlacedMemory } from '@/scrapbook/placement';
 import type { PlacedBoopStamp } from '@/scrapbook/boopStamps';
 import { findCompactPlacement } from '@/scrapbook/placement/compactPlacement';
-import { dynamicRotation, memorySize, rotatedBounds, stableHash } from '@/scrapbook/placement/dynamicLayout';
+import { memorySize, resolveDistinctRotation, rotatedBounds, stableHash } from '@/scrapbook/placement/dynamicLayout';
 
 export { hash, rng };
 
@@ -140,7 +140,7 @@ export interface DynamicStrataItem {
   z: number;
 }
 
-export interface PackedBoopStamp { stamp: PlacedBoopStamp; x: number; y: number; }
+export interface PackedBoopStamp { stamp: PlacedBoopStamp; x: number; y: number; rot: number; }
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
@@ -160,17 +160,19 @@ function labelOrder(label: string): number {
 interface Bounds { x: number; y: number; w: number; h: number; }
 
 /** Deterministic, rotation-aware packing below the reference fixtures in each strip. */
-export function packDynamicStrataItems(memories: PlacedMemory[], startY: number, frameW: number, initialOccupied: Bounds[] = [], measuredHeights: Record<string, number> = {}): DynamicStrataItem[] {
+export function packDynamicStrataItems(memories: PlacedMemory[], startY: number, frameW: number, initialOccupied: Bounds[] = [], measuredHeights: Record<string, number> = {}, fixtureRotations: readonly number[] = []): DynamicStrataItem[] {
   const occupied: Bounds[] = [...initialOccupied];
+  const usedRotations = [...fixtureRotations];
   return [...memories].sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id)).map((memory) => {
     const z = .84;
     const [naturalW, naturalH] = memorySize(memory, measuredHeights[memory.id]);
     const width = naturalW * z;
     const height = naturalH * z;
-    const rotation = dynamicRotation(memory.id);
+    const rotation = resolveDistinctRotation(memory.id, usedRotations);
     const footprint = rotatedBounds(0, 0, width, height, rotation);
     const placed = findCompactPlacement({ frameWidth: frameW, startY, item: { w: footprint.w, h: footprint.h }, occupied, seed: stableHash(memory.id) });
     occupied.push({ x: placed.x, y: placed.y, w: footprint.w, h: footprint.h });
+    usedRotations.push(rotation);
     return { memory, x: Math.round(placed.x + (footprint.w - width) / 2), y: Math.round(placed.y + (footprint.h - height) / 2), rot: rotation, z };
   });
 }
@@ -192,7 +194,7 @@ export function packDynamicStrataItems(memories: PlacedMemory[], startY: number,
  * them. `top` pixel offsets are computed BEFORE the reverse, in the original (newest-first)
  * ST order, so OCT 2026 still sits at `top: 0`. Do not sort/re-derive this order.
  */
-export function buildStrata(headerDelta: number, frameW: number, memories: PlacedMemory[] = [], boopStamps: PlacedBoopStamp[] = [], measuredHeights: Record<string, number> = {}): { strata: StrataStrip[]; acc: number } {
+export function buildStrata(headerDelta: number, frameW: number, memories: PlacedMemory[] = [], boopStamps: PlacedBoopStamp[] = [], measuredHeights: Record<string, number> = {}, includeFixtures = true): { strata: StrataStrip[]; acc: number } {
   const byLabel = new Map<string, PlacedMemory[]>();
   for (const memory of memories) {
     const label = memoryLabel(memory);
@@ -203,31 +205,41 @@ export function buildStrata(headerDelta: number, frameW: number, memories: Place
     const label = memoryLabel({ createdAt: stamp.createdAt } as PlacedMemory);
     boopsByLabel.set(label, [...(boopsByLabel.get(label) ?? []), stamp]);
   }
-  const definitions: StripDef[] = [...ST];
-  for (const label of byLabel.keys()) {
-    if (!definitions.some((definition) => definition.label === label)) definitions.push({ label, h: 142, tex: 'grid', its: [] });
-  }
+  // Populated product books do not render reference fixture items, but they retain the
+  // reference strip geometry. In particular OCT keeps its 118px header-clearance pad;
+  // otherwise a fixture-free book begins at y=0 and its first label sits behind the
+  // floating scrapbook header on initial load.
+  const definitions: StripDef[] = includeFixtures
+    ? [...ST]
+    : [...byLabel.keys()].map((label) => {
+      const reference = ST.find((definition) => definition.label === label);
+      return reference ? { ...reference, its: [] } : { label, h: 142, tex: 'grid', its: [] };
+    });
+  for (const label of byLabel.keys()) if (!definitions.some((definition) => definition.label === label)) definitions.push({ label, h: 142, tex: 'grid', its: [] });
   definitions.sort((a, b) => labelOrder(b.label) - labelOrder(a.label));
   let acc = 0;
   const strata = definitions.map((s) => {
     const pad = s.pad ? s.pad + headerDelta : 0;
     const baseHeight = s.h + pad;
-    const items = s.its.map(([id, p]) => ({ ...mk(id, p), y: (p.y ?? 0) + pad }));
+    const items = includeFixtures ? s.its.map(([id, p]) => ({ ...mk(id, p), y: (p.y ?? 0) + pad })) : [];
     const fixtureBottom = items.reduce((bottom, item) => Math.max(bottom, item.y + item.h), pad + 64);
     const fixtureBounds = items.map((item) => rotatedBounds(item.x ?? 0, item.y, item.w, item.h, item.rot));
     // Start below the month label, not below every fixture: the shared placer can now use
     // genuine side gaps between the authored objects before it grows the paper vertically.
-    const dynamicItems = packDynamicStrataItems(byLabel.get(s.label) ?? [], pad + 64, frameW, fixtureBounds, measuredHeights);
+    const dynamicItems = packDynamicStrataItems(byLabel.get(s.label) ?? [], pad + 64, frameW, fixtureBounds, measuredHeights, items.map((item) => item.rot));
     const dynamicBottom = dynamicItems.reduce((bottom, item) => Math.max(bottom, item.y + memorySize(item.memory, measuredHeights[item.memory.id])[1] * item.z + 24), fixtureBottom);
     const occupied = [
       ...fixtureBounds,
       ...dynamicItems.map((item) => { const [w, h] = memorySize(item.memory, measuredHeights[item.memory.id]); return rotatedBounds(item.x, item.y, w * item.z, h * item.z, item.rot); }),
     ];
+    const usedRotations = [...items.map((item) => item.rot), ...dynamicItems.map((item) => item.rot)];
     const boopStamps = [...(boopsByLabel.get(s.label) ?? [])].sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id)).map((stamp) => {
-      const footprint = rotatedBounds(0, 0, stamp.width, stamp.width, stamp.rotation);
+      const rot = resolveDistinctRotation(stamp.id, usedRotations, stamp.rotation);
+      const footprint = rotatedBounds(0, 0, stamp.width, stamp.width, rot);
       const placed = findCompactPlacement({ frameWidth: frameW, startY: pad + 64, item: { w: footprint.w, h: footprint.h }, occupied, seed: Math.abs(hash(stamp.id)) });
       occupied.push({ x: placed.x, y: placed.y, w: footprint.w, h: footprint.h });
-      return { stamp, x: Math.round(placed.x + (footprint.w - stamp.width) / 2), y: Math.round(placed.y + (footprint.h - stamp.width) / 2) };
+      usedRotations.push(rot);
+      return { stamp, x: Math.round(placed.x + (footprint.w - stamp.width) / 2), y: Math.round(placed.y + (footprint.h - stamp.width) / 2), rot };
     });
     const boopBottom = boopStamps.reduce((bottom, item) => Math.max(bottom, item.y + item.stamp.width + 24), dynamicBottom);
     const hh = Math.max(baseHeight, Math.ceil(boopBottom));

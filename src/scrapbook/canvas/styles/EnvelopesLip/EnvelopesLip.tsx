@@ -23,6 +23,7 @@ export interface EnvelopesLipProps {
   boopStamps?: PlacedBoopStamp[];
   scrollTargetId?: string | null;
   onScrollTargetHandled?: (id: string) => void;
+  onRemoveItem?: (id: string) => void;
 }
 
 /**
@@ -79,10 +80,10 @@ function LipItemSlot({
   );
 }
 
-function LipScrapbookItem({ it, ownerName, view }: { it: LipItem; ownerName: string; view: 'own' | 'visitor' }) {
-  if (it.boop) return <div style={{ width: it.boop.width, transform: `rotate(${it.rot}deg)` }}><BoopStamp stampKey={it.boop.stampKey} recipientName={it.boop.recipientName} className="canvas-boop-stamp" /></div>;
+function LipScrapbookItem({ it, ownerName, view, onRemoveItem }: { it: LipItem; ownerName: string; view: 'own' | 'visitor'; onRemoveItem?: (id: string) => void }) {
+  if (it.boop) return <div style={{ width: it.boop.width, transform: `rotate(${it.rot}deg)` }}><BoopStamp stampKey={it.boop.stampDesignId} senderName={it.boop.senderId} className="canvas-boop-stamp" /></div>;
   const memory = it.memory;
-  if (memory) return <ScrapbookItem id={memory.id} type={memory.kind} text={memory.text} date={it.date} year={it.year} src={memory.kind === 'voice' ? undefined : memory.src} audioSrc={memory.kind === 'voice' ? memory.src : undefined} url={memory.url} ratio={memory.ratio} from={memory.authorId} owner={ownerName} view={view} rot={it.rot} zoom={it.z} seed={memory.seed} />;
+  if (memory) return <ScrapbookItem id={memory.id} type={memory.kind} text={memory.text} date={it.date} year={it.year} src={memory.kind === 'voice' ? undefined : memory.src} audioSrc={memory.kind === 'voice' ? memory.src : undefined} url={memory.url} ratio={memory.ratio} from={memory.authorId} owner={ownerName} view={view} rot={it.rot} zoom={it.z} seed={memory.seed} onRemove={view === 'own' ? onRemoveItem : undefined} />;
   return <ScrapbookItem id={it.id} type={it.type} text={it.text} label={it.label} city={it.city} date={it.date} year={it.year} denom={it.denom} dur={it.dur} src={it.src} ratio={it.ratio} from={it.from} owner={ownerName} view={view} attach={it.attach} rot={it.rot} zoom={it.z} seed={hash(it.id)} />;
 }
 
@@ -106,15 +107,16 @@ function LipScrapbookItem({ it, ownerName, view }: { it: LipItem; ownerName: str
  * own internal AddFab used to hide itself via `hidden={{envOpen}}`; this page doesn't wire
  * that at all, so ours never fades.
  */
-export default function EnvelopesLip({ view, headerDelta, ownerName, frameW, frameH, designX0, items = [], boopStamps = [], scrollTargetId, onScrollTargetHandled }: EnvelopesLipProps) {
+export default function EnvelopesLip({ view, headerDelta, ownerName, frameW, frameH, designX0, items = [], boopStamps = [], scrollTargetId, onScrollTargetHandled, onRemoveItem }: EnvelopesLipProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [openIndex, setOpenIndex] = useState(-1);
   const [measuredH, setMeasuredH] = useState<Record<string, number>>({});
   const [rotatedDeltas, setRotatedDeltas] = useState<Record<string, number>>({});
   const [pages, setPages] = useState<Record<number, number>>({});
   const [appliedTarget, setAppliedTarget] = useState<string | null>(null);
+  const includeFixtures = items.length === 0 && boopStamps.length === 0;
   const targetMemory = scrollTargetId ? [...items, ...boopStamps].find((item) => targetIdForElement(item) === scrollTargetId) : undefined;
-  const targetLocation = targetMemory ? envelopePageForMemory(targetMemory, items, boopStamps) : undefined;
+  const targetLocation = targetMemory ? envelopePageForMemory(targetMemory, items, boopStamps, includeFixtures) : undefined;
   const targetEnvelopeIndex = targetLocation?.envelopeIndex;
   const targetPage = targetLocation?.page;
   if (scrollTargetId && targetLocation && appliedTarget !== scrollTargetId) {
@@ -130,7 +132,7 @@ export default function EnvelopesLip({ view, headerDelta, ownerName, frameW, fra
     setRotatedDeltas((prev) => (prev[id] === delta ? prev : { ...prev, [id]: delta }));
   }, []);
 
-  const { envs, innerH } = buildEnvelopes(openIndex, headerDelta, frameH, measuredH, rotatedDeltas, items, boopStamps, pages);
+  const { envs, innerH } = buildEnvelopes(openIndex, headerDelta, frameH, measuredH, rotatedDeltas, items, boopStamps, pages, includeFixtures);
   const any = openIndex >= 0;
 
   const toggle = (i: number) => {
@@ -193,7 +195,7 @@ export default function EnvelopesLip({ view, headerDelta, ownerName, frameW, fra
                 </g>
               </svg>
 
-              {ev.items.map((it) => <LipItemSlot key={it.id} it={it} onHeightMeasured={handleHeightMeasured} onRotatedTopMeasured={handleRotatedTopMeasured}><div data-scrapbook-item-id={it.memory || it.boop ? targetIdForElement(it.boop ?? it.memory!) : undefined}><LipScrapbookItem it={it} ownerName={ownerName} view={view} /></div></LipItemSlot>)}
+              {ev.items.map((it) => <LipItemSlot key={it.id} it={it} onHeightMeasured={handleHeightMeasured} onRotatedTopMeasured={handleRotatedTopMeasured}><div data-scrapbook-item-id={it.memory || it.boop ? targetIdForElement(it.boop ?? it.memory!) : undefined}><LipScrapbookItem it={it} ownerName={ownerName} view={view} onRemoveItem={onRemoveItem} /></div></LipItemSlot>)}
 
               {/* Always-visible pocket: one ink line, thumb notch, small label holder. */}
               <svg className="envelopes-lip-pocket" width="330" height="196">

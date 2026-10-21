@@ -29,7 +29,7 @@ describe('TornStrata created-memory placement', () => {
     const first = buildStrata(0, 390, records).strata.find((strip) => strip.label === 'OCT 2026')!.dynamicItems;
     const second = buildStrata(0, 390, records).strata.find((strip) => strip.label === 'OCT 2026')!.dynamicItems;
     expect(second).toEqual(first);
-    expect(new Set(first.map((item) => item.rot)).size).toBeGreaterThan(1);
+    expect(new Set(first.map((item) => item.rot)).size).toBe(first.length);
     for (let a = 0; a < first.length; a += 1) for (let b = a + 1; b < first.length; b += 1) {
       // Voice is 230x146 at .84 zoom. This intentionally ignores the extra rotation margin,
       // so a pass here means the rendered conservative boxes have at least as much space.
@@ -41,7 +41,7 @@ describe('TornStrata created-memory placement', () => {
 
   it('uses side-by-side space for consecutive BOOP stamps before growing the month', () => {
     const stamps: PlacedBoopStamp[] = [0, 1].map((index) => ({
-      id: `boop-${index}`, stampKey: index ? 'giddy' : 'nostalgic', scrapbookId: 'library:maya', recipientName: 'maya',
+      id: `boop-${index}`, stampKey: index ? 'giddy' : 'nostalgic', stampDesignId: index ? 'giddy' : 'nostalgic', recipientBookId: 'library:maya', senderId: index ? 'jun' : 'priya',
       x: 0, y: 0, width: 136, rotation: index ? 4 : -3, createdAt: '2026-10-20T12:00:00.000Z',
     }));
     const placed = buildStrata(0, 390, [], stamps).strata.find((strip) => strip.label === 'OCT 2026')!.boopStamps;

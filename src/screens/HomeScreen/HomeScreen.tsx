@@ -97,6 +97,7 @@ export default function HomeScreen({ coverImages = {}, selectedPerson, onSelectP
         </section>
       </div>
       <div className="home-invite-wrap"><InviteSection handle={OWNER_HANDLE} /></div>
+      <div className="home-bottom-dot-texture" aria-hidden="true" />
     </div>
   );
 }

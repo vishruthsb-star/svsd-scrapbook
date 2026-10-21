@@ -7,7 +7,7 @@ import { buildWheel } from './styles/PaperWheel/paperWheelGeometry';
 import { packThemeMemories } from './styles/ThemeSpreads/themeSpreadsGeometry';
 import { THEME_PANELS } from './styles/ThemeSpreads/themeSpreadsData';
 
-const boop = (id = 'boop-1'): PlacedBoopStamp => ({ id, stampKey: 'giddy', scrapbookId: 'library:maya', recipientName: 'maya', x: 0, y: 0, width: 136, rotation: -3, createdAt: '2026-01-12T12:00:00.000Z' });
+const boop = (id = 'boop-1'): PlacedBoopStamp => ({ id, stampKey: 'giddy', stampDesignId: 'giddy', recipientBookId: 'library:maya', senderId: 'priya', x: 0, y: 0, width: 136, rotation: -3, createdAt: '2026-01-12T12:00:00.000Z' });
 const memory = (id = 'memory-1'): PlacedMemory => ({ id, scrapbookId: 'library:maya', recipientId: 'maya', authorId: 'friend', createdAt: '2026-01-11T12:00:00.000Z', seed: 1, kind: 'note', text: 'winter note' });
 
 describe('BOOP canvas projection', () => {
@@ -32,6 +32,8 @@ describe('BOOP canvas projection', () => {
     expect(envelopePageForMemory(stamp, [memory()], [stamp]).envelopeIndex).toBe(WINTER_ENVELOPE_INDEX);
     const { envs } = buildEnvelopes(-1, 0, 844, {}, {}, [memory()], [stamp]);
     expect(envs[0].items.map((item) => item.id)).toEqual(['beer', 'quiet', 'leh', 'film']);
+    expect(envs).toHaveLength(4);
+    expect(envs[3]).toMatchObject({ label: 'SPRING ’26', items: [] });
   });
 
   it('adds BOOPs to their selected wheel month without changing the wheel size', () => {
@@ -47,5 +49,13 @@ describe('BOOP canvas projection', () => {
     expect(envelopePageForMemory(last, [], stamps)).toEqual({ envelopeIndex: WINTER_ENVELOPE_INDEX, page: 1 });
     const { envs } = buildEnvelopes(WINTER_ENVELOPE_INDEX, 0, 844, {}, {}, [], stamps, { [WINTER_ENVELOPE_INDEX]: 1 });
     expect(envs[WINTER_ENVELOPE_INDEX].items.some((item) => item.boop?.id === last.id)).toBe(true);
+  });
+
+  it('gives each item in an open envelope fan a distinct stable tilt', () => {
+    const stamps = Array.from({ length: 6 }, (_, index) => boop(`fan-${index}`));
+    const first = buildEnvelopes(WINTER_ENVELOPE_INDEX, 0, 844, {}, {}, [], stamps, {}, false).envs[WINTER_ENVELOPE_INDEX].items;
+    const second = buildEnvelopes(WINTER_ENVELOPE_INDEX, 0, 844, {}, {}, [], stamps, {}, false).envs[WINTER_ENVELOPE_INDEX].items;
+    expect(new Set(first.map((item) => item.rot)).size).toBe(first.length);
+    expect(second.map((item) => item.rot)).toEqual(first.map((item) => item.rot));
   });
 });

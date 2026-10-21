@@ -3,6 +3,8 @@ import type { CanvasStyle } from '@/scrapbook/canvas';
 
 export const OWNER_NAME = 'Vishruth';
 export const OWNER_HANDLE = 'vishruth';
+/** Stable local prototype account identifier; never infer ownership from labels. */
+export const CURRENT_USER_ID = 'vishruth';
 export const SCRAPBOOK_COVERS: Record<string, string> = {
   vishruth: '/album-covers/vishruth.jpg',
   priya: '/album-covers/priya.jpg',

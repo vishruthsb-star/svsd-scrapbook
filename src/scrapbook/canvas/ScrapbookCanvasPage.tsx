@@ -27,6 +27,8 @@ export interface ScrapbookCanvasPageProps {
   items?: PlacedMemory[];
   headerProps?: ScrapbookHeaderProps;
   ownerName?: string;
+  /** Identity printed in the sender's BOOP picker, never the recipient book owner. */
+  boopSenderName?: string;
   /**
    * Overrides `CANVAS_STYLE_FAB_PLACEMENT[style]` for this mount only — the registry default
    * stays the reference-sourced placement (e.g. torn-strata's bottom-center), so standalone
@@ -41,6 +43,7 @@ export interface ScrapbookCanvasPageProps {
   scrollTargetId?: string | null;
   onScrollTargetHandled?: (id: string) => void;
   onBoopOpenChange?: (open: boolean) => void;
+  onRemoveItem?: (id: string) => void;
 }
 
 /**
@@ -115,6 +118,7 @@ export default function ScrapbookCanvasPage({
   view,
   headerProps,
   ownerName = OWNER_HANDLE,
+  boopSenderName = OWNER_HANDLE,
   fabPlacement: fabPlacementOverride,
   onAddSelect,
   boopStamps = [],
@@ -122,6 +126,7 @@ export default function ScrapbookCanvasPage({
   scrollTargetId,
   onScrollTargetHandled,
   onBoopOpenChange,
+  onRemoveItem,
   items = [],
 }: ScrapbookCanvasPageProps) {
   const frameRef = useRef<HTMLDivElement>(null);
@@ -186,7 +191,7 @@ export default function ScrapbookCanvasPage({
           {headerDelta !== null &&
             designX0 !== null &&
             frame !== null &&
-            CANVAS_STYLES[style]({ view, headerDelta, ownerName, frameW: frame.w, frameH: frame.h, designX0, items, boopStamps, scrollTargetId, onScrollTargetHandled })}
+            CANVAS_STYLES[style]({ view, headerDelta, ownerName, frameW: frame.w, frameH: frame.h, designX0, items, boopStamps, scrollTargetId, onScrollTargetHandled, onRemoveItem })}
         </div>
         <div ref={headerWrapRef} className="scrapbook-canvas-page-header">
           <ScrapbookHeader {...headerProps} />
@@ -212,7 +217,7 @@ export default function ScrapbookCanvasPage({
         )}
         {view === 'visitor' && fabReady && fabPlacement === 'tr' && boopPoint && (
           <BoopFab
-            recipientName={ownerName}
+            senderName={boopSenderName}
             x={boopPoint.x}
             y={boopPoint.y}
             open={boopOpen}

@@ -12,6 +12,8 @@
   inset: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   user-select: none;
 }

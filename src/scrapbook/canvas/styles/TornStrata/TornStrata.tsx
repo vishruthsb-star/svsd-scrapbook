@@ -19,6 +19,7 @@ export interface TornStrataProps {
   boopStamps?: PlacedBoopStamp[];
   scrollTargetId?: string | null;
   onScrollTargetHandled?: (id: string) => void;
+  onRemoveItem?: (id: string) => void;
 }
 
 /**
@@ -33,10 +34,10 @@ export interface TornStrataProps {
  * offset by `designX0` so it lands in the same position relative to the reference's
  * 390-wide design box, centered within the real (possibly wider) frame.
  */
-export default function TornStrata({ view, headerDelta, ownerName, frameW, designX0, items = [], boopStamps = [], scrollTargetId, onScrollTargetHandled }: TornStrataProps) {
+export default function TornStrata({ view, headerDelta, ownerName, frameW, designX0, items = [], boopStamps = [], scrollTargetId, onScrollTargetHandled, onRemoveItem }: TornStrataProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [measuredHeights, setMeasuredHeights] = useState<Record<string, number>>({});
-  const { strata, acc } = useMemo(() => buildStrata(headerDelta, frameW, items, boopStamps, measuredHeights), [headerDelta, frameW, items, boopStamps, measuredHeights]);
+  const { strata, acc } = useMemo(() => buildStrata(headerDelta, frameW, items, boopStamps, measuredHeights, items.length === 0 && boopStamps.length === 0), [headerDelta, frameW, items, boopStamps, measuredHeights]);
   const sH = strataPageHeight(acc, view);
 
   useLayoutEffect(() => {
@@ -131,10 +132,11 @@ export default function TornStrata({ view, headerDelta, ownerName, frameW, desig
                     rot={rot}
                     zoom={z}
                     seed={memory.seed}
+                    onRemove={view === 'own' ? onRemoveItem : undefined}
                   />
                 </div>;
               })}
-              {strip.boopStamps.map(({ stamp, x, y }) => <div key={stamp.id} data-scrapbook-item-id={boopTargetId(stamp.id)} className="torn-strata-boop" style={{ left: x + designX0, top: y, width: stamp.width, transform: `rotate(${stamp.rotation}deg)` }}><BoopStamp stampKey={stamp.stampKey} recipientName={stamp.recipientName} /></div>)}
+              {strip.boopStamps.map(({ stamp, x, y, rot }) => <div key={stamp.id} data-scrapbook-item-id={boopTargetId(stamp.id)} className="torn-strata-boop" style={{ left: x + designX0, top: y, width: stamp.width, transform: `rotate(${rot}deg)` }}><BoopStamp stampKey={stamp.stampDesignId} senderName={stamp.senderId} /></div>)}
             </div>
           ))}
         </div>

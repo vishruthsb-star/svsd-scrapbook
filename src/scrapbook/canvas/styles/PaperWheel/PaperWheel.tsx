@@ -23,6 +23,7 @@ export interface PaperWheelProps {
   boopStamps?: PlacedBoopStamp[];
   scrollTargetId?: string | null;
   onScrollTargetHandled?: (id: string) => void;
+  onRemoveItem?: (id: string) => void;
 }
 
 const START_DI = 11; // di() default: cfg().n - 1
@@ -95,7 +96,7 @@ function MeasuredItem({
  * cross-fade by `eff` (the live value), not just the settled `di` — so a new month's
  * items always start in the reference position.
  */
-export default function PaperWheel({ view, headerDelta, ownerName, frameW, frameH, designX0, items = [], boopStamps = [], scrollTargetId, onScrollTargetHandled }: PaperWheelProps) {
+export default function PaperWheel({ view, headerDelta, ownerName, frameW, frameH, designX0, items = [], boopStamps = [], scrollTargetId, onScrollTargetHandled, onRemoveItem }: PaperWheelProps) {
   const [di, setDi] = useState(START_DI);
   const [ddx, setDdx] = useState(0);
   const [ddrag, setDdrag] = useState(false);
@@ -117,7 +118,8 @@ export default function PaperWheel({ view, headerDelta, ownerName, frameW, frame
 
   // Wheel-item coordinates use the fixed 390px reference box and are then centered by
   // designX0 below, just like the authored fixture placements.
-  const wheel = useMemo(() => buildWheel(di, ddx, frameH, Math.min(frameW, 390), items, boopStamps, measuredHeights), [boopStamps, di, ddx, frameH, frameW, items, measuredHeights]);
+  const includeFixtures = items.length === 0 && boopStamps.length === 0;
+  const wheel = useMemo(() => buildWheel(di, ddx, frameH, Math.min(frameW, 390), items, boopStamps, measuredHeights, includeFixtures), [boopStamps, di, ddx, frameH, frameW, includeFixtures, items, measuredHeights]);
   const eff = effFromDi(di, ddx);
 
   useEffect(() => {
@@ -213,7 +215,7 @@ export default function PaperWheel({ view, headerDelta, ownerName, frameW, frame
                     setMeasuredHeights((previous) => previous[it.id] === height ? previous : { ...previous, [it.id]: height });
                   }}
                 >
-                  {it.boop ? <div style={{ width: it.boop.width, transform: `rotate(${it.rot}deg)` }}><BoopStamp stampKey={it.boop.stampKey} recipientName={it.boop.recipientName} className="canvas-boop-stamp" /></div> : <ScrapbookItem id={it.id} type={it.type as ScrapbookItemType} text={it.text} label={it.label} city={it.city} date={it.date} year={it.year} denom={it.denom} dur={it.dur} src={it.memory?.kind === 'voice' ? undefined : it.src} audioSrc={it.memory?.kind === 'voice' ? it.src : undefined} url={it.memory?.url} ratio={it.ratio} from={it.from} owner={ownerName} view={view} attach={it.attach} rot={it.rot} zoom={it.z} seed={it.memory?.seed ?? hash(it.id)} />}
+                  {it.boop ? <div style={{ width: it.boop.width, transform: `rotate(${it.rot}deg)` }}><BoopStamp stampKey={it.boop.stampDesignId} senderName={it.boop.senderId} className="canvas-boop-stamp" /></div> : <ScrapbookItem id={it.id} type={it.type as ScrapbookItemType} text={it.text} label={it.label} city={it.city} date={it.date} year={it.year} denom={it.denom} dur={it.dur} src={it.memory?.kind === 'voice' ? undefined : it.src} audioSrc={it.memory?.kind === 'voice' ? it.src : undefined} url={it.memory?.url} ratio={it.ratio} from={it.from} owner={ownerName} view={view} attach={it.attach} rot={it.rot} zoom={it.z} seed={it.memory?.seed ?? hash(it.id)} onRemove={it.memory && view === 'own' ? onRemoveItem : undefined} />}
                 </div>
               </MeasuredItem>
             ))}
