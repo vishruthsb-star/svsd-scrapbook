@@ -7,6 +7,7 @@ import {
 } from './mockupGeometry';
 
 const PRODUCT_VIEWPORT = { width: 402, height: 844 } as const;
+const DISPLAY_OVERSCAN = 1;
 
 const aperture = {
   left: (IPHONE_SCREEN_VIEWPORT.x - IPHONE_FRAME_BOUNDS.x) / IPHONE_FRAME_BOUNDS.width,
@@ -38,7 +39,18 @@ export default function IphoneFrame({ scale }: IphoneFrameProps) {
 
     const updateScale = () => {
       const { clientWidth: width, clientHeight: height } = element;
-      setProductScale(Math.min(width / PRODUCT_VIEWPORT.width, height / PRODUCT_VIEWPORT.height));
+      /*
+       * The source display aperture (294 x 633) is slightly taller than the
+       * approved 402 x 844 product viewport. Containing the iframe exposed the
+       * aperture's fallback background above and below every route. Covering
+       * the aperture keeps the product uniformly scaled and lets the hardware
+       * bezel crop the small horizontal excess instead. One CSS pixel of
+       * overscan also prevents fractional-transform seams at scaled sizes.
+       */
+      setProductScale(Math.max(
+        (width + DISPLAY_OVERSCAN * 2) / PRODUCT_VIEWPORT.width,
+        (height + DISPLAY_OVERSCAN * 2) / PRODUCT_VIEWPORT.height,
+      ));
     };
 
     updateScale();
