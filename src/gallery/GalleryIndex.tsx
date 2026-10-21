@@ -5,15 +5,16 @@ import './gallery.css';
 function GalleryCard({ entry }: { entry: GalleryEntry }) {
   const href = entry.kind === 'screen' ? `/screens/${entry.id}` : `/components/${entry.id}`;
   return (
-    <Link to={href} className="gallery-card">
+    <article className="gallery-card">
       <div className={entry.kind === 'screen' ? 'gallery-card-preview gallery-card-preview-screen' : 'gallery-card-preview'}>
         <div className={entry.kind === 'screen' ? 'gallery-card-preview-scale gallery-card-preview-scale-screen' : 'gallery-card-preview-scale'}>
           {entry.render()}
         </div>
       </div>
-      <div className="gallery-card-title">{entry.title}</div>
+      <Link to={href} className="gallery-card-title">{entry.title}</Link>
       <div className="gallery-card-description">{entry.description}</div>
-    </Link>
+      <Link to={href} className="gallery-card-open">Open preview →</Link>
+    </article>
   );
 }
 

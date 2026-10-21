@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from 'react';
 import { Header } from '@/components/Header';
 import { InviteSection } from '@/components/InviteSection';
 import { Library } from '@/components/Library';
+import { ScrapbookCover } from '@/components/ScrapbookCover';
 import { LIBRARY_ACTIVE_INDEX, LIBRARY_PEOPLE, OWNER_HANDLE, OWNER_NAME } from '@/data/mock';
 import './HomeScreen.css';
 
@@ -40,6 +41,11 @@ export default function HomeScreen({ selectedPerson, onSelectPerson }: HomeScree
   return (
     <div className="home-root">
       <Header ownerName={OWNER_NAME} />
+      <section className="home-scrapbook-section" aria-labelledby="home-scrapbook-heading">
+        <p id="home-scrapbook-heading" className="home-section-label">01 · YOUR SCRAPBOOK</p>
+        <ScrapbookCover />
+      </section>
+      <p className="home-section-label home-people-label">02 · PEOPLE IN YOUR FOLDER</p>
       <div className="home-library-wrap" ref={libraryWrapRef}>
         <div className="home-library-scale" ref={libraryScaleRef}>
           <Library people={LIBRARY_PEOPLE} selected={selectedPerson} defaultSelected={LIBRARY_ACTIVE_INDEX} onSelect={onSelectPerson} />

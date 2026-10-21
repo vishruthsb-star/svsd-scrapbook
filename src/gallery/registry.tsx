@@ -8,6 +8,7 @@ import { Header } from '@/components/Header';
 import { HomeBottomNavigation } from '@/components/HomeBottomNavigation';
 import { InviteSection } from '@/components/InviteSection';
 import { Library } from '@/components/Library';
+import { ScrapbookCover } from '@/components/ScrapbookCover';
 import { ScrapbookHeader } from '@/components/ScrapbookHeader';
 import { ScreenShell } from '@/components/ScreenShell';
 import { ThemeNavigation } from '@/components/ThemeNavigation';
@@ -16,6 +17,7 @@ import AppShell from '@/screens/AppShell/AppShell';
 import { LIBRARY_ACTIVE_INDEX, LIBRARY_PEOPLE, OWNER_HANDLE, OWNER_NAME } from '@/data/mock';
 import ScrapbookStylePreview from './ScrapbookStylePreview';
 import ComposeMemoryScreen from '@/screens/ComposeMemoryScreen/ComposeMemoryScreen';
+import { DecorPreview, FlipCardPreview, ItemBackPreview, PillButtonPreview, RemoveButtonPreview, ScrapbookItemPreview } from './ComponentGalleryPreviews';
 
 export type GalleryKind = 'screen' | 'component';
 
@@ -38,6 +40,55 @@ export const SCREENS: GalleryEntry[] = [
 ];
 
 export const COMPONENTS: GalleryEntry[] = [
+  {
+    kind: 'component',
+    id: 'pill-button',
+    title: 'PillButton',
+    description: 'Plain pill control used by canvas pages. Click to test its callback and focus style.',
+    render: () => <PillButtonPreview />,
+  },
+  {
+    kind: 'component',
+    id: 'scrapbook-item',
+    title: 'ScrapbookItem',
+    description: 'Canvas adapter for Stamp, Note, VoicePostcard, and ParcelTag; switch kinds and flip the card.',
+    render: () => <ScrapbookItemPreview />,
+  },
+  {
+    kind: 'component',
+    id: 'decor',
+    title: 'Decor',
+    description: 'Seeded tape, clip, and torn-corner embellishments. Change the seed to inspect variations.',
+    render: () => <DecorPreview />,
+  },
+  {
+    kind: 'component',
+    id: 'flip-card',
+    title: 'FlipCard',
+    description: 'Reusable keyboard and pointer accessible card flip with front and back faces.',
+    render: () => <FlipCardPreview />,
+  },
+  {
+    kind: 'component',
+    id: 'item-back',
+    title: 'ItemBack',
+    description: 'Shared sender and date face; switch viewer modes to inspect privacy states.',
+    render: () => <ItemBackPreview />,
+  },
+  {
+    kind: 'component',
+    id: 'remove-button',
+    title: 'RemoveButton',
+    description: 'Hand-drawn remove action as used on an item back face. Click remove, then restore the preview.',
+    render: () => <RemoveButtonPreview />,
+  },
+  {
+    kind: 'component',
+    id: 'scrapbook-cover',
+    title: 'Scrapbook cover',
+    description: 'Approved 1B top-bound marigold cover with the 2D pages-burst interaction. Click or press Enter/Space to replay.',
+    render: () => <ScrapbookCover name="vishruth’s scrapbook" />,
+  },
   {
     kind: 'component',
     id: 'compose-memory',

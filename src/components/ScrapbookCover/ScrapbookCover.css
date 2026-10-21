@@ -1,0 +1,6 @@
+.scrapbook-cover { position: relative; width: min(100%, 400px); aspect-ratio: 400 / 430; margin: 0 auto; cursor: pointer; outline: none; container-type: inline-size; -webkit-tap-highlight-color: transparent; }
+.scrapbook-cover:focus-visible { outline: 2px solid #111111; outline-offset: 5px; }
+.scrapbook-cover-art { display: block; width: 100%; height: 100%; overflow: visible; }
+.scrapbook-cover-layer, .scrapbook-cover-tag { transform-box: fill-box; transform-origin: center; }
+.scrapbook-cover-name { position: absolute; left: 14%; top: 77.674%; width: 55%; height: 5.35%; display: flex; align-items: center; justify-content: center; box-sizing: border-box; font-family: var(--font-hand); font-weight: 300; font-size: 4.75cqw; line-height: 1.21; color: #111111; transform: rotate(-6deg); transform-origin: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .scrapbook-cover { scroll-behavior: auto; } }

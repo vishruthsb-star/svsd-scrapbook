@@ -184,8 +184,19 @@ filenames exactly as given):
   screen; reference the `--safe-top` / `--safe-bottom` / `--safe-side` tokens only
   (`ScreenShell` already applies them for you), and change the safe-area values only in
   `src/index.css`, never per-screen.
-- Every new screen or component must be registered in `src/gallery/registry.ts` (the single
-  list the gallery renders from) — that's the only file a new addition needs to touch.
+- **Mandatory gallery convention:** every new reusable visual component implemented in
+  this repository MUST also be registered in the existing Component Gallery as part of the
+  same implementation task, whether or not the implementation prompt mentions the gallery.
+  A component is complete only when its React/TypeScript implementation exists, it is
+  integrated into its intended product screen when applicable, it is registered in
+  `src/gallery/registry.tsx`, and it has an independently accessible, functional preview
+  where its appearance and interactions can be tested in isolation. Interactive components
+  must expose their relevant interactions in the preview; components with meaningful states
+  or variants should provide practical preview controls using existing gallery patterns.
+  Do not add standalone previews for internal utility functions, hooks, or structural
+  wrappers with no standalone visual purpose. Keep preview-only mock data and controls out
+  of production component behavior. The registry in `src/gallery/registry.tsx` is the
+  single source of gallery entries; do not create a second gallery.
 - The Home screen's exact spacing values (44px header→Library, 64px Library→InviteSection)
   are CSS variables declared at the top of `src/screens/HomeScreen/HomeScreen.css`.
 - Mock/sample data lives in one file, `src/data/mock.ts`, so it can be swapped for real data
